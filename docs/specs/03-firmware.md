@@ -55,7 +55,7 @@ A linha de telemetria tem ~95 caracteres. A 9600 baud (~960 caracteres/s) cada l
 **~100 ms** para ser transmitida; como o buffer de TX do UNO tem 64 bytes, o `Serial.print`
 bloqueia. Logo, o período real do laço é ≈ 100 ms + 50 ms de `delay`, e não 50 ms.
 Velocidade máxima efetiva ≈ 2° / 0,15 s ≈ **13°/s** por eixo. Ver melhoria em
-[06-problemas-conhecidos.md](06-problemas-conhecidos.md#p4).
+[06-problemas-conhecidos.md](06-problemas-conhecidos.md#p3).
 
 ## Build
 
@@ -63,5 +63,4 @@ Velocidade máxima efetiva ≈ 2° / 0,15 s ≈ **13°/s** por eixo. Ver melhori
 - `arduino-cli` (linha de comando): ver skill `.claude/skills/firmware-arduino`.
 - Tinkercad: colar o conteúdo de `main.c` no editor de código (modo texto) do circuito.
 
-A biblioteca `Servo` já vem com a Arduino IDE; o arquivo `Servo.h` da raiz do repositório não é
-necessário para compilar (ver [06-problemas-conhecidos.md](06-problemas-conhecidos.md#p3)).
+A biblioteca `Servo` já vem com a Arduino IDE (no `arduino-cli`: `arduino-cli lib install Servo`).

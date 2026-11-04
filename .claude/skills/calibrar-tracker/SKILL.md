@@ -33,7 +33,7 @@ Se o usuário colar um log, converta para tabela/CSV (scratchpad) e calcule por 
 1. Luz uniforme (difusa) sobre os 4 LDRs, ~30 s de log.
 2. Calcular a média e a amplitude de `dH` e `dV` → isso é o desequilíbrio natural dos sensores.
 3. `TOLERANCIA` ≥ |média| + amplitude, com folga de ~20 %.
-4. Se a média de algum eixo for grande (>30), sugerir offset por sensor (P7 em problemas conhecidos)
+4. Se a média de algum eixo for grande (>30), sugerir offset por sensor (P6 em problemas conhecidos)
    em vez de inflar a tolerância.
 5. Testar com lanterna (testes F-01 a F-03 de `docs/specs/05-testes.md`).
 

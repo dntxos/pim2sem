@@ -29,8 +29,6 @@ arduino-cli compile --fqbn arduino:avr:uno "$SK"
 Se o repositório já tiver `firmware/solar_tracker/solar_tracker.ino`, compile essa pasta
 diretamente. Relate o uso de flash/RAM que o compilador imprime.
 
-**Não** copie o `Servo.h` da raiz para a pasta do sketch — ele é só o cabeçalho e quebra o build.
-
 ## 3. Gravar (somente se o usuário pedir e a placa estiver conectada)
 
 ```bash

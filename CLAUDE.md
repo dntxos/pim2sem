@@ -12,7 +12,6 @@ seguem o padrão já usado no código (português, `camelCase`; constantes em `M
 
 ```
 main.c                  Firmware (sketch Arduino em C++, apesar da extensão .c)
-Servo.h                 Cópia do cabeçalho da lib Servo — NÃO é usada no build
 docs/diagrama_tinkercad.png   Circuito de referência (Tinkercad)
 docs/specs/             Especificações — leia antes de mudar comportamento
 3d_material/amf/        Montagem 3D completa (.AMF, ~11 MB)
