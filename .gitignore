@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Arduino / PlatformIO build
+build/
+.pio/
+*.hex
+*.elf
+*.bin
+
+# Editores
+.vscode/
+.idea/
+
+# Claude Code (local)
+.claude/settings.local.json
