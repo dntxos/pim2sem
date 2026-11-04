@@ -1,9 +1,13 @@
 # Rastreador Solar — PIM UNIP
 
-Protótipo de **rastreador solar de dois eixos**: Arduino UNO, quatro LDRs e dois servos mantêm uma
-placa fotovoltaica apontada para a luz, aumentando o aproveitamento de energia.
+Protótipo de **rastreador solar de dois eixos**: um Arduino Nano, quatro LDRs e dois servos MG996R
+mantêm um painel solar de 10 W apontado para a luz, aumentando o aproveitamento de energia. O
+sistema é alimentado por uma bateria de 12 V com conversores XL4015.
 
 ![Circuito no Tinkercad](docs/diagrama_tinkercad.png)
+
+*O Tinkercad não tem Arduino Nano; o diagrama usa um UNO, que tem o mesmo microcontrolador e os
+mesmos pinos.* Lista de materiais e alimentação: [02-hardware.md](docs/specs/02-hardware.md).
 
 ## Conteúdo
 
@@ -35,6 +39,8 @@ Detalhes em [docs/specs/01-visao-geral.md](docs/specs/01-visao-geral.md).
 
 ## Executar
 
-1. Montar o circuito conforme o diagrama (ver pinos em [02-hardware.md](docs/specs/02-hardware.md)).
-2. Abrir o código na Arduino IDE (placa **Arduino Uno**) e enviar.
-3. Abrir o Monitor Serial a 9600 baud para ver as leituras.
+1. Ajustar os XL4015 com multímetro **antes** de ligar as cargas (6,0 V servos, 7,5 V Nano).
+2. Montar o circuito (pinos e alimentação em [02-hardware.md](docs/specs/02-hardware.md)).
+3. Abrir o código na Arduino IDE — placa **Arduino Nano**, processador **ATmega328P (Old
+   Bootloader)** na maioria dos clones — e enviar.
+4. Abrir o Monitor Serial a 9600 baud para ver as leituras.

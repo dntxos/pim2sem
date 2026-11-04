@@ -21,11 +21,14 @@
 
 | ID | Cenário | Resultado esperado |
 |----|---------|--------------------|
+| F-00 | Antes de tudo: XL4015 sem carga, medir com multímetro | #1 = 6,0 V (servos); #2 = 7,5 V (VIN do Nano). Só então ligar as cargas. |
 | F-01 | Lanterna movida lentamente em arco | Placa acompanha a lanterna. |
 | F-02 | Lanterna parada | Placa estabiliza sem "tremer" (sem oscilação contínua). |
 | F-03 | Sentido dos eixos | Placa vai **em direção** à luz. Se fugir, inverter o sinal do eixo. |
-| F-04 | Alimentação | Arduino não reinicia quando os dois servos se movem juntos. |
+| F-04 | Alimentação | Nano não reinicia quando os dois servos se movem juntos; XL4015 #1 não esquenta demais. |
 | F-05 | Sol real (opcional) | Ao longo de algumas horas, placa segue o sol. |
+| F-06 | Torque na elevação | Com o painel montado, o servo vertical segura a placa em 20° e 160° sem "cair" nem zumbir forte. |
+| F-07 | Autonomia (opcional) | Medir tensão da bateria no início e no fim do dia; com controlador de carga, deve subir ao sol. |
 
 ## Calibração
 

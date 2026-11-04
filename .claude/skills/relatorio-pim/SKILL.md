@@ -9,8 +9,9 @@ description: Redigir seções do relatório acadêmico do PIM (UNIP) sobre o ras
 
 Antes de escrever, leia `docs/specs/` e `main.c`. **Não invente** medições, resultados ou valores de
 ganho energético: se não houver dados medidos, deixe marcadores como `[INSERIR MEDIÇÃO]` e avise o
-usuário. Números do projeto (pinos, TOLERANCIA=40, PASSO=2, limites 20°–160°, 4 LDRs, 2 servos SG90,
-Arduino UNO) devem vir do código/specs atuais.
+usuário. Números do projeto (pinos, TOLERANCIA=40, PASSO=2, limites 20°–160°, 4 LDRs, 2 servos MG996R,
+Arduino Nano, bateria 12 V, 2 XL4015, painel 10 W) devem vir do código/specs atuais. O diagrama do
+Tinkercad usa UNO porque o Tinkercad não tem Nano — explicar isso no texto, não trocar o hardware.
 
 ## Estrutura típica de PIM
 
@@ -20,7 +21,8 @@ Arduino UNO) devem vir do código/specs atuais.
    do ângulo de incidência); LDR e divisor de tensão; servomotor e PWM (50 Hz, pulso 0,5–2,4 ms);
    microcontrolador/Arduino; controle em malha fechada (bang-bang com zona morta); tipos de
    rastreadores (1 eixo × 2 eixos; sensorial × astronômico).
-3. **Metodologia / Materiais** — BOM (`02-hardware.md`), simulação no Tinkercad, modelagem e
+3. **Metodologia / Materiais** — BOM (`02-hardware.md`), simulação no Tinkercad e no simulador 3D, sistema de alimentação
+   (bateria + conversores *step-down*), modelagem e
    impressão 3D (`04-mecanica.md`).
 4. **Desenvolvimento** — circuito (figura `docs/diagrama_tinkercad.png`), algoritmo (fluxograma a
    partir de `03-firmware.md`), montagem mecânica.

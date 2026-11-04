@@ -26,7 +26,8 @@ Se o usuário colar um log, converta para tabela/CSV (scratchpad) e calcule por 
 | Uma leitura fixa ~0 ou flutuando | Pino errado/sem LDR (ex.: A4 vazio) | Conferir ligação × `docs/specs/02-hardware.md`. |
 | Encosta em 20° ou 160° e fica | Luz fora do alcance, ou eixo invertido | Verificar sentido; limites são intencionais. |
 | Muito lento | `PASSO` pequeno + serial bloqueando (~100 ms/linha a 9600) | Aumentar `PASSO`, `Serial.begin(115200)`, imprimir a cada N ciclos. |
-| Arduino reinicia ao mover | Alimentação dos servos pelo 5 V do UNO | Fonte externa 5 V + GND comum + capacitor. |
+| Nano reinicia ao mover | Servos puxando corrente do Nano, XL4015 fraco/desajustado ou GND não comum | Servos só no XL4015 de 6 V, GNDs interligados, capacitor 1000 µF, fios mais grossos que jumper. |
+| Servo vertical "cai" ou zumbe com o painel | Torque no limite (MG996R a 4,8 V) | XL4015 dos servos em 6 V; conferir peso do painel. |
 
 ## Procedimento de calibração
 

@@ -1,7 +1,7 @@
 # Simulador 3D do rastreador solar
 
 Simulador no navegador que roda o **firmware compilado de verdade** (`main.c` → `.hex`) num
-ATmega328P emulado e mostra a estrutura montada com as **peças 3D reais** do projeto.
+ATmega328P emulado (o chip do Arduino Nano) e mostra a estrutura montada com as **peças 3D reais** do projeto.
 
 ## Como abrir
 
@@ -26,7 +26,7 @@ Depois acesse http://localhost:8000/simulator/
   invertidos, variação entre LDRs e ruído.
 - **Comparar energia**: no modo "trajetória do dia", acumula a energia do rastreador e de uma
   placa fixa (voltada ao Norte, inclinada na latitude) e mostra o ganho.
-- **Rodar outro firmware**: carregue qualquer `.hex` para Arduino Uno (ex.: exportado pela
+- **Rodar outro firmware**: carregue qualquer `.hex` para Arduino Nano/Uno (ex.: exportado pela
   Arduino IDE em *Sketch → Exportar binário compilado*).
 
 ## Atualizar o firmware depois de editar o `main.c`
@@ -42,7 +42,7 @@ Gera `simulator/firmware/solar_tracker.hex` (requer `arduino-cli`). Depois recar
 | Parte | Arquivo | Detalhe |
 |-------|---------|---------|
 | Emulador | `js/arduino.js` | [avr8js](https://github.com/wokwi/avr8js): CPU, timers, ADC, USART e GPIO do ATmega328P a 16 MHz. Os ângulos dos servos são medidos pela largura do pulso em D9/D10 (biblioteca Servo: 544–2400 µs ↔ 0–180°). |
-| Montagem | `js/montagem.js` | Os STLs foram exportados nas coordenadas da montagem; as peças são agrupadas em fixo / azimute / elevação. Eixos extraídos da geometria (centro do prato e pino da trave). A placa (280 × 250 mm, medida do AMF), os servos e os LDRs são desenhados à parte. |
+| Montagem | `js/montagem.js` | Os STLs foram exportados nas coordenadas da montagem; as peças são agrupadas em fixo / azimute / elevação. Eixos extraídos da geometria (centro do prato e pino da trave). O painel (280 × 250 mm, medida do AMF — conferir com o painel de 10 W real), os servos MG996R e os LDRs são desenhados à parte. |
 | Sensores | `js/sensores.js` + `main.js` | Luz direta em cada LDR por *raycasting* contra as peças (a sombra do divisor em cruz é a da peça real) + luz difusa. Lux → resistência (curva do GL5528, R10 = 15 kΩ, γ = 0,7) → divisor com 10 kΩ → tensão no ADC. |
 | Sol | `js/sol.js` | Posição solar simplificada (declinação + ângulo horário). Convenção: Norte = −X, Leste = −Z. |
 

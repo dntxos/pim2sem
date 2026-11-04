@@ -54,15 +54,17 @@ Esquerda: 512 | Direita: 498 | Superior: 530 | Inferior: 480 | Horizontal: 92 | 
 ## Temporização real
 
 A linha de telemetria tem ~95 caracteres. A 9600 baud (~960 caracteres/s) cada linha leva
-**~100 ms** para ser transmitida; como o buffer de TX do UNO tem 64 bytes, o `Serial.print`
-bloqueia até sobrar espaço. O `delay(50)` acontece enquanto o restante do buffer ainda está saindo,
+**~100 ms** para ser transmitida; como o buffer de TX tem 64 bytes, o `Serial.print`
+bloqueia até sobrar espaço (buffer de 64 bytes do núcleo Arduino AVR, igual no Nano e no UNO). O `delay(50)` acontece enquanto o restante do buffer ainda está saindo,
 então o período real do laço é **≈ 100 ms** (medido no simulador: 0,098 s), e não 50 ms.
 Velocidade máxima efetiva ≈ 2° / 0,1 s ≈ **20°/s** por eixo. Ver melhoria em
 [06-problemas-conhecidos.md](06-problemas-conhecidos.md#p3).
 
 ## Build
 
-- Arduino IDE: abrir o sketch, placa **Arduino Uno**, porta USB, *Upload*.
+- Arduino IDE: abrir o sketch, placa **Arduino Nano**, processador **ATmega328P** — nos clones
+  com chip USB CH340 normalmente é **ATmega328P (Old Bootloader)**; se o *upload* der
+  `stk500_getsync`/`not in sync`, troque essa opção. Porta USB, *Upload*.
 - `arduino-cli` (linha de comando): ver skill `.claude/skills/firmware-arduino`.
 - Tinkercad: colar o conteúdo de `main.c` no editor de código (modo texto) do circuito.
 - Simulador 3D do projeto: `./simulator/build-firmware.sh` e abrir `simulator/` (ver

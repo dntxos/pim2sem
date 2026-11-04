@@ -33,9 +33,19 @@
   *horn* antes de imprimir a versão final.
 - O anteparo dos LDRs deve ser **opaco** (filamento escuro) para a sombra funcionar.
 
+## Componentes que a estrutura recebe
+
+| Componente | Observação |
+|------------|------------|
+| 2 × MG996R | O CAD foi modelado com eles (54 × 20 × 40 mm com abas, no AMF). São mais pesados e fortes que um SG90: usar os parafusos do kit e reforçar o encaixe do *horn* metálico. |
+| Painel 10 W | No AMF a placa tem 280 × 250 × 16 mm. **Conferir com o painel real** (medir e pesar) — o simulador e o cálculo de torque usam essas medidas e ~1 kg. |
+| Arduino Nano | Menor que o UNO; cabe com folga na caixa inferior. |
+| Bateria 12 V | Não cabe na estrutura impressa — fica ao lado, ligada por cabos. Deixar folga nos cabos que sobem pelo eixo de azimute (o prato gira ±70°). |
+| 2 × XL4015 | Ficam perto da bateria ou na caixa inferior; o dissipador precisa de ventilação. |
+
 ## Montagem (ordem sugerida)
 
-1. Base + paredes estruturais formando a caixa; Arduino e protoboard dentro.
+1. Base + paredes estruturais formando a caixa; Arduino Nano e protoboard dentro.
 2. Servo horizontal fixado na coluna interna; prato giratório no *horn*.
 3. Paredes de apoio do motor sobre o prato; servo vertical entre elas.
 4. Trave no *horn* do servo vertical; placa fotovoltaica sobre a trave.

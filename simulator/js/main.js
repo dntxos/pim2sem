@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { ArduinoUno, FREQ_HZ } from './arduino.js';
+import { Arduino328P, FREQ_HZ } from './arduino.js';
 import {
   PECAS, EIXO_AZIMUTE, EIXO_ELEVACAO, INCLINACAO_EXPORTADA_GRAUS, N0, U0, LDRS, RAIO_LDR, PLACA,
 } from './montagem.js';
@@ -155,15 +155,15 @@ function addMalha(geo, material, grupo) {
   grupoEl.add(new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x8fb3ff, transparent: true, opacity: 0.35 })));
 }
 
-// servos ilustrativos (SG90), não fazem parte dos STLs
+// servos MG996R ilustrativos (corpo 40,7 × 19,7 × 42,9 mm), não fazem parte dos STLs
 {
-  const mat = new THREE.MeshStandardMaterial({ color: 0x1f4fbf, roughness: 0.5 });
-  const sH = new THREE.Mesh(new THREE.BoxGeometry(12.2, 22.7, 23), mat);
-  sH.position.set(0, 68.7 - 22.7 / 2 - 4, 5);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
+  const sH = new THREE.Mesh(new THREE.BoxGeometry(19.7, 36, 40.7), mat);
+  sH.position.set(0, 68.7 - 36 / 2, 10);
   sH.castShadow = true;
   grupoFixo.add(sH);
-  const sV = new THREE.Mesh(new THREE.BoxGeometry(22.7, 23, 12.2), mat);
-  sV.position.set(0, EIXO_ELEVACAO.y - 6, 0);
+  const sV = new THREE.Mesh(new THREE.BoxGeometry(19.7, 40.7, 42.9), mat);
+  sV.position.set(0, EIXO_ELEVACAO.y - 10, 0);
   sV.castShadow = true;
   grupoAz.add(sV);
 }
@@ -209,7 +209,7 @@ async function carregarPecas() {
 // ---------------------------------------------------------------- Arduino
 function iniciarArduino(hexTexto) {
   hexAtual = hexTexto;
-  uno = new ArduinoUno(hexTexto, { onSerialLine: receberSerial });
+  uno = new Arduino328P(hexTexto, { onSerialLine: receberSerial });
   estado.amostras = [];
 }
 function receberSerial(linha) {
@@ -295,7 +295,7 @@ function aplicarPose() {
   grupoEl.rotation.z = (inclinacao - INCLINACAO_EXPORTADA_GRAUS) * GRAU;
 }
 
-const VEL_SERVO = 500; // °/s (SG90 ≈ 0,12 s / 60°)
+const VEL_SERVO = 400; // °/s (MG996R a 6 V ≈ 0,14–0,15 s / 60°)
 function moverServos(dt) {
   for (const [pino, chave] of [[9, 'servoH'], [10, 'servoV']]) {
     const alvo = uno.anguloServo(pino);

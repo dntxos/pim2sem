@@ -35,8 +35,9 @@ astronômico da posição do sol.
 
 | ID | Requisito |
 |----|-----------|
-| RNF-01 | Plataforma: Arduino UNO (ATmega328P), firmware em C++/Arduino. |
-| RNF-02 | Simulável no Tinkercad Circuits antes da montagem física. |
+| RNF-01 | Plataforma: Arduino Nano (ATmega328P), firmware em C++/Arduino. Servos MG996R. |
+| RNF-06 | Autônomo: alimentado por bateria 12 V (recarregada pelo próprio painel de 10 W), com conversores *step-down* XL4015. |
+| RNF-02 | Simulável antes da montagem física: Tinkercad (com UNO, equivalente ao Nano) e simulador 3D do projeto. |
 | RNF-03 | Peças mecânicas imprimíveis em impressora 3D FDM comum. |
 | RNF-04 | Movimento suave, sem oscilação contínua quando a luz está estável. |
 | RNF-05 | Código legível e comentado em português (avaliação acadêmica). |

@@ -1,7 +1,10 @@
 # CLAUDE.md
 
 Rastreador solar de dois eixos — PIM (Projeto Integrado Multidisciplinar) da UNIP.
-Arduino UNO + 4 LDRs + 2 servos movem uma placa fotovoltaica para seguir a luz.
+Arduino **Nano** + 4 LDRs + 2 servos **MG996R** movem um painel solar de 10 W para seguir a luz.
+Alimentação: bateria 12 V + 2 conversores XL4015 (6 V servos, 7,5 V no VIN do Nano).
+O diagrama do Tinkercad usa UNO só porque o Tinkercad não tem Nano (mesmo ATmega328P e pinos).
+Lista de materiais real: `docs/specs/02-hardware.md` — não citar SG90, UNO ou fonte USB como hardware do projeto.
 
 ## Idioma
 
@@ -50,7 +53,7 @@ Não há testes automatizados. Para checar se compila (requer `arduino-cli`, ver
 `firmware-arduino`):
 
 ```bash
-arduino-cli compile --fqbn arduino:avr:uno <pasta-do-sketch>
+arduino-cli compile --fqbn arduino:avr:nano <pasta-do-sketch>
 ```
 
 Como o arquivo é `main.c`, para compilar é preciso copiá-lo para `<pasta>/<pasta>.ino` (ver P2 em

@@ -1,4 +1,4 @@
-// Emulação do Arduino UNO (ATmega328P @ 16 MHz) rodando o firmware compilado (.hex).
+// Emulação do Arduino Nano (ATmega328P @ 16 MHz — o mesmo chip do UNO) rodando o firmware compilado (.hex).
 // Usa avr8js: o código executado é exatamente o binário gerado a partir do main.c.
 import {
   CPU, avrInstruction,
@@ -32,7 +32,7 @@ export function parseIntelHex(text) {
   return flash;
 }
 
-export class ArduinoUno {
+export class Arduino328P {
   /**
    * @param {string} hexText conteúdo do .hex
    * @param {{onSerialLine?: (linha: string) => void}} [opcoes]

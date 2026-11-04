@@ -21,10 +21,19 @@ abre *sketches* `.ino` dentro de uma pasta com o mesmo nome. **Correção sugeri
 e/ou imprimir a cada N ciclos, e/ou formato compacto (CSV: `e,d,s,i,h,v`), que também facilita
 plotar no Serial Plotter da IDE.
 
-## <a id="p4"></a>P4 — Servos alimentados pelo 5 V do Arduino (médio, só no físico)
+## <a id="p4"></a>P4 — Alimentação dos servos (resolvido no projeto físico — conferir a montagem)
 
-Picos de corrente dos dois servos podem resetar o Arduino. Ver
-[02-hardware.md](02-hardware.md#alimentação).
+O diagrama do Tinkercad alimenta os servos pelo 5 V do Arduino, o que não funciona com MG996R
+(até ~2,5 A cada). O projeto físico usa bateria 12 V + XL4015 dedicado aos servos (6 V). Riscos que
+continuam: XL4015 desajustado (medir antes de ligar), GND não interligado, jumpers Dupont finos
+demais para a corrente dos servos. Ver [02-hardware.md](02-hardware.md#alimentação).
+
+## <a id="p12"></a>P12 — Sem controlador de carga entre painel e bateria (alto, se forem ligados)
+
+O painel de 10 W (≈ 18 V em operação, ≈ 21 V em aberto) não pode ser ligado direto à bateria
+selada de 12 V: sobrecarrega durante o dia e descarrega a bateria pelo painel à noite. Nenhum
+controlador aparece na lista de compras. **Correção:** controlador PWM 12 V (≥ 5 A) entre painel e
+bateria — ou não ligar o painel à bateria e usá-lo só para medir a geração.
 
 ## P5 — Sem filtro nas leituras (baixo)
 
