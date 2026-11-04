@@ -231,6 +231,27 @@ CAMERAS = {
 
 
 def camera(cena, nome):
+    if nome == 'detalhe_ldr':
+        # mira o suporte em cruz real (centro da caixa envolvente), de frente para a face sensível
+        bpy.context.view_layer.update()
+        sup = next(o for o in cena.objects if 'SUPORTE_LDR' in o.name and 'DO_SUPORTE' not in o.name)
+        cantos = [sup.matrix_world @ Vector(c) for c in sup.bound_box]
+        alvo_v = sum(cantos, Vector()) / 8
+        el = cena.objects['elevacao']
+        n = (el.matrix_world.to_3x3() @ N0).normalized()
+        lado = n.cross(Vector((0, 0, 1))).normalized()
+        pos_v = alvo_v + n * 0.16 + lado * 0.10 + Vector((0, 0, 0.05))
+        cam = bpy.data.cameras.new('cam')
+        cam.lens = 85
+        cam.dof.use_dof = True
+        cam.dof.focus_distance = (alvo_v - pos_v).length
+        cam.dof.aperture_fstop = 16
+        co = bpy.data.objects.new('cam', cam)
+        cena.collection.objects.link(co)
+        co.location = pos_v
+        co.rotation_euler = (alvo_v - pos_v).to_track_quat('-Z', 'Y').to_euler()
+        cena.camera = co
+        return
     pos, alvo = CAMERAS[nome]
     pos = Vector(pos) + Vector((0.13, -0.13, 0)) * 0  # posições já absolutas
     cam = bpy.data.cameras.new('cam')

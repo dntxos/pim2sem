@@ -45,10 +45,13 @@ sensor ou filtro exponencial (`x = x*0.8 + leitura*0.2`).
 LDRs do mesmo lote variam bastante. **Melhoria:** offsets de calibração por sensor, medidos com luz
 uniforme no `setup()`.
 
-## P7 — Sem modo noturno (baixo)
+## <a id="p7"></a>P7 — Sem modo noturno (médio)
 
-No escuro as leituras ficam próximas e a placa para onde estiver. **Melhoria:** se a soma das 4
-leituras ficar abaixo de um limiar por alguns minutos, voltar à posição de "nascer do sol" (leste).
+No escuro as leituras ficam próximas e a placa para onde estiver (voltada a Oeste). Simulação de
+21/jun sem reiniciar o Arduino entre um dia e outro: a placa amanhece de costas para o Sol (erro
+110° às 7 h) e só se realinha perto das 10h45; ligando às 6h30 em 90°/90°, alinha às 8h50 (erro 2° às
+9h50) — `docs/relatorio/dados/noite_elev25.json`. **Melhoria:** se a soma das 4 leituras ficar
+abaixo de um limiar por alguns minutos, voltar à posição inicial (90°/90°) ou ao nascente.
 
 ## P8 — Controle proporcional (melhoria opcional)
 
@@ -99,3 +102,18 @@ sol pleno (~100 000 lux) os LDRs saturam completamente e quase não há sinal.
 
 **Melhorias:** resistor fixo menor (1–2,2 kΩ) para uso ao sol, anteparo do divisor mais alto,
 tolerância relativa (`|e − d| > 5 % de (e + d)`) em vez de absoluta.
+
+## <a id="p13"></a>P13 — O próprio painel sombreia os LDRs (alto) — encontrado em simulação
+
+No CAD, o suporte dos LDRs fica preso à borda da trave ~13 mm **abaixo** do plano do painel. Com o
+Sol baixo vindo do lado "inferior" do painel, a trave/painel sombreiam os LDRs inferiores; o firmware
+lê "mais luz em cima" e inclina o painel para longe do Sol, ficando preso. Simulação de 21/jun
+(lat −23,55°, partindo de 90°/90° ao amanhecer): rastreador capta **−74%** em relação à placa fixa.
+Com o suporte elevado 25 mm (`simulator/?elevacaoLdr=25`): **+33%**, erro < 20° das 8h40 às 17 h.
+Em 21/dez as duas geometrias rendem +48%. Dados: `docs/relatorio/dados/dia172*.json`, `dia355*.json`.
+
+**Correção proposta:** espaçador de ~25 mm (ou reimprimir `SUPORTE_DO_SUPORTE_LDR`) para que os
+sensores fiquem acima do painel. **Ressalva:** posição/espessura do painel real foram estimadas —
+confirmar no protótipo com lanterna rasante vinda do lado inferior.
+
+Diagnóstico no simulador: `sim.bloqueios()` mostra qual peça bloqueia o raio de cada LDR ao Sol.

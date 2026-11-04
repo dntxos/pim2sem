@@ -32,6 +32,17 @@ nos LDRs numa pose — ao rodar, o firmware volta para os ângulos dele. Para co
 `avancar` roda ~4× o tempo real; mantenha cada chamada abaixo de ~30 s simulados (limite de
 tempo das ferramentas). `s.estado.linhasSerial` tem a saída serial do firmware.
 
+## Variantes e diagnóstico
+
+- `?elevacaoLdr=25` na URL eleva o suporte dos LDRs 25 mm (variante de projeto do P13).
+- `sim.bloqueios()` → para cada LDR, a peça que bloqueia o raio ao Sol (`-` = livre).
+- **Cache:** depois de editar `simulator/js/*.js`, force o recarregamento
+  (`await fetch('/simulator/js/main.js',{cache:'reload'})` + `location.reload()`) e confirme que a
+  função/variante nova existe antes de confiar no resultado — uma rodada "elevada" já saiu inválida
+  por usar o módulo antigo em cache.
+- Para extrair séries longas, rodar em blocos < 30 s simulados por chamada; para salvar em disco,
+  um pequeno servidor local de POST (ver histórico em `docs/relatorio/dados/`).
+
 ## Cenários de regressão
 
 Todos partindo de `s.reiniciar()` (90/90), ~1 000 lux, difusa 10 %:
@@ -44,6 +55,8 @@ Todos partindo de `s.reiniciar()` (90/90), ~1 000 lux, difusa 10 %:
 | Sol L el 55° / O el 50° (10 s) | erro ≈ 18°, sem oscilar quando V cruza 90° |
 | Dia 355, 7h, lat −23,55 (16 s) | erro ≈ 16° |
 | Fiação "diagrama" (A0–A3) | erro cresce (P1, ainda não corrigido) |
+| Dia 172 completo (6h30→17h30, 0,5 h/s) — CAD | **falha** (P13): energia ≈ 1,8 u.r. × placa fixa 6,9 |
+| Dia 172 completo — `?elevacaoLdr=25` | ≈ 9,2 u.r. (+33%) |
 
 Se uma correção de firmware mudar esses resultados, atualize esta tabela e
 `docs/specs/06-problemas-conhecidos.md`.

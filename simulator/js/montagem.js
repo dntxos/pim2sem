@@ -43,7 +43,10 @@ function doReferencialDaPlaca(u, n, z) {
 // Divisor em cruz (SUPORTE_LDR): 30 × 30 mm, centro em u = 327,5 / z = 141,3, base em n ≈ 17.
 // Os LDRs ficam no centro de cada quadrante (±7,5 mm), cabeça ~2 mm acima da base.
 // "Esquerda" é -Z (vista de frente para a placa, com "cima" = U0).
-const CRUZ = { u: 327.55, z: 141.3, nBase: 17.0, meio: 7.5 };
+// Variante de projeto (P13): ?elevacaoLdr=25 eleva o suporte dos LDRs 25 mm ao longo da normal,
+// colocando os sensores acima do plano do painel. Padrão 0 = geometria do CAD.
+export const ELEVACAO_LDR = Number(new URLSearchParams(globalThis.location?.search ?? '').get('elevacaoLdr') ?? 0) || 0;
+const CRUZ = { u: 327.55, z: 141.3, nBase: 17.0 + ELEVACAO_LDR, meio: 7.5 };
 export const LDRS = [
   { id: 'SE', nome: 'Superior esquerdo', du: +1, dz: -1 },
   { id: 'SD', nome: 'Superior direito', du: +1, dz: +1 },

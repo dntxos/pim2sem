@@ -8,7 +8,7 @@ import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Arduino328P, FREQ_HZ } from './arduino.js';
 import {
-  PECAS, EIXO_AZIMUTE, EIXO_ELEVACAO, INCLINACAO_EXPORTADA_GRAUS, N0, U0, LDRS, RAIO_LDR, PLACA,
+  PECAS, EIXO_AZIMUTE, EIXO_ELEVACAO, INCLINACAO_EXPORTADA_GRAUS, N0, U0, LDRS, RAIO_LDR, PLACA, ELEVACAO_LDR,
 } from './montagem.js';
 import { posicaoSolar, direcaoSolar, azElDeDirecao } from './sol.js';
 import { resistenciaLdr, tensaoDivisor, rng, gauss } from './sensores.js';
@@ -137,7 +137,7 @@ function addMalha(geo, material, grupo) {
   const mats = [0x9aa4b2, 0x9aa4b2, 0x0d2a6b, 0x9aa4b2, 0x9aa4b2, 0x9aa4b2].map(
     (c, i) => new THREE.MeshStandardMaterial({ color: c, roughness: i === 2 ? 0.25 : 0.6, metalness: i === 2 ? 0.3 : 0.1 }),
   );
-  addMalha(geo, mats, 'elevacao');
+  addMalha(geo, mats, 'elevacao').name = 'PAINEL';
   // células (linhas desenhadas na face)
   const linhas = [];
   for (let i = -2; i <= 2; i++) {
@@ -202,7 +202,10 @@ async function carregarPecas() {
     if (!r.ok) throw new Error(`Não foi possível carregar ${p.arquivo}.STL (${r.status})`);
     const geo = loader.parse(await r.arrayBuffer());
     geo.computeVertexNormals();
-    addMalha(geo, new THREE.MeshStandardMaterial({ color: p.cor, roughness: 0.75 }), p.grupo);
+    if (ELEVACAO_LDR && p.arquivo.startsWith('SUPORTE')) {
+      geo.translate(N0[0] * ELEVACAO_LDR, N0[1] * ELEVACAO_LDR, 0);
+    }
+    addMalha(geo, new THREE.MeshStandardMaterial({ color: p.cor, roughness: 0.75 }), p.grupo).name = p.arquivo;
   }));
 }
 
@@ -400,6 +403,16 @@ window.sim = {
   },
   /** Posiciona os servos (sem firmware) e devolve a luz em cada LDR.
    *  Atenção: o firmware guarda os próprios ângulos e vai sobrescrever esta pose ao rodar. */
+  /** Diagnóstico: qual peça bloqueia o raio do centro de cada LDR até o sol (ou '-' se livre). */
+  bloqueios: () => {
+    scene.updateMatrixWorld(); grupoEl.getWorldQuaternion(qEl);
+    const n = new THREE.Vector3(...N0).applyQuaternion(qEl); const sDir = new THREE.Vector3(...estado.sol);
+    return LDRS.map((l, i) => {
+      malhasLdr[i].getWorldPosition(vP); raycaster.set(vP.clone().addScaledVector(n, 1.2), sDir); raycaster.far = 3000;
+      const hit = raycaster.intersectObjects(oclusores, false)[0];
+      return `${l.id}:${hit ? hit.object.name || '?' : '-'}`;
+    }).join(' ') + ` cos=${n.dot(sDir).toFixed(2)}`;
+  },
   sondar: (h, v) => {
     estado.servoH = h; estado.servoV = v; aplicarPose(); atualizarSol(); calcularSensores();
     return LDRS.map((l, i) => `${l.id}=${Math.round(leituras[i].lux)}`).join(' ');

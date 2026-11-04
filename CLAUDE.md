@@ -49,6 +49,10 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 - **O sentido da correção horizontal depende do lado da placa** (`sentidoHorizontal` no
   `main.c`, P10 em problemas conhecidos). Não remover: sem isso o servo horizontal trava no limite
   sempre que o vertical fica abaixo de 90°.
+- **O painel sombreia os LDRs (P13):** no CAD o suporte dos LDRs fica abaixo do plano do painel;
+  em simulação isso faz o rastreador fugir do Sol em junho. Variante `simulator/?elevacaoLdr=25`.
+- **Relatório:** gerado por script (`tools/relatorio/gerar_relatorio.py` → `exportar_pdf.sh`);
+  números vêm de `docs/relatorio/dados/` — não digitar resultados à mão.
 - O AMF guarda as posições das peças em **metros** e a geometria em mm; prefira os STLs, que já
   estão nas coordenadas da montagem.
 - O código precisa continuar **compatível com o Tinkercad** (só bibliotecas padrão: `Servo`; sem
