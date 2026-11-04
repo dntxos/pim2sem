@@ -35,8 +35,9 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 - **Limites 20°–160°** protegem a estrutura impressa — não ampliar sem checar a mecânica.
 - **Serial a 9600 baud dita o ritmo do laço** (~100 ms por linha, medido). Mudanças de
   temporização devem considerar isso.
-- **Correção horizontal inverte quando o servo vertical cruza 90°** (P10 em problemas conhecidos)
-  — bug real do algoritmo, reproduzível no simulador.
+- **O sentido da correção horizontal depende do lado da placa** (`sentidoHorizontal` no
+  `main.c`, P10 em problemas conhecidos). Não remover: sem isso o servo horizontal trava no limite
+  sempre que o vertical fica abaixo de 90°.
 - O AMF guarda as posições das peças em **metros** e a geometria em mm; prefira os STLs, que já
   estão nas coordenadas da montagem.
 - O código precisa continuar **compatível com o Tinkercad** (só bibliotecas padrão: `Servo`; sem

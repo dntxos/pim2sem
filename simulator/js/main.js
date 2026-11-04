@@ -393,7 +393,13 @@ window.sim = {
   },
   erro: () => anguloErro(),
   leituras,
-  /** Posiciona os servos (sem firmware) e devolve a luz em cada LDR. */
+  /** Reinicia o Arduino (firmware volta ao setup(): servos em 90°/90°). Opcional: outro .hex. */
+  reiniciar: (hexTexto = hexAtual) => {
+    iniciarArduino(hexTexto);
+    estado.servoH = 90; estado.servoV = 90; aplicarPose(); zerarEnergia();
+  },
+  /** Posiciona os servos (sem firmware) e devolve a luz em cada LDR.
+   *  Atenção: o firmware guarda os próprios ângulos e vai sobrescrever esta pose ao rodar. */
   sondar: (h, v) => {
     estado.servoH = h; estado.servoV = v; aplicarPose(); atualizarSol(); calcularSensores();
     return LDRS.map((l, i) => `${l.id}=${Math.round(leituras[i].lux)}`).join(' ');

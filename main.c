@@ -50,11 +50,16 @@ void loop() {
   int inferior = (infEsq + infDir) / 2;
 
   // Eixo horizontal
+  // Os LDRs giram junto com a placa. Quando o servo vertical passa de 90°,
+  // a placa fica voltada para o outro lado e "esquerda/direita" se invertem
+  // em relação ao giro do prato; por isso o sentido da correção também inverte.
+  int sentidoHorizontal = (anguloVertical >= 90) ? 1 : -1;
+
   if (esquerda > direita + TOLERANCIA) {
-    anguloHorizontal += PASSO;
+    anguloHorizontal += sentidoHorizontal * PASSO;
   }
   else if (direita > esquerda + TOLERANCIA) {
-    anguloHorizontal -= PASSO;
+    anguloHorizontal -= sentidoHorizontal * PASSO;
   }
 
   // Eixo vertical

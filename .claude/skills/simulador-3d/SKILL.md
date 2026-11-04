@@ -21,21 +21,29 @@ Detalhes de arquitetura em `simulator/README.md`. Resumo: `js/arduino.js` (emula
 const s = window.sim;
 s.estado.rodando = false;                 // pausa o laço animado
 s.estado.modoSol = 'manual'; s.estado.azManual = 0; s.estado.elManual = 50;
-s.sondar(90, 90);                          // servos em 90/90; retorna lux de cada LDR
+s.reiniciar();                             // SEMPRE antes de cada cenário: firmware volta a 90/90
 for (let i = 0; i < 5; i++) { s.avancar(1); console.log(s.estado.servoH, s.estado.servoV, s.erro()); }
 ```
+
+O firmware guarda os próprios ângulos internos: `s.sondar(h, v)` só serve para inspecionar a luz
+nos LDRs numa pose — ao rodar, o firmware volta para os ângulos dele. Para comparar firmwares,
+`s.reiniciar(textoDoHex)` carrega outro `.hex`.
 
 `avancar` roda ~4× o tempo real; mantenha cada chamada abaixo de ~30 s simulados (limite de
 tempo das ferramentas). `s.estado.linhasSerial` tem a saída serial do firmware.
 
 ## Cenários de regressão
 
+Todos partindo de `s.reiniciar()` (90/90), ~1 000 lux, difusa 10 %:
+
 | Cenário | Esperado com o firmware atual |
 |---------|-------------------------------|
-| Sol N, el 50°, início 90/90 | converge para V ≈ 118–130, erro ≈ 12° (zona morta + saturação, P11) |
-| Dia 172, 9h e 14h, lat −23,55 | erro final < 20° |
-| Sol NE el 30°, início 90/60 | **falha**: H vai a 160°, erro ~75° (P10) — deve passar após corrigir P10 |
-| Fiação "diagrama" (A0–A3) | erro cresce (P1) |
+| Sol N el 50° / S el 50° (6 s) | V ≈ 118 / 62, erro ≈ 12° (zona morta + saturação, P11) |
+| Sol SE el 40° / SO el 35° (6 s) | erro ≈ 17–18° (falhava antes da correção do P10: 53–58°) |
+| Sol NE el 30° / NO el 35° (6 s) | erro ≈ 17–18° |
+| Sol L el 55° / O el 50° (10 s) | erro ≈ 18°, sem oscilar quando V cruza 90° |
+| Dia 355, 7h, lat −23,55 (16 s) | erro ≈ 16° |
+| Fiação "diagrama" (A0–A3) | erro cresce (P1, ainda não corrigido) |
 
 Se uma correção de firmware mudar esses resultados, atualize esta tabela e
 `docs/specs/06-problemas-conhecidos.md`.

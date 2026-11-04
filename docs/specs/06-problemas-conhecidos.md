@@ -52,27 +52,34 @@ limitado) aproxima mais rápido quando longe e suaviza perto do alvo — bom tó
 Ler a tensão da placa em uma entrada analógica e enviar na telemetria permite provar o ganho do
 rastreador em relação a uma placa fixa (ver [05-testes.md](05-testes.md)).
 
-## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical (alto)
+## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical — ✅ corrigido
 
 *Encontrado com o simulador.* Os LDRs ficam presos à placa, então "esquerda/direita" é medido no
 referencial da placa. Quando o servo vertical cruza 90° (a face passa a olhar para o outro lado),
-girar o azimute no mesmo sentido move o sol para o lado **oposto** do sensor. O firmware sempre
-aplica `anguloHorizontal += PASSO` para "esquerda mais clara", então em metade da faixa de
-elevação a correção horizontal empurra a placa para longe do sol até o limite (20° ou 160°).
+girar o azimute no mesmo sentido move o sol para o lado **oposto** do sensor. O firmware original
+sempre aplicava `anguloHorizontal += PASSO` para "esquerda mais clara", então em metade da faixa
+de elevação a correção horizontal empurrava a placa para longe do sol até o limite (20° ou 160°).
+Isso acontece para qualquer sentido de montagem dos servos — só muda qual metade da faixa falha.
 
-No simulador: sol a Nordeste a 30° de altura, partindo de 90°/60° → horizontal vai a 160° e o erro
-fica em ~75°. Isso acontece para qualquer sentido de montagem dos servos — só muda qual metade da
-faixa falha.
-
-**Correção:** inverter o sentido horizontal quando a placa estiver do "outro lado", por exemplo:
+**Correção aplicada em `main.c`:** o sentido da correção horizontal depende do lado da placa.
 
 ```cpp
-int sentidoH = (anguloVertical >= 90) ? 1 : -1;   // ajustar o lado conforme a montagem
-if (esquerda > direita + TOLERANCIA)      anguloHorizontal += sentidoH * PASSO;
-else if (direita > esquerda + TOLERANCIA) anguloHorizontal -= sentidoH * PASSO;
+int sentidoHorizontal = (anguloVertical >= 90) ? 1 : -1;
+if (esquerda > direita + TOLERANCIA)      anguloHorizontal += sentidoHorizontal * PASSO;
+else if (direita > esquerda + TOLERANCIA) anguloHorizontal -= sentidoHorizontal * PASSO;
 ```
 
-ou limitar o servo vertical a um só lado de 90°.
+Resultado no simulador (partindo do `setup()`, servos em 90°/90°, ~1 000 lux, 6 s):
+
+| Sol | Antes | Depois |
+|-----|-------|--------|
+| Sudeste, 40° | erro 53° (H travado em 160°) | erro 18° |
+| Sudoeste, 35° | erro 58° (H travado em 20°) | erro 17° |
+| Nordeste 30° / Noroeste 35° | 17–18° | 17–18° (sem mudança) |
+| Leste 55° / Oeste 50° (cruza 90°) | — | 18°, sem oscilação na fronteira |
+
+> No protótipo físico, conferir o lado: se a placa fugir do sol só quando o servo vertical está
+> abaixo (ou acima) de 90°, trocar `>= 90` por `< 90`.
 
 ## <a id="p11"></a>P11 — Erro residual por saturação dos LDRs + zona morta (médio)
 

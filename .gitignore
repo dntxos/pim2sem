@@ -14,3 +14,6 @@ build/
 
 # Claude Code (local)
 .claude/settings.local.json
+
+# O simulador precisa do .hex versionado
+!simulator/firmware/*.hex

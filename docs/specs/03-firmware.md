@@ -24,8 +24,10 @@ direita  = (SD + ID) / 2
 superior = (SE + SD) / 2
 inferior = (IE + ID) / 2
 
-se esquerda > direita + TOL   → horizontal += PASSO
-senão se direita > esquerda + TOL → horizontal -= PASSO
+sentidoH = +1 se vertical >= 90, senão -1   (placa voltada para o outro lado — ver P10)
+
+se esquerda > direita + TOL   → horizontal += sentidoH * PASSO
+senão se direita > esquerda + TOL → horizontal -= sentidoH * PASSO
 
 se superior > inferior + TOL  → vertical -= PASSO
 senão se inferior > superior + TOL → vertical += PASSO
