@@ -6,6 +6,12 @@ Alimentação: bateria 12 V + 2 conversores XL4015 (6 V servos, 7,5 V no VIN do 
 O diagrama do Tinkercad usa UNO só porque o Tinkercad não tem Nano (mesmo ATmega328P e pinos).
 Lista de materiais real: `docs/specs/02-hardware.md` — não citar SG90, UNO ou fonte USB como hardware do projeto.
 
+## Contexto do PIM II
+
+O tema oficial do semestre é uma **torre solar que carrega celulares por 2 saídas USB** (bateria
+12 V + controlador de carga + PCI); este rastreador é o subsistema de rastreamento. Relatório:
+skill `relatorio-pim`.
+
 ## Idioma
 
 Responder, comentar código e escrever documentação **em português do Brasil**. Nomes de variáveis
@@ -20,6 +26,8 @@ docs/specs/             Especificações — leia antes de mudar comportamento
 3d_material/amf/        Montagem 3D completa (.AMF, ~11 MB)
 3d_material/stl/        Peças individuais para impressão (exportadas nas coordenadas da montagem)
 simulator/              Simulador 3D: firmware real emulado (avr8js) + STLs (three.js)
+tools/render/           Renders fotorrealistas da montagem no Blender (figuras do relatório)
+docs/relatorio/         Relatório do PIM II (.docx) e figuras
 .claude/skills/         Skills do projeto
 ```
 
