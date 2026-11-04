@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador Rastreador Solar</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/three.module.js",
+        "three/addons/": "./vendor/three/addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main class="app">
+    <section class="cena" id="cena">
+      <div class="overlay topo">
+        <span class="chip" id="chipEstado">carregando…</span>
+        <span class="chip" id="chipTempo">t = 0,0 s</span>
+        <span class="dica">Arraste o ☀️ para mover o sol · arraste o fundo para girar a câmera</span>
+      </div>
+      <div class="overlay erro" id="erroCarga" hidden></div>
+    </section>
+
+    <aside class="painel">
+      <header class="cab">
+        <h1>Rastreador Solar <small>simulador</small></h1>
+        <div class="botoes">
+          <button id="btnPausa" title="Pausar / continuar">⏸ Pausar</button>
+          <button id="btnReset" title="Reinicia o Arduino (como apertar RESET)">↺ Reset</button>
+        </div>
+      </header>
+
+      <details open>
+        <summary>☀️ Sol</summary>
+        <div class="seg" role="radiogroup">
+          <label><input type="radio" name="modoSol" value="dia" checked> Trajetória do dia</label>
+          <label><input type="radio" name="modoSol" value="manual"> Manual</label>
+        </div>
+        <div id="grupoDia">
+          <label class="campo">Hora solar <output id="outHora"></output>
+            <input type="range" id="inHora" min="5" max="19" step="0.01" value="9"></label>
+          <label class="campo">Dia do ano <output id="outDia"></output>
+            <input type="range" id="inDia" min="1" max="365" step="1" value="172"></label>
+          <div class="linha">
+            <label class="campo curto">Latitude
+              <input type="number" id="inLat" value="-23.55" step="0.5" min="-66" max="66"></label>
+            <label class="campo curto">Velocidade do dia
+              <select id="inVelDia">
+                <option value="0">parado</option>
+                <option value="0.05">1 h a cada 20 s</option>
+                <option value="0.2" selected>1 h a cada 5 s</option>
+                <option value="1">1 h a cada 1 s</option>
+              </select></label>
+          </div>
+        </div>
+        <div id="grupoManual" hidden>
+          <label class="campo">Azimute <output id="outAz"></output>
+            <input type="range" id="inAz" min="0" max="360" step="0.5" value="45"></label>
+          <label class="campo">Elevação <output id="outEl"></output>
+            <input type="range" id="inEl" min="-5" max="90" step="0.5" value="40"></label>
+        </div>
+        <label class="campo">Intensidade da luz direta <output id="outLux"></output>
+          <input type="range" id="inLux" min="1" max="5" step="0.01" value="3"></label>
+        <label class="campo">Luz difusa (céu) <output id="outDif"></output>
+          <input type="range" id="inDif" min="0" max="50" step="1" value="10"></label>
+        <p class="nota">Sol pleno ≈ 100 000 lux. Com resistor de 10 kΩ, LDRs saturam acima de ~5 000 lux — teste e veja.</p>
+      </details>
+
+      <details open>
+        <summary>🔌 Montagem e firmware</summary>
+        <label class="campo">Fiação dos LDRs
+          <select id="inFiacao">
+            <option value="codigo" selected>Como o código espera (A1–A4)</option>
+            <option value="diagrama">Como no diagrama Tinkercad (A0–A3)</option>
+          </select></label>
+        <div class="linha">
+          <label class="check"><input type="checkbox" id="inInvH"> Inverter servo horizontal</label>
+          <label class="check"><input type="checkbox" id="inInvV"> Inverter servo vertical</label>
+        </div>
+        <label class="campo">Variação entre LDRs <output id="outVar"></output>
+          <input type="range" id="inVar" min="0" max="40" step="1" value="10"></label>
+        <label class="campo">Ruído na leitura <output id="outRuido"></output>
+          <input type="range" id="inRuido" min="0" max="50" step="1" value="5"></label>
+        <div class="linha">
+          <label class="campo curto">Velocidade da simulação
+            <select id="inVelSim">
+              <option value="1" selected>1× (tempo real)</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select></label>
+          <label class="campo curto">Firmware (.hex)
+            <input type="file" id="inHex" accept=".hex"></label>
+        </div>
+        <p class="nota" id="notaHex">Rodando: <code>firmware/solar_tracker.hex</code> (compilado do <code>main.c</code>).</p>
+      </details>
+
+      <details open>
+        <summary>📊 Leituras</summary>
+        <table class="tab" id="tabLdr">
+          <thead><tr><th>LDR</th><th>Pino</th><th>lux</th><th>V</th><th>ADC</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="metricas">
+          <div><span>Servo horizontal (D9)</span><b id="mH">–</b></div>
+          <div><span>Servo vertical (D10)</span><b id="mV">–</b></div>
+          <div><span>Erro de apontamento</span><b id="mErro">–</b></div>
+          <div><span>Aproveitamento (cos θ)</span><b id="mApr">–</b></div>
+        </div>
+        <div class="energia" id="boxEnergia">
+          <div><span>Energia rastreador</span><b id="mEtrack">–</b></div>
+          <div><span>Energia placa fixa*</span><b id="mEfixa">–</b></div>
+          <div><span>Ganho</span><b id="mGanho">–</b></div>
+          <p class="nota">* Placa fixa voltada ao Norte, inclinada na latitude. Unidade relativa (lux·h ÷ 1000). Zera ao mudar a data ou o modo.</p>
+        </div>
+        <canvas id="grafico" height="150"></canvas>
+      </details>
+
+      <details open>
+        <summary>🖥️ Monitor serial (9600 baud)</summary>
+        <pre id="serial" class="serial"></pre>
+        <div class="linha">
+          <button id="btnLog">Baixar log (.txt)</button>
+          <button id="btnLimpar">Limpar</button>
+        </div>
+      </details>
+    </aside>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

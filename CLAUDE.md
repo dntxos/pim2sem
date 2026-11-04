@@ -15,7 +15,8 @@ main.c                  Firmware (sketch Arduino em C++, apesar da extensão .c)
 docs/diagrama_tinkercad.png   Circuito de referência (Tinkercad)
 docs/specs/             Especificações — leia antes de mudar comportamento
 3d_material/amf/        Montagem 3D completa (.AMF, ~11 MB)
-3d_material/stl/        Peças individuais para impressão
+3d_material/stl/        Peças individuais para impressão (exportadas nas coordenadas da montagem)
+simulator/              Simulador 3D: firmware real emulado (avr8js) + STLs (three.js)
 .claude/skills/         Skills do projeto
 ```
 
@@ -32,8 +33,12 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 - **Sinais dos eixos** (`+=`/`-=`) dependem da montagem mecânica; o eixo vertical é propositalmente
   invertido em relação ao horizontal.
 - **Limites 20°–160°** protegem a estrutura impressa — não ampliar sem checar a mecânica.
-- **Serial a 9600 baud bloqueia o laço** (~100 ms por linha). Mudanças de temporização devem
-  considerar isso.
+- **Serial a 9600 baud dita o ritmo do laço** (~100 ms por linha, medido). Mudanças de
+  temporização devem considerar isso.
+- **Correção horizontal inverte quando o servo vertical cruza 90°** (P10 em problemas conhecidos)
+  — bug real do algoritmo, reproduzível no simulador.
+- O AMF guarda as posições das peças em **metros** e a geometria em mm; prefira os STLs, que já
+  estão nas coordenadas da montagem.
 - O código precisa continuar **compatível com o Tinkercad** (só bibliotecas padrão: `Servo`; sem
   libs externas).
 - Arquivos `.AMF`/`.STL` são binários/grandes: não ler nem editar; só referenciar.
@@ -56,3 +61,5 @@ problemas conhecidos).
 2. Atualizar `docs/specs/03-firmware.md` se mudar parâmetros, algoritmo ou formato serial.
 3. Atualizar `docs/specs/02-hardware.md` se mudar pinos.
 4. Compilar antes de dizer que está pronto.
+5. Validar o comportamento no simulador (skill `simulador-3d`): `./simulator/build-firmware.sh`
+   regenera o `.hex`; o `.hex` versionado precisa corresponder ao `main.c` commitado.

@@ -1,5 +1,9 @@
 # 05 — Plano de testes e calibração
 
+> Os testes T-01 a T-08 e F-01 a F-03 também podem ser feitos no **simulador 3D**
+> ([simulator/README.md](../../simulator/README.md)), que roda o firmware compilado sobre as peças
+> reais. Cenários de regressão já conhecidos estão na skill `.claude/skills/simulador-3d`.
+
 ## Testes no Tinkercad (simulação)
 
 | ID | Cenário | Ação | Resultado esperado |

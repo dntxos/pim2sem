@@ -53,8 +53,9 @@ Esquerda: 512 | Direita: 498 | Superior: 530 | Inferior: 480 | Horizontal: 92 | 
 
 A linha de telemetria tem ~95 caracteres. A 9600 baud (~960 caracteres/s) cada linha leva
 **~100 ms** para ser transmitida; como o buffer de TX do UNO tem 64 bytes, o `Serial.print`
-bloqueia. Logo, o período real do laço é ≈ 100 ms + 50 ms de `delay`, e não 50 ms.
-Velocidade máxima efetiva ≈ 2° / 0,15 s ≈ **13°/s** por eixo. Ver melhoria em
+bloqueia até sobrar espaço. O `delay(50)` acontece enquanto o restante do buffer ainda está saindo,
+então o período real do laço é **≈ 100 ms** (medido no simulador: 0,098 s), e não 50 ms.
+Velocidade máxima efetiva ≈ 2° / 0,1 s ≈ **20°/s** por eixo. Ver melhoria em
 [06-problemas-conhecidos.md](06-problemas-conhecidos.md#p3).
 
 ## Build
@@ -62,5 +63,7 @@ Velocidade máxima efetiva ≈ 2° / 0,15 s ≈ **13°/s** por eixo. Ver melhori
 - Arduino IDE: abrir o sketch, placa **Arduino Uno**, porta USB, *Upload*.
 - `arduino-cli` (linha de comando): ver skill `.claude/skills/firmware-arduino`.
 - Tinkercad: colar o conteúdo de `main.c` no editor de código (modo texto) do circuito.
+- Simulador 3D do projeto: `./simulator/build-firmware.sh` e abrir `simulator/` (ver
+  [simulator/README.md](../../simulator/README.md)).
 
 A biblioteca `Servo` já vem com a Arduino IDE (no `arduino-cli`: `arduino-cli lib install Servo`).

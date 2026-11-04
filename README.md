@@ -12,6 +12,18 @@ placa fotovoltaica apontada para a luz, aumentando o aproveitamento de energia.
 | `main.c` | Firmware do Arduino |
 | `docs/specs/` | Especificações (requisitos, hardware, firmware, mecânica, testes) |
 | `3d_material/` | Peças para impressão 3D (`stl/`) e montagem completa (`amf/`) |
+| `simulator/` | Simulador 3D no navegador: o firmware real roda emulado sobre as peças 3D |
+
+## Simulador 3D
+
+Teste o código sem hardware: mova o sol e veja a estrutura seguir a luz, com leituras dos LDRs,
+monitor serial e comparação de energia com uma placa fixa.
+
+```bash
+python3 -m http.server 8000   # na raiz do repositório
+```
+
+Abra http://localhost:8000/simulator/ — detalhes em [simulator/README.md](simulator/README.md).
 
 ## Como funciona
 

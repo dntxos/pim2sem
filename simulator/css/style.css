@@ -1,0 +1,93 @@
+:root {
+  --bg: #f4f5f7;
+  --painel: #ffffff;
+  --borda: #dfe2e7;
+  --texto: #1d2330;
+  --suave: #5d6677;
+  --acento: #e08a00;
+  --acento-2: #2563eb;
+  --ok: #15803d;
+  --ruim: #b91c1c;
+  --codigo: #0f172a;
+  --codigo-txt: #d6e2ff;
+  --s1: #e08a00; /* horizontal */
+  --s2: #2563eb; /* vertical */
+  --s3: #b91c1c; /* erro */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f131a;
+    --painel: #161b24;
+    --borda: #2a3140;
+    --texto: #e6e9ef;
+    --suave: #9aa3b5;
+    --acento: #f5a524;
+    --acento-2: #6b9bff;
+    --ok: #4ade80;
+    --ruim: #f87171;
+    --codigo: #0a0d12;
+    --s1: #f5a524;
+    --s2: #6b9bff;
+    --s3: #f87171;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--texto); }
+.app { display: grid; grid-template-columns: 1fr 380px; height: 100vh; }
+.cena { position: relative; overflow: hidden; min-height: 300px; }
+.cena canvas { display: block; touch-action: none; }
+.overlay { position: absolute; left: 12px; right: 12px; pointer-events: none; }
+.overlay.topo { top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.overlay.erro { top: 50%; transform: translateY(-50%); background: var(--painel); border: 1px solid var(--ruim);
+  border-radius: 8px; padding: 16px; color: var(--ruim); pointer-events: auto; }
+.chip { background: color-mix(in srgb, var(--painel) 85%, transparent); border: 1px solid var(--borda);
+  border-radius: 999px; padding: 4px 10px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.dica { font-size: 12px; color: var(--suave); background: color-mix(in srgb, var(--painel) 70%, transparent);
+  padding: 3px 8px; border-radius: 6px; }
+
+.painel { background: var(--painel); border-left: 1px solid var(--borda); overflow-y: auto; padding: 12px 16px 24px; }
+.cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.cab h1 { font-size: 17px; margin: 0; }
+.cab h1 small { font-weight: 400; color: var(--suave); }
+.botoes { display: flex; gap: 6px; }
+button { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--borda);
+  background: var(--bg); color: var(--texto); cursor: pointer; }
+button:hover { border-color: var(--acento); }
+
+details { border-top: 1px solid var(--borda); padding: 8px 0; }
+summary { font-weight: 600; cursor: pointer; padding: 4px 0; font-size: 14px; }
+.campo { display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--suave); margin: 8px 0; }
+.campo output { float: right; color: var(--texto); font-variant-numeric: tabular-nums; }
+.campo input[type=range] { width: 100%; accent-color: var(--acento); }
+.campo select, .campo input[type=number], .campo input[type=file] { font: inherit; font-size: 13px; padding: 4px;
+  border: 1px solid var(--borda); border-radius: 6px; background: var(--bg); color: var(--texto); min-width: 0; }
+.linha { display: flex; gap: 10px; flex-wrap: wrap; }
+.linha > .curto { flex: 1 1 140px; }
+.seg { display: flex; gap: 14px; font-size: 13px; margin: 4px 0; }
+.check { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.nota { font-size: 12px; color: var(--suave); margin: 6px 0; line-height: 1.4; }
+code { font-size: 11.5px; }
+
+.tab { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.tab th, .tab td { text-align: right; padding: 3px 4px; border-bottom: 1px solid var(--borda); }
+.tab th:first-child, .tab td:first-child { text-align: left; }
+.tab .barra { display: inline-block; height: 6px; border-radius: 3px; background: var(--acento); vertical-align: middle; margin-left: 4px; }
+.metricas, .energia { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px 0; }
+.metricas div, .energia div { background: var(--bg); border-radius: 6px; padding: 6px 8px; }
+.metricas span, .energia span { display: block; font-size: 11.5px; color: var(--suave); }
+.metricas b, .energia b { font-size: 16px; font-variant-numeric: tabular-nums; }
+.energia .nota { grid-column: 1 / -1; }
+.bom { color: var(--ok); }
+.mau { color: var(--ruim); }
+#grafico { width: 100%; background: var(--bg); border-radius: 6px; }
+
+.serial { background: var(--codigo); color: var(--codigo-txt); font-size: 11px; line-height: 1.35; height: 180px;
+  overflow: auto; padding: 8px; border-radius: 6px; margin: 6px 0; white-space: pre; }
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 55vh auto; height: auto; }
+  .painel { border-left: 0; border-top: 1px solid var(--borda); }
+  .dica { display: none; }
+}
