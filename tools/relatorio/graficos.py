@@ -175,3 +175,61 @@ if __name__ == '__main__':
     g_ldr()
     g_cos()
     print(g_resumo_energia())
+
+
+# ============================================================ ESP32 (main.c atual e variantes)
+ROTULOS_FW = {
+    'esp32': 'main.c atual (ESP32)',
+    'esp32:esp32_tol160': '+ tolerância 160',
+    'esp32:esp32_tol160_p10': '+ tolerância 160 + correção P10',
+}
+CORES_FW = {'esp32': VERMELHO, 'esp32:esp32_tol160': LARANJA, 'esp32:esp32_tol160_p10': AZUL}
+
+
+def g_esp32():
+    d = json.load(open(os.path.join(DADOS, 'esp32_cenarios_elev25.json')))
+    cols = d.pop('cols')
+    fws = list(ROTULOS_FW)
+    fig, ax = plt.subplots(1, 2, figsize=(9.2, 3.5))
+    cen = [('SE', 'Sol a SE\n40°'), ('SO', 'Sol a SO\n35°'), ('NE', 'Sol a NE\n30°')]
+    x = np.arange(len(cen))
+    for k, fw in enumerate(fws):
+        v = [d[f'{fw}|{c}'][-1][cols.index('erro')] for c, _ in cen]
+        b = ax[0].bar(x + (k - 1) * 0.26, v, 0.25, color=CORES_FW[fw], label=ROTULOS_FW[fw])
+        ax[0].bar_label(b, fmt='%.0f°', fontsize=8, padding=1)
+    ax[0].set_xticks(x, [r for _, r in cen])
+    ax[0].set(ylabel='Erro de apontamento final (°)', title='Posições fixas do Sol (8 s)', ylim=(0, 72))
+    ax[0].legend(fontsize=8, loc='upper right')
+    dias = [('jun', '21 de junho'), ('dez', '21 de dezembro')]
+    x = np.arange(len(dias))
+    fixa = [d[f'esp32|{c}'][-1][cols.index('eFixa')] for c, _ in dias]
+    ax[1].bar(x - 0.39, fixa, 0.19, color=CINZA, label='Placa fixa')
+    for k, fw in enumerate(fws):
+        v = [d[f'{fw}|{c}'][-1][cols.index('eTrack')] for c, _ in dias]
+        b = ax[1].bar(x + (k - 1) * 0.2 + 0.0, v, 0.19, color=CORES_FW[fw])
+        ganhos = [f'{(e / f - 1) * 100:+.0f}%' for e, f in zip(v, fixa)]
+        ax[1].bar_label(b, labels=ganhos, fontsize=7.5, padding=1)
+    ax[1].set_xticks(x, [r for _, r in dias])
+    ax[1].set(ylabel='Energia no dia (u.r.)', title='Dias completos (latitude −23,55°)', ylim=(0, 13))
+    ax[1].legend(fontsize=8, loc='upper left')
+    fig.tight_layout()
+    salvar(fig, 'g_esp32.png')
+
+
+def g_noite_esp32():
+    d = json.load(open(os.path.join(DADOS, 'noite_esp32_vs_nano_dez.json')))
+    cols = d.pop('cols')
+    fig, ax = plt.subplots(figsize=(6.6, 3.3))
+    for k, cor, rot in (('nano', VERMELHO, 'Nano (sem repouso noturno): amanhece voltado a Oeste'),
+                        ('esp32', AZUL, 'ESP32 (com repouso noturno em 20°/90°)')):
+        s = [r for r in d[k] if r[0] != 'tarde' and r[0] != 'noite (140 s)']
+        ax.plot([r[1] for r in s], [r[4] for r in s], color=cor, lw=2, marker='o', ms=3, label=rot)
+    ax.set(xlabel='Hora solar (h)', ylabel='Erro de apontamento (°)', ylim=(0, 140), xlim=(5.2, 10.9),
+           title='Amanhecer de 21 de dezembro após uma noite')
+    ax.legend(fontsize=8.5)
+    salvar(fig, 'g_noite_esp32.png')
+
+
+if __name__ == '__main__':
+    g_esp32()
+    g_noite_esp32()

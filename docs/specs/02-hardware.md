@@ -1,18 +1,21 @@
 # 02 — Hardware e ligações
 
-Referência visual: [`docs/diagrama_tinkercad.png`](../diagrama_tinkercad.png). O Tinkercad não tem
-Arduino Nano, por isso o diagrama usa um **UNO** — os dois usam o mesmo microcontrolador
-(ATmega328P) e os mesmos nomes de pinos, então o circuito e o código são equivalentes.
+> **Placa atual: ESP32** (adotada na etapa final, de testes físicos). O projeto começou com Arduino
+> Nano; o diagrama do Tinkercad (que usa UNO, pois não tem Nano nem ESP32) ficou como referência da
+> fase inicial. A migração trouxe Wi-Fi (controle pelo celular), ADC de 12 bits e mais memória.
+
+Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_tinkercad.png).
 
 ## Lista de materiais (BOM) — comprado
 
 | Qtd | Componente | Função |
 |-----|------------|--------|
-| 1 | Arduino Nano (ATmega328P) | Lê os 4 LDRs e comanda os 2 servos |
+| 1 | ESP32 (placa de desenvolvimento + placa de expansão com bornes) | Lê os 4 LDRs, comanda os 2 servos e serve a interface web por Wi-Fi |
+| (1) | Arduino Nano (ATmega328P) | Usado até a migração para o ESP32 |
 | 4 | LDR 5 mm | Sensores de luz |
 | 4 | Resistor 10 kΩ 1/4 W | Divisor de tensão com cada LDR |
 | 2 | Servo MG996R (15 kg·cm, engrenagem metálica) | Giro horizontal (azimute) e inclinação (elevação) |
-| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | Baixar os 12 V da bateria para os servos e para o Nano |
+| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | Baixar os 12 V da bateria para os servos e para a placa de controle |
 | 1 | Bateria selada 12 V (Elgin, tipo alarme/cerca) | Fonte de energia do sistema |
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
@@ -25,44 +28,44 @@ Arduino Nano, por isso o diagrama usa um **UNO** — os dois usam o mesmo microc
 |------|----------------------|
 | **Controlador de carga solar 12 V** (PWM, ≥ 5 A) | Um painel de 12 V "nominal" chega a ~21 V em aberto. Ligado direto na bateria, sobrecarrega e danifica a bateria selada, e à noite a bateria descarrega pelo painel. Só dispensável se o painel **não** for ligado à bateria (ex.: só medido com multímetro). |
 | Protoboard ou placa perfurada | Montar os divisores dos LDRs e distribuir 5 V/GND. |
-| Cabo USB do Nano (Mini-USB na maioria dos clones) | Gravar o firmware e ler o Monitor Serial. |
+| Cabo USB do ESP32 | Gravar o firmware e ler o Monitor Serial (115 200 baud). |
 | Capacitor eletrolítico 470–1000 µF / 16 V | Junto aos servos, absorve os picos de corrente do MG996R. |
 | Fusível (2–5 A) + porta-fusível na saída da bateria | Bateria selada fornece corrente alta em curto-circuito. |
 | Chave liga/desliga e fios mais grossos (≥ 0,5 mm²) | Os jumpers Dupont de 20 cm não são adequados para a corrente dos servos (até ~2,5 A cada em travamento). |
 | Multímetro | Ajustar a saída dos XL4015 **antes** de ligar qualquer coisa. |
 
-## Mapa de pinos (Nano)
+## Mapa de pinos (ESP32 — `main.c` atual)
 
-| Sinal | Pino no **código** (`main.c`) | Pino no **diagrama Tinkercad** |
-|-------|------------------------------|--------------------------------|
-| LDR superior-esquerdo (`LDR_SE`) | A1 | A0 ⚠️ |
-| LDR superior-direito (`LDR_SD`) | A2 | A1 ⚠️ |
-| LDR inferior-esquerdo (`LDR_IE`) | A3 | A2 ⚠️ |
-| LDR inferior-direito (`LDR_ID`) | A4 | A3 ⚠️ |
-| Servo horizontal (azimute) | D9 | D9 |
-| Servo vertical (elevação) | D10 | D10 |
+| Sinal | GPIO | Observação |
+|-------|------|------------|
+| LDR superior-esquerdo (`LDR_SE`) | 34 | ADC1, só entrada |
+| LDR superior-direito (`LDR_SD`) | 35 | ADC1, só entrada |
+| LDR inferior-esquerdo (`LDR_IE`) | 32 | ADC1 |
+| LDR inferior-direito (`LDR_ID`) | 33 | ADC1 |
+| Servo horizontal (azimute) | 18 | ESP32Servo, 500–2400 µs |
+| Servo vertical (elevação) | 19 | ESP32Servo, 500–2400 µs |
 
-> ⚠️ **Divergência:** no diagrama os quatro fios analógicos saem de **A0–A3**; o código lê
-> **A1–A4**. Um dos dois precisa ser corrigido antes da montagem final (ver
-> [06-problemas-conhecidos.md](06-problemas-conhecidos.md#p1)). Também é preciso confirmar qual
-> LDR físico vai em cada pino, pois a lógica depende da posição (SE/SD/IE/ID).
+Os LDRs estão no **ADC1** de propósito: o ADC2 do ESP32 não funciona com o Wi-Fi ligado.
 
-O Nano tem A0–A7, mas **A6 e A7 são só analógicos** e ficam em outra posição da barra de pinos — os
-pinos usados (A0–A4) estão em sequência, logo após o pino REF/3V3.
+> ⚠️ **3,3 V:** as entradas do ESP32 não toleram 5 V. Os divisores dos LDRs devem ser alimentados
+> pelo pino **3V3** (não pelo 5V/VIN). Confirmar na montagem.
+
+**Histórico (Nano):** o código usava A1–A4 e o diagrama A0–A3 (P1) — divergência encerrada com a
+migração, pois o ESP32 tem pinos próprios.
 
 ## Circuito dos LDRs
 
-Cada LDR forma um divisor de tensão com um resistor de 10 kΩ, alimentado pelo **5 V do Nano**:
+Cada LDR forma um divisor de tensão com um resistor de 10 kΩ, alimentado pelo **3V3 do ESP32**:
 
 ```
-5V ──[LDR]──┬── Ax (entrada analógica)
+3V3 ──[LDR]──┬── GPIO 32–35 (entrada analógica)
             │
           [10kΩ]
             │
            GND
 ```
 
-Com o LDR no lado do 5 V, **mais luz → menor resistência do LDR → leitura maior** (0–1023).
+Com o LDR no lado do 3V3, **mais luz → menor resistência do LDR → leitura maior** (0–4095).
 A lógica do firmware assume essa convenção (valor maior = lado mais iluminado). Se o divisor for
 montado invertido (LDR no GND), os sentidos dos eixos se invertem.
 

@@ -1,73 +1,50 @@
 # 03 — Firmware
 
-Arquivo atual: `main.c` (é um *sketch* Arduino em C++, apesar da extensão `.c` — ver
-[06-problemas-conhecidos.md](06-problemas-conhecidos.md#p2)).
+Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32`, bibliotecas
+`WiFi`, `WebServer` e `ESP32Servo`). A versão anterior, para Arduino Nano, está no histórico do Git
+(último commit com o Nano: `e3ec9ed`) e compilada em `simulator/firmware/nano_versao_anterior.hex`.
+
+## Funcionalidades
+
+1. **Rastreamento automático** pelos 4 LDRs (mesma lógica de médias por lado da versão Nano).
+2. **Modo manual** pelo celular: o ESP32 cria a rede Wi-Fi `SOLAR_TOWER` (senha `torre1234`) e
+   serve uma página em `http://192.168.4.1` com botões ◀ ▶ ▲ ▼, posição inicial e leituras.
+3. **Repouso noturno:** média dos LDRs < 500 por 120 s → painel vai para a posição inicial
+   (H = 20°, V = 90°) e para; média > 700 por 30 s → volta a rastrear (resolve o P7).
 
 ## Parâmetros
 
 | Constante | Valor | Significado |
 |-----------|-------|-------------|
-| `TOLERANCIA` | 40 | Zona morta (unidades ADC, 0–1023). Diferença mínima entre lados para mover. |
-| `PASSO` | 2 | Graus movidos por iteração quando há desequilíbrio. |
-| Limites | 20°–160° | `constrain` aplicado aos dois eixos. |
-| Posição inicial | 90° / 90° | Ambos os eixos centralizados no `setup()`. |
-| `delay` | 50 ms | Pausa ao fim de cada ciclo. |
-| Serial | 9600 baud | Telemetria por linha. |
+| `TOLERANCIA` | 40 | Zona morta em unidades do ADC — **⚠️ herdada do Nano (10 bits); no ADC de 12 bits deveria ser ~160 (P14)** |
+| `PASSO_AUTO` / `PASSO_MANUAL` | 2° / 5° | Passo por ciclo automático / por toque no celular |
+| `INTERVALO_MOVIMENTO` | 100 ms | Período do rastreamento (não depende mais da serial) |
+| `LIMITE_*` | 20°–160° | Limites dos dois eixos |
+| `INICIO_H` / `INICIO_V` | 20° / 90° | Posição inicial / de repouso noturno |
+| `LIMITE_NOITE` / `LIMITE_DIA` | 500 / 700 | Média dos LDRs (0–4095) para noite / dia (histerese) |
+| `TEMPO_NOITE` / `TEMPO_DIA` | 120 s / 30 s | Tempo contínuo para confirmar noite / dia |
 
-## Algoritmo (por ciclo do `loop()`)
+## API web (usada pela página do celular)
 
-```
-ler SE, SD, IE, ID                     (analogRead, 0–1023)
+| Rota | Função |
+|------|--------|
+| `GET /` | Página "SOLAR SMART TOWER" |
+| `GET /estado` | `{"h":…, "v":…, "luz":…, "modo":"AUTO"|"MANUAL", "estado":"ATIVO"|"NOITE - REPOUSO"}` |
+| `GET /modo?valor=auto|manual` | Troca o modo |
+| `GET /mover?eixo=h|v&direcao=±1` | Move 5° (só em modo manual; senão HTTP 409) |
+| `GET /inicio` | Posição inicial (só em modo manual) |
 
-esquerda = (SE + IE) / 2
-direita  = (SD + ID) / 2
-superior = (SE + SD) / 2
-inferior = (IE + ID) / 2
+## ⚠️ Pendências encontradas no simulador (mesmo `main.c`, compilado para WebAssembly)
 
-sentidoH = +1 se vertical >= 90, senão -1   (placa voltada para o outro lado — ver P10)
-
-se esquerda > direita + TOL   → horizontal += sentidoH * PASSO
-senão se direita > esquerda + TOL → horizontal -= sentidoH * PASSO
-
-se superior > inferior + TOL  → vertical -= PASSO
-senão se inferior > superior + TOL → vertical += PASSO
-
-limitar ambos a [20, 160]
-escrever ângulos nos servos
-imprimir telemetria
-esperar 50 ms
-```
-
-O sinal (+/−) de cada eixo depende de como o servo está montado na estrutura. Se, na montagem
-física, a placa fugir da luz em vez de segui-la, basta inverter o sinal daquele eixo.
-
-## Formato da telemetria serial
-
-Uma linha por ciclo:
-
-```
-Esquerda: 512 | Direita: 498 | Superior: 530 | Inferior: 480 | Horizontal: 92 | Vertical: 88
-```
-
-Útil para calibração (ver skill `calibrar-tracker`) e para gerar gráficos no relatório.
-
-## Temporização real
-
-A linha de telemetria tem ~95 caracteres. A 9600 baud (~960 caracteres/s) cada linha leva
-**~100 ms** para ser transmitida; como o buffer de TX tem 64 bytes, o `Serial.print`
-bloqueia até sobrar espaço (buffer de 64 bytes do núcleo Arduino AVR, igual no Nano e no UNO). O `delay(50)` acontece enquanto o restante do buffer ainda está saindo,
-então o período real do laço é **≈ 100 ms** (medido no simulador: 0,098 s), e não 50 ms.
-Velocidade máxima efetiva ≈ 2° / 0,1 s ≈ **20°/s** por eixo. Ver melhoria em
-[06-problemas-conhecidos.md](06-problemas-conhecidos.md#p3).
+- **P10 regrediu:** a correção `sentidoHorizontal` não foi levada para o ESP32. Com o Sol a SE/SO o
+  servo horizontal trava no limite (erro 54°–59° × 17°–18° com a correção).
+- **P14 — tolerância:** com ±10% de variação entre LDRs, `TOLERANCIA = 40` (1% da escala de 12
+  bits) faz o painel fugir do Sol ao amanhecer de junho (−100% de energia); com 160, +35%.
 
 ## Build
 
-- Arduino IDE: abrir o sketch, placa **Arduino Nano**, processador **ATmega328P** — nos clones
-  com chip USB CH340 normalmente é **ATmega328P (Old Bootloader)**; se o *upload* der
-  `stk500_getsync`/`not in sync`, troque essa opção. Porta USB, *Upload*.
-- `arduino-cli` (linha de comando): ver skill `.claude/skills/firmware-arduino`.
-- Tinkercad: colar o conteúdo de `main.c` no editor de código (modo texto) do circuito.
-- Simulador 3D do projeto: `./simulator/build-firmware.sh` e abrir `simulator/` (ver
-  [simulator/README.md](../../simulator/README.md)).
-
-A biblioteca `Servo` já vem com a Arduino IDE (no `arduino-cli`: `arduino-cli lib install Servo`).
+- Arduino IDE: placa **ESP32 Dev Module**, biblioteca **ESP32Servo**. Compilado: 949 515 bytes
+  (72% da flash), 47 916 bytes de RAM (14%).
+- `arduino-cli compile --fqbn esp32:esp32:esp32 <pasta-do-sketch>` (ver skill `firmware-arduino`).
+- Simulador: `./simulator/build-firmware.sh` compila o **mesmo `main.c`** para WebAssembly com o
+  núcleo ESP32 simulado (`simulator/esp32/nucleo/`) — ver [simulator/README.md](../../simulator/README.md).

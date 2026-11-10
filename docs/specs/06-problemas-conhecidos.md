@@ -2,7 +2,7 @@
 
 Resultado da análise do repositório (nov/2026). Ordenado por impacto.
 
-## <a id="p1"></a>P1 — Pinos dos LDRs divergem entre código e diagrama (alto)
+## <a id="p1"></a>P1 — Pinos dos LDRs divergem entre código e diagrama — encerrado com a migração para o ESP32
 
 `main.c` lê **A1–A4**; o diagrama do Tinkercad liga os LDRs em **A0–A3**. Montado como no
 diagrama, o firmware lê A4 (vazio, flutuando) e perde A0 → o rastreador se comporta de forma
@@ -45,7 +45,7 @@ sensor ou filtro exponencial (`x = x*0.8 + leitura*0.2`).
 LDRs do mesmo lote variam bastante. **Melhoria:** offsets de calibração por sensor, medidos com luz
 uniforme no `setup()`.
 
-## <a id="p7"></a>P7 — Sem modo noturno (médio)
+## <a id="p7"></a>P7 — Sem modo noturno — ✅ resolvido no firmware ESP32 (repouso noturno)
 
 No escuro as leituras ficam próximas e a placa para onde estiver (voltada a Oeste). Simulação de
 21/jun sem reiniciar o Arduino entre um dia e outro: a placa amanhece de costas para o Sol (erro
@@ -64,7 +64,11 @@ limitado) aproxima mais rápido quando longe e suaviza perto do alvo — bom tó
 Ler a tensão da placa em uma entrada analógica e enviar na telemetria permite provar o ganho do
 rastreador em relação a uma placa fixa (ver [05-testes.md](05-testes.md)).
 
-## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical — ✅ corrigido
+## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical — ⚠️ corrigido no Nano, **regrediu no ESP32**
+
+> O `main.c` do ESP32 não tem `sentidoHorizontal`. Simulação com o mesmo `main.c`: Sol a SE 40° → erro 54°
+> (H travado em 160°); SO 35° → 59°. Com a correção restaurada (variante `esp32_tol160_p10`): 18° / 17°.
+> Dados: `docs/relatorio/dados/esp32_cenarios_elev25.json`.
 
 *Encontrado com o simulador.* Os LDRs ficam presos à placa, então "esquerda/direita" é medido no
 referencial da placa. Quando o servo vertical cruza 90° (a face passa a olhar para o outro lado),
@@ -117,3 +121,14 @@ sensores fiquem acima do painel. **Ressalva:** posição/espessura do painel rea
 confirmar no protótipo com lanterna rasante vinda do lado inferior.
 
 Diagnóstico no simulador: `sim.bloqueios()` mostra qual peça bloqueia o raio de cada LDR ao Sol.
+
+## <a id="p14"></a>P14 — Tolerância não foi reescalonada para o ADC de 12 bits (alto) — encontrado em simulação
+
+No Nano, `TOLERANCIA = 40` era ~4% da escala (0–1023). No ESP32 o ADC vai de 0 a 4095 e o mesmo 40
+vale ~1%: a diferença natural entre LDRs (±10%) passa a comandar o painel com pouca luz. Simulação
+de 21/jun com o `main.c` atual: ao amanhecer o painel desce até V = 20° e fica de costas para o Sol
+o dia todo (−100% de energia). Sem variação entre LDRs o rastreamento funciona (erro 1°–8°);
+com `TOLERANCIA = 160` (variante `esp32_tol160`): +35% sobre a placa fixa.
+
+**Correção:** `TOLERANCIA = 160` (ou tolerância relativa à soma das leituras — ver P11) e calibrar
+com o painel real.

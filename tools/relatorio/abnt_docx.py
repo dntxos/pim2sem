@@ -349,6 +349,15 @@ class Relatorio:
         par.paragraph_format.first_line_indent = Cm(0)
         _campo(par, 'TOC \\o "1-3" \\h \\z \\u', 'Clique com o botão direito e escolha "Atualizar campo" para gerar o sumário.')
 
+    def listas(self, titulo, rotulos):
+        """Uma página com várias listas (ex.: tabelas e quadros), uma por rótulo."""
+        self.titulo_sem_numero(titulo)
+        for rotulo in rotulos:
+            par = self.doc.add_paragraph()
+            par.paragraph_format.first_line_indent = Cm(0)
+            par.paragraph_format.space_after = Pt(6)
+            _campo(par, f'TOC \\h \\z \\c "{rotulo}"', 'Atualize o campo para gerar a lista.')
+
     def lista(self, titulo, rotulo):
         """Lista de ilustrações/tabelas/quadros a partir dos campos SEQ das legendas."""
         self.titulo_sem_numero(titulo)

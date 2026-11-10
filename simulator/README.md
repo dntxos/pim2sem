@@ -1,7 +1,13 @@
 # Simulador 3D do rastreador solar
 
-Simulador no navegador que roda o **firmware compilado de verdade** (`main.c` → `.hex`) num
-ATmega328P emulado (o chip do Arduino Nano) e mostra a estrutura montada com as **peças 3D reais** do projeto.
+Simulador no navegador que roda o **mesmo `main.c`** do projeto e mostra a estrutura montada com as
+**peças 3D reais**.
+
+- **ESP32 (atual):** o `main.c` é compilado para WebAssembly junto com um *núcleo ESP32 simulado*
+  (`esp32/nucleo/`: `millis()`, ADC de 12 bits, `ESP32Servo`, `WiFi.softAP`, `WebServer`). Não é uma
+  emulação do chip Xtensa — é o mesmo código-fonte, com a mesma lógica e os mesmos tempos. A página
+  do celular servida pelo `main.c` aparece no painel **📱 Celular** e controla a torre simulada.
+- **Arduino Nano (versão anterior):** `?firmware=nano` roda o `.hex` em um ATmega328P emulado (avr8js).
 
 ## Como abrir
 
@@ -35,7 +41,10 @@ Depois acesse http://localhost:8000/simulator/
 ./simulator/build-firmware.sh
 ```
 
-Gera `simulator/firmware/solar_tracker.hex` (requer `arduino-cli`). Depois recarregue a página.
+Detecta a placa pelo `main.c`: para ESP32 gera `simulator/firmware/esp32.mjs` (requer `em++`:
+`brew install emscripten`); para Nano, o `.hex` (requer `arduino-cli`). Depois recarregue a página.
+Se o `main.c` usar uma função do Arduino/ESP32 que o núcleo simulado ainda não tem, a compilação
+falha indicando qual — basta implementá-la em `esp32/nucleo/`.
 
 ## Como funciona
 

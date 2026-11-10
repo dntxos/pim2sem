@@ -91,3 +91,5 @@ code { font-size: 11.5px; }
   .painel { border-left: 0; border-top: 1px solid var(--borda); }
   .dica { display: none; }
 }
+
+.celular { width: 100%; height: 560px; border: 10px solid #111; border-radius: 28px; background: #101820; margin-top: 6px; }

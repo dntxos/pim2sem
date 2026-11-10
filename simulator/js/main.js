@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Arduino328P, FREQ_HZ } from './arduino.js';
+import { Esp32Simulado } from './esp32.js';
 import {
   PECAS, EIXO_AZIMUTE, EIXO_ELEVACAO, INCLINACAO_EXPORTADA_GRAUS, N0, U0, LDRS, RAIO_LDR, PLACA, ELEVACAO_LDR,
 } from './montagem.js';
@@ -210,13 +211,42 @@ async function carregarPecas() {
 }
 
 // ---------------------------------------------------------------- Arduino
+// firmwareAtual: { tipo: 'nano', hex } ou { tipo: 'esp32', url, cfg }
+let firmwareAtual = null;
+const firmwares = { esp32: null, nano: null }; // firmwares conhecidos, para trocar sem ambiguidade
 function iniciarArduino(hexTexto) {
   hexAtual = hexTexto;
+  firmwareAtual = { tipo: 'nano', hex: hexTexto };
   uno = new Arduino328P(hexTexto, { onSerialLine: receberSerial });
   estado.amostras = [];
+  mostrarCelular(false);
+}
+/** (Re)inicia o firmware atual, como apertar RESET. Para o ESP32 recria a instância WebAssembly. */
+async function iniciarFirmware(fw = firmwareAtual) {
+  if (!fw) return;
+  if (fw.tipo === 'nano') return iniciarArduino(fw.hex);
+  firmwareAtual = fw;
+  uno = await Esp32Simulado.criar(fw.url, fw.cfg, { onSerialLine: receberSerial });
+  estado.amostras = [];
+  mostrarCelular(true);
+}
+
+// ---------------------------------------------------------------- celular (interface web do ESP32)
+// A página é a do próprio main.c (rota "/"); os fetch() dela são entregues ao servidor simulado.
+window.simHttp = (url) => (uno && uno.http ? uno.http(url) : { status: 503, tipo: 'text/plain', corpo: '' });
+function mostrarCelular(visivel) {
+  const box = $('boxCelular');
+  if (!box) return;
+  box.hidden = !visivel;
+  if (!visivel) return;
+  const pagina = uno.http('/').corpo;
+  const ponte = `<script>window.fetch = async (u) => { const r = parent.simHttp(String(u));
+    return { ok: r.status < 400, status: r.status, json: async () => JSON.parse(r.corpo), text: async () => r.corpo }; };<\/script>`;
+  $('telaCelular').srcdoc = pagina.replace('<head>', '<head>' + ponte);
+  $('ssidCelular').textContent = uno.ssid();
 }
 function receberSerial(linha) {
-  const t = uno.segundos.toFixed(2).padStart(7);
+  const t = (uno ? uno.segundos : 0).toFixed(2).padStart(7);
   estado.linhasSerial.push(`[${t}s] ${linha.replace(/\r$/, '')}`);
   if (estado.linhasSerial.length > 2000) estado.linhasSerial.splice(0, 500);
   serialSujo = true;
@@ -397,10 +427,44 @@ window.sim = {
   erro: () => anguloErro(),
   leituras,
   /** Reinicia o Arduino (firmware volta ao setup(): servos em 90°/90°). Opcional: outro .hex. */
-  reiniciar: (hexTexto = hexAtual) => {
-    iniciarArduino(hexTexto);
+  /** Reinicia o firmware (como o botão RESET). `qual`: 'esp32' | 'nano' | texto de um .hex | omitido (o atual).
+   *  Sempre confira sim.firmware() depois: rodadas anteriores podem ter trocado o firmware atual. */
+  reiniciar: async (qual) => {
+    if (qual === 'esp32') await iniciarFirmware(firmwares.esp32);
+    else if (typeof qual === 'string' && qual.startsWith('esp32:')) {
+      // variante de teste: simulator/firmware/variantes/<nome>.mjs (mesmos pinos do firmware atual)
+      await iniciarFirmware({ ...firmwares.esp32, url: `../firmware/variantes/${qual.slice(6)}.mjs`, variante: qual });
+    }
+    else if (qual === 'nano') iniciarArduino(firmwares.nano ?? await fetch('firmware/nano_versao_anterior.hex').then((r) => r.text()));
+    else if (qual) iniciarArduino(qual);
+    else await iniciarFirmware();
     estado.servoH = 90; estado.servoV = 90; aplicarPose(); zerarEnergia();
+    return firmwareAtual.variante ?? firmwareAtual.tipo;
   },
+  http: (url) => window.simHttp(url),
+  /** Roda um cenário completo a partir do RESET e devolve a série
+   *  [t, H, V, erro, solAz, solEl, hora, energiaRastreador, energiaFixa] a cada `passo` s simulados. */
+  traco: async (fw, cfg = {}, seg = 8, passo = 0.25) => {
+    Object.assign(estado, { difusa: 0.1, ruidoMv: 5, variacao: 0.1, fiacao: 'codigo', luxDireta: 1000,
+      horasPorSegundo: 0, velSim: 1, rodando: false }, cfg);
+    sortearFatores();
+    const hps = estado.horasPorSegundo;
+    estado.horasPorSegundo = 0;
+    const usado = await window.sim.reiniciar(fw);
+    if (fw && usado !== fw) throw new Error(`firmware errado: ${usado}`);
+    estado.horasPorSegundo = hps;
+    const serie = [];
+    for (let t = 0; t < seg - 1e-9; t += passo) {
+      window.sim.avancar(passo);
+      serie.push([+(t + passo).toFixed(2), +estado.servoH.toFixed(1), +estado.servoV.toFixed(1), +anguloErro().toFixed(2),
+        +(estado.azSol ?? 0).toFixed(1), +(estado.elSol ?? 0).toFixed(1), +estado.hora.toFixed(3),
+        +estado.energiaTrack.toFixed(3), +estado.energiaFixa.toFixed(3)]);
+    }
+    return serie;
+  },
+  colunas: ['t', 'H', 'V', 'erro', 'solAz', 'solEl', 'hora', 'eTrack', 'eFixa'],
+  salvar: (nome, obj) => fetch(`http://127.0.0.1:8001/${nome}`, { method: 'POST', body: JSON.stringify(obj) }).then((r) => r.text()),
+  firmware: () => firmwareAtual && (firmwareAtual.variante ?? firmwareAtual.tipo),
   /** Posiciona os servos (sem firmware) e devolve a luz em cada LDR.
    *  Atenção: o firmware guarda os próprios ângulos e vai sobrescrever esta pose ao rodar. */
   /** Diagnóstico: qual peça bloqueia o raio do centro de cada LDR até o sol (ou '-' se livre). */
@@ -484,10 +548,14 @@ function atualizarUI() {
   const canais = canaisDaFiacao();
   [...corpoTab.rows].forEach((tr, i) => {
     const v = leituras[i].volts;
-    tr.cells[1].textContent = `A${canais[i]}`;
+    tr.cells[1].textContent = uno && uno.gpioDoCanal ? `GPIO ${uno.gpioDoCanal[canais[i]]}` : `A${canais[i]}`;
     tr.cells[2].textContent = fmt(leituras[i].lux);
-    tr.cells[3].textContent = fmt(v, 2);
-    tr.cells[4].innerHTML = `${Math.round((v / 5) * 1023)}<span class="barra" style="width:${(v / 5) * 50}px"></span>`;
+    // ESP32: divisor em 3,3 V e ADC de 12 bits; Nano: 5 V e 10 bits (mesma proporção do divisor)
+    const esp = uno && uno.placa === 'esp32';
+    const vref = esp ? 3.3 : 5;
+    const maxAdc = esp ? 4095 : 1023;
+    tr.cells[3].textContent = fmt((v / 5) * vref, 2);
+    tr.cells[4].innerHTML = `${Math.round((v / 5) * maxAdc)}<span class="barra" style="width:${(v / 5) * 50}px"></span>`;
   });
   $('mH').textContent = `${fmt(estado.servoH, 0)}°`;
   $('mV').textContent = `${fmt(estado.servoV, 0)}°`;
@@ -595,7 +663,7 @@ ligar('btnPausa', 'click', () => {
   estado.rodando = !estado.rodando;
   $('btnPausa').textContent = estado.rodando ? '⏸ Pausar' : '▶ Continuar';
 });
-ligar('btnReset', 'click', () => { if (hexAtual) { iniciarArduino(hexAtual); zerarEnergia(); } });
+ligar('btnReset', 'click', async () => { await iniciarFirmware(); zerarEnergia(); });
 ligar('btnLimpar', 'click', () => { estado.linhasSerial = []; serialSujo = true; });
 ligar('btnLog', 'click', () => {
   const blob = new Blob([estado.linhasSerial.join('\n') + '\n'], { type: 'text/plain' });
@@ -671,14 +739,26 @@ new ResizeObserver(redimensionar).observe(cenaEl);
   aplicarPose();
   redimensionar();
   try {
-    const [hex] = await Promise.all([
-      fetch('firmware/solar_tracker.hex').then((r) => {
-        if (!r.ok) throw new Error('firmware/solar_tracker.hex não encontrado — rode simulator/build-firmware.sh');
-        return r.text();
-      }),
+    // ?firmware=nano carrega a versão anterior (Arduino Nano, .hex emulado); padrão: firmware.json
+    const pedido = new URLSearchParams(location.search).get('firmware');
+    const [cfg] = await Promise.all([
+      pedido === 'nano' ? { placa: 'nano', arquivo: 'nano_versao_anterior.hex' }
+        : fetch('firmware/firmware.json', { cache: 'no-store' }).then((r) => {
+          if (!r.ok) throw new Error('firmware/firmware.json não encontrado — rode simulator/build-firmware.sh');
+          return r.json();
+        }),
       carregarPecas(),
     ]);
-    iniciarArduino(hex);
+    if (cfg.placa === 'esp32') {
+      firmwares.esp32 = { tipo: 'esp32', url: `../firmware/${cfg.arquivo}`, cfg };
+      await iniciarFirmware(firmwares.esp32);
+      $('notaHex').innerHTML = `Rodando: <b>ESP32</b> — o <code>main.c</code> compilado para WebAssembly com o núcleo ESP32 simulado (<code>firmware/${cfg.arquivo}</code>).`;
+      $('inFiacao').disabled = true;
+    } else {
+      const hex = await fetch(`firmware/${cfg.arquivo}`, { cache: 'no-store' }).then((r) => r.text());
+      iniciarArduino(hex);
+      $('notaHex').innerHTML = `Rodando: <b>Arduino Nano</b> emulado (<code>firmware/${cfg.arquivo}</code>).`;
+    }
   } catch (err) {
     const box = $('erroCarga');
     box.hidden = false;

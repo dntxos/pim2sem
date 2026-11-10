@@ -1,9 +1,23 @@
 ---
 name: simulador-3d
-description: Rodar, testar e modificar o simulador 3D do rastreador solar (simulator/) — firmware real emulado com avr8js sobre as peças STL em three.js. Use para validar mudanças no main.c sem hardware, reproduzir um comportamento (placa foge do sol, oscila, trava no limite), gerar evidências/gráficos para o relatório, ou alterar a cena, o modelo dos LDRs e a cinemática.
+description: Rodar, testar e modificar o simulador 3D do rastreador solar (simulator/) — o mesmo main.c do ESP32 compilado para WebAssembly (núcleo ESP32 simulado) sobre as peças STL em three.js, com a interface web do celular. Use para validar mudanças no main.c sem hardware, reproduzir um comportamento (placa foge do sol, oscila, trava no limite), gerar evidências/gráficos para o relatório, ou alterar a cena, o modelo dos LDRs e a cinemática.
 ---
 
 # Simulador 3D
+
+**Firmware:** `./simulator/build-firmware.sh` detecta a placa pelo `main.c`. ESP32 → compila o
+mesmo arquivo com `em++` + `simulator/esp32/nucleo/` (millis, ADC 12 bits, ESP32Servo, WiFi.softAP,
+WebServer) → `simulator/firmware/esp32.mjs` + `firmware.json` (pinos lidos do `main.c`). O painel
+"📱 Celular" mostra a página do próprio `main.c`. A versão Nano antiga roda com `?firmware=nano`.
+
+API de teste (console): `await sim.reiniciar('esp32' | 'nano' | 'esp32:<variante>')` (retorna o
+firmware ativo — **confira sempre**; já houve rodadas contaminadas por firmware trocado),
+`await sim.traco(fw, cfg, segundos)`, `sim.http('/estado')`, `sim.salvar(nome, obj)` (com
+`python3 tools/relatorio/receptor_dados.py docs/relatorio/dados` rodando). Variantes de teste:
+`simulator/firmware/variantes/*.mjs` (compiladas de cópias editadas do `main.c`, nunca do original).
+
+**Tempo:** o Sol anda acelerado (horasPorSegundo), mas os temporizadores do firmware (120 s / 30 s
+do repouso noturno) correm em tempo simulado real — para testar noite/amanhecer, desacelere o Sol.
 
 Detalhes de arquitetura em `simulator/README.md`. Resumo: `js/arduino.js` (emulador),
 `js/montagem.js` (peças, eixos, posição dos LDRs), `js/sensores.js` (lux → volts), `js/sol.js`,

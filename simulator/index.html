@@ -105,8 +105,8 @@
           <tbody></tbody>
         </table>
         <div class="metricas">
-          <div><span>Servo horizontal (D9)</span><b id="mH">–</b></div>
-          <div><span>Servo vertical (D10)</span><b id="mV">–</b></div>
+          <div><span>Servo horizontal</span><b id="mH">–</b></div>
+          <div><span>Servo vertical</span><b id="mV">–</b></div>
           <div><span>Erro de apontamento</span><b id="mErro">–</b></div>
           <div><span>Aproveitamento (cos θ)</span><b id="mApr">–</b></div>
         </div>
@@ -119,8 +119,15 @@
         <canvas id="grafico" height="150"></canvas>
       </details>
 
+      <details open id="boxCelular" hidden>
+        <summary>📱 Celular — interface web do ESP32</summary>
+        <p class="nota">Rede Wi-Fi <b id="ssidCelular">SOLAR_TOWER</b> · senha <code>torre1234</code> · <code>http://192.168.4.1</code>.
+          Esta é a página servida pelo próprio <code>main.c</code>; os botões controlam a torre simulada.</p>
+        <iframe id="telaCelular" class="celular" title="Interface web do ESP32"></iframe>
+      </details>
+
       <details open>
-        <summary>🖥️ Monitor serial (9600 baud)</summary>
+        <summary>🖥️ Monitor serial</summary>
         <pre id="serial" class="serial"></pre>
         <div class="linha">
           <button id="btnLog">Baixar log (.txt)</button>

@@ -1,0 +1,7 @@
+{
+  "placa": "esp32",
+  "arquivo": "esp32.mjs",
+  "pinos": { "SE": 34, "SD": 35, "IE": 32, "ID": 33,
+             "servoH": 18, "servoV": 19 },
+  "adcBits": 12, "vref": 3.3
+}
