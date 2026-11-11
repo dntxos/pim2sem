@@ -45,7 +45,9 @@ const int LIMITE_V_MAX = 160;
 // =====================================
 // CONFIGURACOES DO RASTREAMENTO
 // =====================================
-const int TOLERANCIA = 40;
+// Zona morta em unidades do ADC de 12 bits (0-4095). No Nano (10 bits)
+// era 40; no ESP32 a escala e 4x maior, entao 40 x 4 = 160 (P14).
+const int TOLERANCIA = 160;
 const int PASSO_AUTO = 2;
 const int PASSO_MANUAL = 5;
 
@@ -269,11 +271,17 @@ void rastrearSol() {
   int superior = (se + sd) / 2;
   int inferior = (ie + id) / 2;
 
+  // Os LDRs giram junto com o painel. Quando o servo vertical passa de 90,
+  // o painel fica voltado para o outro lado e "esquerda/direita" se invertem
+  // em relacao ao giro do prato; por isso o sentido da correcao tambem
+  // inverte (P10). Sem isso o servo horizontal trava no limite.
+  int sentidoHorizontal = (anguloV >= 90) ? 1 : -1;
+
   if (esquerda > direita + TOLERANCIA)
-    anguloH += PASSO_AUTO;
+    anguloH += sentidoHorizontal * PASSO_AUTO;
 
   else if (direita > esquerda + TOLERANCIA)
-    anguloH -= PASSO_AUTO;
+    anguloH -= sentidoHorizontal * PASSO_AUTO;
 
   if (superior > inferior + TOLERANCIA)
     anguloV -= PASSO_AUTO;

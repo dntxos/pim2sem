@@ -16,7 +16,7 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 
 | Constante | Valor | Significado |
 |-----------|-------|-------------|
-| `TOLERANCIA` | 40 | Zona morta em unidades do ADC — **⚠️ herdada do Nano (10 bits); no ADC de 12 bits deveria ser ~160 (P14)** |
+| `TOLERANCIA` | 160 | Zona morta em unidades do ADC de 12 bits (era 40 no Nano, 10 bits — P14) |
 | `PASSO_AUTO` / `PASSO_MANUAL` | 2° / 5° | Passo por ciclo automático / por toque no celular |
 | `INTERVALO_MOVIMENTO` | 100 ms | Período do rastreamento (não depende mais da serial) |
 | `LIMITE_*` | 20°–160° | Limites dos dois eixos |
@@ -34,16 +34,23 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 | `GET /mover?eixo=h|v&direcao=±1` | Move 5° (só em modo manual; senão HTTP 409) |
 | `GET /inicio` | Posição inicial (só em modo manual) |
 
-## ⚠️ Pendências encontradas no simulador (mesmo `main.c`, compilado para WebAssembly)
+## Correções aplicadas após os testes físicos (11/11/2026)
 
-- **P10 regrediu:** a correção `sentidoHorizontal` não foi levada para o ESP32. Com o Sol a SE/SO o
-  servo horizontal trava no limite (erro 54°–59° × 17°–18° com a correção).
-- **P14 — tolerância:** com ±10% de variação entre LDRs, `TOLERANCIA = 40` (1% da escala de 12
-  bits) faz o painel fugir do Sol ao amanhecer de junho (−100% de energia); com 160, +35%.
+O `main.c` usado nos testes físicos tinha duas falhas, encontradas no simulador (mesmo código,
+compilado para WebAssembly). Ambas foram corrigidas; a versão dos testes físicos continua disponível
+no simulador como variante `esp32:esp32_testes_fisicos`.
+
+| Falha | Antes (testes físicos) | Depois (`main.c` atual) |
+|-------|------------------------|-------------------------|
+| **P10** — faltava `sentidoHorizontal` | Sol a SE/SO: erro 54°/59°, servo H travado no limite | 18°/17° |
+| **P14** — `TOLERANCIA = 40` em 12 bits | 21/jun: painel foge do Sol (−100% vs. placa fixa) | +35% (dez: +49%) |
+
+Repouso noturno e interface web conferidos após a correção. **Validação física: pendente.**
+Dados: `docs/relatorio/dados/esp32_corrigido_vs_testes.json`.
 
 ## Build
 
-- Arduino IDE: placa **ESP32 Dev Module**, biblioteca **ESP32Servo**. Compilado: 949 515 bytes
+- Arduino IDE: placa **ESP32 Dev Module**, biblioteca **ESP32Servo**. Compilado: 949 523 bytes
   (72% da flash), 47 916 bytes de RAM (14%).
 - `arduino-cli compile --fqbn esp32:esp32:esp32 <pasta-do-sketch>` (ver skill `firmware-arduino`).
 - Simulador: `./simulator/build-firmware.sh` compila o **mesmo `main.c`** para WebAssembly com o

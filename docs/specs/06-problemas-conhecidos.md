@@ -64,7 +64,7 @@ limitado) aproxima mais rápido quando longe e suaviza perto do alvo — bom tó
 Ler a tensão da placa em uma entrada analógica e enviar na telemetria permite provar o ganho do
 rastreador em relação a uma placa fixa (ver [05-testes.md](05-testes.md)).
 
-## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical — ⚠️ corrigido no Nano, **regrediu no ESP32**
+## <a id="p10"></a>P10 — Correção horizontal se inverte quando a placa passa da vertical — ✅ corrigido (Nano), regrediu no ESP32 e foi **restaurado em 11/11/2026**
 
 > O `main.c` do ESP32 não tem `sentidoHorizontal`. Simulação com o mesmo `main.c`: Sol a SE 40° → erro 54°
 > (H travado em 160°); SO 35° → 59°. Com a correção restaurada (variante `esp32_tol160_p10`): 18° / 17°.
@@ -122,7 +122,7 @@ confirmar no protótipo com lanterna rasante vinda do lado inferior.
 
 Diagnóstico no simulador: `sim.bloqueios()` mostra qual peça bloqueia o raio de cada LDR ao Sol.
 
-## <a id="p14"></a>P14 — Tolerância não foi reescalonada para o ADC de 12 bits (alto) — encontrado em simulação
+## <a id="p14"></a>P14 — Tolerância não foi reescalonada para o ADC de 12 bits — ✅ corrigido (`TOLERANCIA = 160`, 11/11/2026)
 
 No Nano, `TOLERANCIA = 40` era ~4% da escala (0–1023). No ESP32 o ADC vai de 0 a 4095 e o mesmo 40
 vale ~1%: a diferença natural entre LDRs (±10%) passa a comandar o painel com pouca luz. Simulação

@@ -91,8 +91,8 @@ def linha_do_tempo():
         ('Simulação noturna', 'Placa amanhecia voltada a Oeste (P7)', 'corrigido'),
         ('Montagem física', 'Braço da trave impresso quebrou na montagem', 'corrigido'),
         ('Testes físicos', 'Migração para ESP32: Wi-Fi e controle pelo celular', 'acerto'),
-        ('Simulador × ESP32', 'Correção P10 perdida na migração (regressão)', 'pendente'),
-        ('Simulador × ESP32', 'TOLERANCIA não escalada para ADC de 12 bits (P14)', 'pendente'),
+        ('Simulador × ESP32', 'Correção P10 perdida na migração — restaurada no main.c', 'corrigido'),
+        ('Simulador × ESP32', 'TOLERANCIA não escalada para ADC de 12 bits (P14) — 40 → 160', 'corrigido'),
     ]
     cores = {'corrigido': '#2e7d4f', 'pendente': '#b23a3a', 'proposta': '#d9822b', 'acerto': '#1f4e8c', 'encerrado': '#6b7280'}
     rot = {'corrigido': 'Corrigido', 'pendente': 'Pendente', 'proposta': 'Solução proposta', 'acerto': 'Acerto', 'encerrado': 'Encerrado'}

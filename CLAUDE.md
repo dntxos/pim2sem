@@ -42,8 +42,9 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 
 - **ESP32:** LDRs em GPIO 34/35/32/33 (ADC1 — o ADC2 não funciona com Wi-Fi), servos em 18/19.
   Divisores dos LDRs em **3V3** (entradas não toleram 5 V). ADC de 12 bits (0–4095).
-- **Pendências no `main.c` do ESP32 (achadas no simulador):** P10 regrediu (falta `sentidoHorizontal`)
-  e P14 (`TOLERANCIA = 40` não foi escalada para 12 bits). Não alterar o `main.c` sem o usuário pedir.
+- **Não remover do `main.c`:** `sentidoHorizontal` (P10 — sem ele o servo horizontal trava no limite
+  com o vertical abaixo de 90°; já regrediu uma vez na migração) e `TOLERANCIA = 160` (P14 — escala
+  de 12 bits; 40 era o valor do Nano). Validação física dessas correções ainda pendente.
 - **Convenção do sensor:** leitura maior = mais luz (LDR no lado do 5 V do divisor). Inverter o
   divisor inverte o sentido dos eixos.
 - **Sinais dos eixos** (`+=`/`-=`) dependem da montagem mecânica; o eixo vertical é propositalmente

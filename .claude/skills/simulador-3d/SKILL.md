@@ -57,7 +57,18 @@ tempo das ferramentas). `s.estado.linhasSerial` tem a saída serial do firmware.
 - Para extrair séries longas, rodar em blocos < 30 s simulados por chamada; para salvar em disco,
   um pequeno servidor local de POST (ver histórico em `docs/relatorio/dados/`).
 
-## Cenários de regressão
+## Cenários de regressão — firmware ESP32 (`main.c` atual)
+
+`await sim.traco('esp32', cfg, seg)` com `?elevacaoLdr=25`, ±10% entre LDRs, difusa 10%:
+
+| Cenário | Esperado (`main.c` atual) | `esp32:esp32_testes_fisicos` |
+|---------|---------------------------|------------------------------|
+| Sol SE 40° / SO 35° / NE 30° (8 s) | erro 18° / 17° / 18° | 54° / 59° / 14° (P10) |
+| Dia 172 (6h30, 0,5 h/s, 22 s) | +35% vs. placa fixa | −100% (P14) |
+| Dia 355 (6h, 0,5 h/s, 24 s) | +49% | +50% |
+| Noite: 140 s de escuro → alvorada lenta | `NOITE - REPOUSO` em 20°/90°; volta ~5h30 | igual |
+
+## Cenários de regressão — firmware Nano (histórico, `?firmware=nano`)
 
 Todos partindo de `s.reiniciar()` (90/90), ~1 000 lux, difusa 10 %:
 

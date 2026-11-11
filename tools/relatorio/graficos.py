@@ -179,9 +179,9 @@ if __name__ == '__main__':
 
 # ============================================================ ESP32 (main.c atual e variantes)
 ROTULOS_FW = {
-    'esp32': 'main.c atual (ESP32)',
+    'esp32': 'main.c dos testes físicos',
     'esp32:esp32_tol160': '+ tolerância 160',
-    'esp32:esp32_tol160_p10': '+ tolerância 160 + correção P10',
+    'esp32:esp32_tol160_p10': '+ tolerância 160 + P10 (main.c atual)',
 }
 CORES_FW = {'esp32': VERMELHO, 'esp32:esp32_tol160': LARANJA, 'esp32:esp32_tol160_p10': AZUL}
 

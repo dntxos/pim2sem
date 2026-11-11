@@ -1,4 +1,5 @@
-"""Gera o relatório do PIM II — versão 2 (docs/relatorio/PIM_Torre_Solar_v2.docx).
+"""Gera o relatório do PIM II — versão 3 (docs/relatorio/PIM_Torre_Solar_v3.docx).
+v3: correções P10 e P14 aplicadas ao main.c do ESP32 (a v2 as trazia como pendentes).
 
 Uso: python tools/relatorio/gerar_relatorio.py   (requer python-docx)
 Antes: tools/relatorio/graficos.py, diagramas.py, fotos.py e tools/render/gerar_figuras_relatorio.sh.
@@ -19,7 +20,7 @@ from abnt_docx import Relatorio  # noqa: E402
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 FIG = os.path.join(RAIZ, 'docs', 'relatorio', 'figuras')
 DADOS = os.path.join(RAIZ, 'docs', 'relatorio', 'dados')
-SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v2.docx')
+SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v3.docx')
 C = WD_ALIGN_PARAGRAPH.CENTER
 
 
@@ -118,9 +119,9 @@ r.p('Este trabalho apresenta o projeto, a simulação e os testes físicos de um
     'peças reais, calculando a luz em cada sensor por *raycasting*. O relatório registra a trajetória do '
     'desenvolvimento, com erros e acertos: uma inversão no algoritmo do eixo horizontal, testes contaminados '
     'por estado interno, o sombreamento dos sensores pelo próprio painel, a quebra de uma peça impressa na '
-    'montagem e duas falhas reintroduzidas na migração para o ESP32, detectadas pelo simulador. Nos testes '
+    'montagem e duas falhas reintroduzidas na migração para o ESP32, detectadas pelo simulador e corrigidas. Nos testes '
     'físicos, a gravação do ESP32, a movimentação dos servos e o controle pelo celular funcionaram. Em '
-    f'simulação, as correções propostas levam o rastreador a captar {eng(TOLP10 + "|jun")} de energia em '
+    f'simulação, com as correções aplicadas, o rastreador capta {eng(TOLP10 + "|jun")} de energia em '
     f'relação a uma placa fixa no inverno e {eng(TOLP10 + "|dez")} no verão.', recuo=False)
 r.espaco()
 r.p('**Palavras-chave:** energia solar fotovoltaica; rastreador solar; ESP32; sensor LDR; simulação; automação.',
@@ -138,8 +139,8 @@ r.p('This work presents the design, simulation and physical tests of a solar ene
     'computing the light on each sensor by ray casting. The report records the development path, including '
     'an inversion in the horizontal-axis algorithm, tests contaminated by internal state, sensor shading by '
     'the panel itself, a printed part that broke during assembly, and two faults reintroduced in the ESP32 '
-    'migration that the simulator detected. In the physical tests, ESP32 programming, servo motion and phone '
-    f'control worked. In simulation, the proposed fixes make the tracker collect {eng(TOLP10 + "|jun")} '
+    'migration that the simulator detected and that were then fixed. In the physical tests, ESP32 programming, '
+    f'servo motion and phone control worked. In simulation, with the fixes applied, the tracker collects {eng(TOLP10 + "|jun")} '
     f'energy relative to a fixed panel in winter and {eng(TOLP10 + "|dez")} in summer.', recuo=False)
 r.espaco()
 r.p('**Keywords:** photovoltaic solar energy; solar tracker; ESP32; LDR sensor; simulation; automation.', recuo=False)
@@ -202,7 +203,7 @@ r.tabela('Cronograma de execução do projeto', ['Etapa', 'Atividade', 'Situaç�
     ['4', 'Simulação de dias completos; diagnóstico do sombreamento (P13)', 'Concluída'],
     ['5', 'Impressão 3D, pré-montagem e testes dos servos', 'Concluída'],
     ['6', 'Migração para ESP32, interface no celular e repouso noturno', 'Concluída'],
-    ['7', 'Simulação do firmware ESP32; regressões P10 e P14', 'Concluída'],
+    ['7', 'Simulação do firmware ESP32; correção das regressões P10 e P14', 'Concluída'],
     ['8', 'Controlador de carga, saídas USB e PCI', 'Planejada'],
 ], larguras=[1.5, 11.5, 3.0])
 
@@ -302,22 +303,24 @@ r.p('Três cuidados merecem destaque: os servos não são alimentados pela placa
     'os divisores dos LDRs devem usar o **3,3 V** do ESP32, cujas entradas não toleram 5 V.')
 
 r.h2('3.5 Programação e controle')
-r.p(f'O firmware é escrito em C++ na plataforma Arduino para o ESP32 e compilado ocupa 949 515 bytes (72% da '
+r.p(f'O firmware é escrito em C++ na plataforma Arduino para o ESP32 e compilado ocupa 949 523 bytes (72% da '
     f'memória de programa). A Figura {r.prox_fig()} mostra seu fluxo. Além do rastreamento, ele cria a rede '
     'Wi-Fi da torre e serve a página de controle (seção 4.5), e implementa o **repouso noturno**: se a média '
     'dos quatro LDRs fica abaixo de 500 por 120 s, o painel vai para a posição inicial (20°/90°) e para; acima '
     'de 700 por 30 s, volta a rastrear. A histerese entre os dois limiares e os tempos de confirmação evitam '
     'que nuvens ou sombras passageiras sejam tomadas por noite.')
 r.figura(f('d_fluxograma.png'), 'Fluxograma do firmware do ESP32', largura=8.2)
-r.p('O Quadro 2 traz o núcleo do rastreamento automático, transcrito do `main.c` utilizado nos testes físicos.')
+r.p('O Quadro 2 traz o núcleo do rastreamento automático na versão atual do `main.c`, já com as correções descritas na seção 5.5.')
 r.codigo('''void rastrearSol() {
   int se, sd, ie, id;
   lerSensores(se, sd, ie, id);
   int esquerda = (se + ie) / 2;   int direita  = (sd + id) / 2;
   int superior = (se + sd) / 2;   int inferior = (ie + id) / 2;
 
-  if (esquerda > direita + TOLERANCIA)       anguloH += PASSO_AUTO;
-  else if (direita > esquerda + TOLERANCIA)  anguloH -= PASSO_AUTO;
+  // painel do outro lado da vertical: inverte o giro horizontal (P10)
+  int sentidoHorizontal = (anguloV >= 90) ? 1 : -1;
+  if (esquerda > direita + TOLERANCIA)  anguloH += sentidoHorizontal * PASSO_AUTO;
+  else if (direita > esquerda + TOLERANCIA) anguloH -= sentidoHorizontal * PASSO_AUTO;
 
   if (superior > inferior + TOLERANCIA)      anguloV -= PASSO_AUTO;
   else if (inferior > superior + TOLERANCIA) anguloV += PASSO_AUTO;
@@ -325,7 +328,7 @@ r.codigo('''void rastrearSol() {
   anguloH = constrain(anguloH, LIMITE_H_MIN, LIMITE_H_MAX);
   anguloV = constrain(anguloV, LIMITE_V_MIN, LIMITE_V_MAX);
   aplicarPosicao();
-}''', 'Rastreamento automático no firmware do ESP32', fonte='Autoria própria, 2026 (trecho de `main.c`).')
+}''', 'Rastreamento automático no firmware do ESP32 (TOLERANCIA = 160)', fonte='Autoria própria, 2026 (trecho de `main.c`).')
 
 r.h2('3.6 Simulação')
 r.ps(
@@ -425,6 +428,7 @@ r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'],
     ['Rastreamento automático (lanterna ou Sol)', '[PREENCHER]', '—'],
     ['Repouso noturno', 'Validado em simulação (seção 5.6); físico [PREENCHER]', '—'],
     ['Ajuste dos XL4015', '[PREENCHER: tensões medidas]', '—'],
+    ['Correções P10 e P14 no protótipo', 'Validadas em simulação; físico [PREENCHER]', '—'],
     ['Tensão do painel, carga da bateria e saídas USB', 'Pendente (controlador e módulo USB não adquiridos)', '—'],
 ], larguras=[6.0, 6.5, 3.5])
 
@@ -476,7 +480,7 @@ r.h2('5.5 A migração para o ESP32 e duas regressões (P10 e P14)')
 r.p('Com o firmware do ESP32 pronto e testado fisicamente, o simulador foi adaptado para compilar o mesmo '
     '`main.c` (seção 3.6). Os testes revelaram dois problemas introduzidos na reescrita:')
 r.itens([
-    f'**P10 regrediu:** a variável `sentidoHorizontal` não foi levada para o novo código (Quadro 2). Com o Sol a '
+    f'**P10 regrediu:** a variável `sentidoHorizontal` não foi levada para a versão usada nos testes físicos. Com o Sol a '
     f'Sudeste ou Sudoeste o servo horizontal volta a travar no fim de curso, com erro de {err(ATUAL + "|SE")}° e '
     f'{err(ATUAL + "|SO")}°;',
     f'**P14 — tolerância não reescalonada:** a `TOLERANCIA = 40` foi herdada do Nano, em que valia ≈ 4% da '
@@ -488,8 +492,10 @@ r.p(f'Para medir as correções sem alterar o `main.c` dos testes, foram compila
     f'160 (40 × 4) e tolerância 160 com o P10 restaurado. A Figura {r.prox_fig()} compara as três versões: só '
     f'a segunda variante acerta todas as posições (erro de {err(TOLP10 + "|SE")}°, {err(TOLP10 + "|SO")}° e '
     f'{err(TOLP10 + "|NE")}°) e capta {eng(TOLP10 + "|jun")} em junho e {eng(TOLP10 + "|dez")} em dezembro em '
-    'relação à placa fixa.')
-r.figura(f('g_esp32.png'), 'Firmware do ESP32 em simulação: main.c atual e variantes com as correções propostas', largura=16)
+    'relação à placa fixa. Confirmado o efeito, as duas correções foram incorporadas ao `main.c` (Quadro 2), '
+    'que compila para o ESP32 e reproduz exatamente os resultados da variante; o repouso noturno e a '
+    'interface web foram conferidos novamente. Falta a validação no protótipo físico.')
+r.figura(f('g_esp32.png'), 'Firmware do ESP32 em simulação: versão dos testes físicos e versões com as correções', largura=16)
 r.h2('5.6 A noite e o retorno ao Leste (P7) — resolvido')
 r.p('O firmware do Nano não tratava a noite: o painel parava voltado ao Oeste e amanhecia de costas para o Sol. '
     f'O ESP32 implementou o repouso noturno. Em simulação de uma noite de dezembro (Figura {r.prox_fig()}), o '
@@ -501,12 +507,12 @@ r.h2('5.7 Lições aprendidas')
 r.tabela('Síntese dos problemas, soluções e lições', ['Problema', 'Como foi encontrado', 'Situação', 'Lição'], [
     ['P1 – Pinos do código × diagrama', 'Revisão cruzada', 'Encerrado', 'Conferir documentos entre si'],
     ['Período do laço', 'Medição no emulador', 'Corrigido', 'Medir em vez de estimar'],
-    ['P10 – Inversão horizontal', 'Simulador, Sol ao Sul', 'Regrediu no ESP32', 'Testar de novo após reescrever'],
+    ['P10 – Inversão horizontal', 'Simulador, Sol ao Sul', 'Regrediu e restaurado', 'Testar de novo após reescrever'],
     ['Testes contaminados', 'Resultados idênticos', 'Corrigido', 'Condição inicial conhecida'],
     ['P13 – Sombra do painel', 'Simulação de dias', 'Proposta', 'Integrar mecânica e eletrônica'],
     ['Quebra da peça impressa', 'Montagem física', '[PREENCHER]', 'Reforçar regiões de esforço'],
     ['P7 – Noite', 'Simulação da madrugada', 'Resolvido (ESP32)', 'Prever todos os estados'],
-    ['P14 – Tolerância 12 bits', 'Simulação do ESP32', 'Pendente', 'Revisar unidades ao trocar de hardware'],
+    ['P14 – Tolerância 12 bits', 'Simulação do ESP32', 'Corrigido', 'Revisar unidades ao trocar de hardware'],
 ], larguras=[4.6, 3.9, 3.0, 4.5], quadro=True)
 
 # =====================================================================  6 APLICAÇÕES
@@ -565,12 +571,12 @@ r.ps(
     'O principal resultado, contudo, foi o método. A combinação de revisão, simulação do mesmo código e testes '
     'físicos permitiu encontrar uma inversão no algoritmo, erros de método nos testes, o sombreamento dos '
     'sensores pelo próprio painel e, depois da migração para o ESP32, duas regressões que o comportamento em '
-    'bancada dificilmente revelaria. O episódio mostra que trocar de plataforma exige revisar não só o código, '
+    'bancada dificilmente revelaria — ambas já corrigidas no código. O episódio mostra que trocar de plataforma exige revisar não só o código, '
     'mas as unidades e as correções acumuladas.',
     'Como próximos passos, recomenda-se:',
 )
 r.itens([
-    'restaurar `sentidoHorizontal` (P10) e ajustar `TOLERANCIA` para ≈ 160 (P14) no `main.c` do ESP32;',
+    'validar no protótipo as correções P10 e P14, já aplicadas ao `main.c` e verificadas em simulação;',
     'elevar o suporte dos LDRs em ≈ 25 mm (P13) e validar com lanterna rasante;',
     'reforçar ou reimprimir as peças da trave sujeitas a esforço;',
     'adquirir controlador de carga, fusível e módulo USB, fabricar a PCI e medir a energia real com e sem rastreamento.',
