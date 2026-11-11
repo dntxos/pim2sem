@@ -40,7 +40,7 @@ digraph G {{
     usb2 [label="Saída USB 2", style="rounded,dashed,filled", fillcolor="#ffffff"];
   }}
   subgraph cluster_r {{ label="Rastreamento solar"; fontname="{FONTE}"; fontsize=14; color="#9ca3af"; style="rounded,dashed";
-    x2 [label="XL4015 #2\\n5 V"]; x1 [label="XL4015 #1\\n6,0 V"];
+    x2 [label="XL4015 #2\\n6 V"]; x1 [label="XL4015 #1\\n6,0 V"];
     nano [label="ESP32\\n(Wi-Fi + ADC 12 bits)", fillcolor="#1f4e8c", fontcolor="white"];
     cel [label="Celular\\nrede SOLAR_TOWER\\n192.168.4.1", fillcolor="#fff7e6", color="#d9822b"];
     ldr [label="4 × LDR + 10 kΩ\\n(cruz de sombra)"];
@@ -48,7 +48,7 @@ digraph G {{
   }}
   painel -> ctrl -> bat -> fus;
   fus -> usbc; usbc -> usb1; usbc -> usb2;
-  fus -> x2; x2 -> nano [xlabel="5 V"];
+  fus -> x2; x2 -> nano [xlabel="6 V"];
   cel -> nano [dir=both, style=dashed, color="#d9822b", xlabel="Wi-Fi"];
   fus -> x1; x1 -> sh; x1 -> sv;
   ldr -> nano [xlabel="GPIO 32–35"];
@@ -89,10 +89,11 @@ def linha_do_tempo():
         ('Método de teste', 'Testes contaminados: firmware não reiniciado entre cenários', 'corrigido'),
         ('Simulação de 1 dia', 'Sombra do painel nos LDRs: placa foge do Sol em junho (P13)', 'proposta'),
         ('Simulação noturna', 'Placa amanhecia voltada a Oeste (P7)', 'corrigido'),
-        ('Montagem física', 'Braço da trave impresso quebrou na montagem', 'corrigido'),
+        ('Montagem física', 'Encaixe dos braços na peça da placa quebrou — reimpressa', 'corrigido'),
         ('Testes físicos', 'Migração para ESP32: Wi-Fi e controle pelo celular', 'acerto'),
         ('Simulador × ESP32', 'Correção P10 perdida na migração — restaurada no main.c', 'corrigido'),
         ('Simulador × ESP32', 'TOLERANCIA não escalada para ADC de 12 bits (P14) — 40 → 160', 'corrigido'),
+        ('Teste com lanterna', 'Rastreamento reage, mas gira para o lado contrário', 'pendente'),
     ]
     cores = {'corrigido': '#2e7d4f', 'pendente': '#b23a3a', 'proposta': '#d9822b', 'acerto': '#1f4e8c', 'encerrado': '#6b7280'}
     rot = {'corrigido': 'Corrigido', 'pendente': 'Pendente', 'proposta': 'Solução proposta', 'acerto': 'Acerto', 'encerrado': 'Encerrado'}
@@ -138,7 +139,7 @@ def esquematico():
         ], size=(3.2, 5.4)).theta(0).at((0, 0))
         d += nano
         d += elm.Label().at((1.6, 5.9)).label('U1 — ESP32 (placa de desenvolvimento)', fontsize=11)
-        rede(d, nano['5V'], '+5 V', 'left', V)
+        rede(d, nano['5V'], '+6 V placa', 'left', V)
         rede(d, nano['3V3'], '+3,3 V', 'left', V)
         rede(d, nano.GND, 'GND', 'left')
         for p in ('IO34', 'IO35', 'IO32', 'IO33', 'IO18', 'IO19'):
@@ -176,7 +177,7 @@ def esquematico():
         d += elm.Fuse().right().at(topo).label('F1 3 A', loc='top')
         no12 = d.here
         d += elm.Dot()
-        for j, (nome, saida) in enumerate((('XL4015 #1', '+6 V'), ('XL4015 #2', '+5 V'))):
+        for j, (nome, saida) in enumerate((('XL4015 #1', '+6 V'), ('XL4015 #2', '+6 V placa'))):
             y = topo[1] - 0.8 - j * 3.2
             conv = elm.Ic(pins=[elm.IcPin(name='IN+', side='left', slot='2/2'), elm.IcPin(name='IN−', side='left', slot='1/2'),
                                 elm.IcPin(name='OUT+', side='right', slot='2/2'), elm.IcPin(name='OUT−', side='right', slot='1/2')],
@@ -245,7 +246,7 @@ def pci():
         ax.text(x - 6, y + 2.4, nome, color=tela, fontsize=7.5, family='serif', zorder=5)
         trilha([(x - 6, y), (x - 6, y - 3), (nx, y - 3), (nx, ny + pino * 2.54)], 0.5)
     # bornes de alimentação
-    for x, nome in ((10, 'J7 +6V SERVOS'), (26, 'J8 +5V ESP32')):
+    for x, nome in ((10, 'J7 +6V SERVOS'), (26, 'J8 +6V ESP32')):
         ax.add_patch(Rectangle((x - 3, 2.5), 10, 6, fill=False, ec=tela, lw=1.2, zorder=5))
         pad(x, 5.5, 1.3, quad=True); pad(x + 5, 5.5, 1.3)
         ax.text(x + 2.5, 10, nome, color=tela, ha='center', fontsize=7.5, family='serif', zorder=5)

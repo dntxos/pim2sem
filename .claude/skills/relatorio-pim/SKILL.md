@@ -22,7 +22,7 @@ Antes de escrever, leia **sempre**:
 - Hardware real: **ESP32** (migrou do Arduino Nano na etapa de testes físicos), servos **MG996R**,
   4 LDR + 10 kΩ, 2 × **XL4015**, bateria **12 V** Elgin, painel **10 W**. Wi-Fi `SOLAR_TOWER` /
   `torre1234` / `http://192.168.4.1`. Integrantes: ver `INTEGRANTES` em `tools/relatorio/gerar_relatorio.py`.
-- **Limite: no máximo 40 páginas no total** (v3: 36). Conferir após cada mudança com `exportar_pdf.sh`.
+- **Limite: no máximo 40 páginas no total** (v4: 37). Conferir após cada mudança com `exportar_pdf.sh`.
 - Testes físicos: só o que está em `docs/imagens_videos_testes_fisicos/` ou foi informado pelo grupo
   (painéis de fotos: `tools/relatorio/fotos.py`).
 - Português formal, impessoal, termos estrangeiros em itálico, siglas por extenso na 1ª ocorrência.
@@ -49,8 +49,8 @@ praça), sempre rotuladas "Ilustração conceitual gerada por IA" — nunca como
 - Formato de entrega: **.docx** (o curso usa Word) gerado via skill `docx` ou python-docx, com
   estilos reais (Título 1/2/3) para o sumário automático, Times New Roman 12, margens 3/3/2/2,
   1,5 entrelinhas, numeração a partir da Introdução, legendas "Figura N –" em cima e "Fonte:" embaixo.
-- Pipeline: `graficos.py` / `diagramas.py` / `fotos.py` → `gerar_relatorio.py` (v3) →
-  `exportar_pdf.sh PIM_Torre_Solar_v3` (Word atualiza sumário/listas e exporta o PDF). Os números do
+- Pipeline: `graficos.py` / `diagramas.py` / `fotos.py` → `gerar_relatorio.py` (v4) →
+  `exportar_pdf.sh PIM_Torre_Solar_v4` (Word atualiza sumário/listas e exporta o PDF). Os números do
   texto são lidos de `docs/relatorio/dados/` — gere dados novos pelo simulador (`sim.traco`/`sim.salvar`).
 - Salvar em `docs/relatorio/` (`PIM_Torre_Solar_vN.docx`) + exportar PDF para conferência visual;
   revisar as páginas renderizadas antes de entregar (quebras, figuras cortadas, órfãs).

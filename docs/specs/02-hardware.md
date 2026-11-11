@@ -88,7 +88,7 @@ montado invertido (LDR no GND), os sentidos dos eixos se invertem.
                   [fusível]
 Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]── servos (+ capacitor 1000 µF)
   (não comprado — ver acima)                          │
-                                                      └──[XL4015 #2 → 7,5 V]── VIN do Nano
+                                                      └──[XL4015 #2 → 6 V]── placa de expansão do ESP32
 GND da bateria, dos dois XL4015, dos servos e do Nano: TODOS INTERLIGADOS
 ```
 
@@ -96,7 +96,8 @@ GND da bateria, dos dois XL4015, dos servos e do Nano: TODOS INTERLIGADOS
    qualquer posição — um XL4015 saindo 12 V queima o Nano ou os servos na hora.
 2. **XL4015 #1 (servos): 6,0 V.** Cabos curtos e mais grossos que os jumpers; capacitor perto dos
    servos.
-3. **XL4015 #2 (Nano): 7,5 V no pino VIN.** O regulador do Nano baixa para 5 V e protege contra um
+3. **XL4015 #2 (placa do ESP32): 6 V** — valor ajustado pelo grupo nos testes físicos (12 V → 6 V).
+   *Histórico (Nano):* 7,5 V no pino VIN. O regulador do Nano baixa para 5 V e protege contra um
    ajuste descuidado. (Alternativa: 5,0 V direto no pino 5V — sem proteção, exige ajuste preciso.)
 4. Com a bateria ligada, pode-se conectar o USB ao computador para ver o Monitor Serial — os GNDs
    ficam em comum pelo USB, o que é esperado.

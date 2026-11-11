@@ -1,38 +1,30 @@
-# Pendências do relatório — versão 3 (ESP32 + testes físicos + correções P10/P14)
+# Pendências do relatório — versão 4
 
-Itens marcados em **amarelo** (`[PREENCHER: …]`) no `PIM_Torre_Solar_v3.docx` (36 páginas; limite
-combinado: 40). Preencher no `tools/relatorio/gerar_relatorio.py` e regenerar, ou editar direto no Word.
+`PIM_Torre_Solar_v4.docx` / `.pdf` — 37 páginas (limite combinado: 40). Itens em **amarelo**
+(`[PREENCHER: …]`) ainda dependem do grupo. Preencher em `tools/relatorio/gerar_relatorio.py` e
+regenerar, ou editar direto no Word.
 
-## Folha de rosto
+## Ainda em aberto
 
-- [ ] Nome do professor orientador
-- [ ] Confirmar **Campus Sorocaba** e o nome do curso
+- [ ] **Custos:** valor do **ESP32 + placa de expansão** e do **filamento PLA** (Tabela 2) — com eles
+      dá para fechar o total (hoje: subtotal de R$ 235,04 dos itens com valor informado)
+- [ ] **PCI (3.7):** software e método de fabricação
+- [ ] **Repouso noturno** observado no protótipo? (Tabela 3)
+- [ ] **Correções P10/P14 no protótipo:** gravar o `main.c` atual e testar (Tabela 3)
+- [ ] **Teste com lanterna (4.6):** o painel girou para o lado contrário — repetir iluminando um lado
+      de cada vez e anotar qual eixo se move e para onde; com isso escolhemos a correção
+      (sinal do eixo no `main.c`, divisor invertido, LDRs trocados ou P10)
+- [ ] Confirmar **Campus Sorocaba**
+- [ ] Confirmar se os divisores dos LDRs estão no **3V3** do ESP32 (entradas não toleram 5 V)
 
-## Testes físicos (cap. 4 e Tabela 3) — só registrar o que foi realmente feito
+## Preenchido na v4
 
-- [ ] **Quebra da peça (4.3):** onde quebrou, causa e solução adotada (reimpressão? mais perímetros?)
-- [ ] **Tensão ajustada no XL4015 da placa do ESP32** (4.4) e dos servos — valores medidos
-- [ ] **Rastreamento automático** com lanterna ou ao sol: foi testado? resultado?
-- [ ] **Repouso noturno** no protótipo: foi observado?
-- [ ] Confirmar que os divisores dos LDRs estão no **3V3** do ESP32 (entradas não toleram 5 V)
-
-## Projeto
-
-- [ ] Software e método de fabricação da **PCI** (3.7)
-- [ ] Valores pagos: ESP32 + placa de expansão, MG996R, XL4015, bateria, painel, filamento (Tabela 2)
-
-## Firmware
-
-- [x] **P10** (`sentidoHorizontal`) e **P14** (`TOLERANCIA = 160`) aplicados ao `main.c` em 11/11/2026
-      e validados em simulação (+35% em junho, +49% em dezembro sobre a placa fixa).
-- [ ] **Gravar o `main.c` corrigido no ESP32 e testar no protótipo** (lanterna em arco com o painel
-      dos dois lados da vertical; conferir se o painel não "foge" com pouca luz). Preencher a linha
-      "Correções P10 e P14 no protótipo" da Tabela 3.
-- [ ] **P13:** espaçador de 25 mm no suporte dos LDRs?
+Orientador (Prof. Marcelo Bellodi) · custos de servos, XL4015, bateria e painel · XL4015 ajustado de
+12 V para 6 V · peça do suporte da placa quebrou no encaixe dos braços e foi reimpressa mais
+resistente · teste com lanterna (sentido invertido).
 
 ## Para a apresentação oral
 
-Sugestão de roteiro: problema (cosseno) → solução (rastreador + torre) → montagem e testes físicos
-(fotos do cap. 4) → simulador com o mesmo código (mostrar a página do celular dentro dele) → **a
-história dos erros** (P10, testes contaminados, sombra do painel, peça quebrada, regressões do ESP32)
-→ resultados → próximos passos. Figuras em `docs/relatorio/figuras/`.
+Roteiro sugerido: problema (cosseno) → solução (rastreador + torre) → montagem e testes físicos →
+simulador com o mesmo código (página do celular dentro dele) → **a história dos erros** (P10, testes
+contaminados, sombra do painel, peça quebrada, regressões do ESP32, lanterna) → próximos passos.

@@ -1,5 +1,6 @@
-"""Gera o relatório do PIM II — versão 3 (docs/relatorio/PIM_Torre_Solar_v3.docx).
-v3: correções P10 e P14 aplicadas ao main.c do ESP32 (a v2 as trazia como pendentes).
+"""Gera o relatório do PIM II — versão 4 (docs/relatorio/PIM_Torre_Solar_v4.docx).
+v3: correções P10 e P14 aplicadas ao main.c do ESP32. v4: dados do grupo (orientador, custos,
+XL4015 em 6 V, peça reimpressa, teste com lanterna).
 
 Uso: python tools/relatorio/gerar_relatorio.py   (requer python-docx)
 Antes: tools/relatorio/graficos.py, diagramas.py, fotos.py e tools/render/gerar_figuras_relatorio.sh.
@@ -20,7 +21,7 @@ from abnt_docx import Relatorio  # noqa: E402
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 FIG = os.path.join(RAIZ, 'docs', 'relatorio', 'figuras')
 DADOS = os.path.join(RAIZ, 'docs', 'relatorio', 'dados')
-SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v3.docx')
+SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v4.docx')
 C = WD_ALIGN_PARAGRAPH.CENTER
 
 
@@ -97,7 +98,7 @@ r.p(SUBTITULO, alin=C, recuo=False)
 r.espaco(2)
 nat = r.p('Trabalho apresentado ao Curso Superior de Tecnologia em Automação Industrial da Universidade '
           'Paulista – UNIP, Campus Sorocaba, como requisito parcial para obtenção de nota na disciplina de '
-          'Projeto Integrado Multidisciplinar (PIM II), sob orientação do Prof. [PREENCHER: nome do orientador].',
+          'Projeto Integrado Multidisciplinar (PIM II), sob orientação do Prof. Marcelo Bellodi.',
           recuo=False)
 nat.paragraph_format.left_indent = Cm(8)
 nat.paragraph_format.line_spacing_rule = 0
@@ -295,7 +296,7 @@ r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'F
     ['2', 'Servo MG996R (engrenagens metálicas)', 'Azimute (GPIO 18) e elevação (GPIO 19)'],
     ['1', 'Painel monocristalino 10 W', 'Gera a energia do sistema'],
     ['1', 'Bateria selada 12 V', 'Armazena a energia'],
-    ['2', 'Conversor *step-down* XL4015 (5 A)', 'Servos (6 V) e placa de controle'],
+    ['2', 'Conversor *step-down* XL4015 (5 A)', '12 V da bateria → 6 V (servos e placa de controle)'],
     ['—', 'Controlador de carga, conversor USB duplo, fusível (planejados)', 'Carga segura, saídas USB e proteção'],
 ], larguras=[1.3, 7.2, 7.5], quadro=True)
 r.p('Três cuidados merecem destaque: os servos não são alimentados pela placa de controle (cada MG996R pode '
@@ -362,13 +363,13 @@ r.tabela('Custos dos componentes', ['Item', 'Qtd.', 'Unit. (R$)', 'Total (R$)'],
     ['Sensor LDR 5 mm', '4', '0,45', '1,80'],
     ['Resistor 10 kΩ 1/4 W', '4', '0,05', '0,20'],
     ['Jumpers Dupont 20 cm (macho-fêmea e macho-macho)', '80', '0,05–0,06', '4,40'],
+    ['Servo MG996R', '2', '36,80', '73,60'],
+    ['Conversor XL4015', '2', '18,50', '37,00'],
+    ['Bateria selada 12 V', '1', '78,80', '78,80'],
+    ['Painel solar 10 W', '1', '39,24', '39,24'],
+    ['**Subtotal dos itens com valor informado**', '', '', '**235,04**'],
     ['ESP32 + placa de expansão', '1', '[PREENCHER]', '[PREENCHER]'],
-    ['Servo MG996R', '2', '[PREENCHER]', '[PREENCHER]'],
-    ['Conversor XL4015', '2', '[PREENCHER]', '[PREENCHER]'],
-    ['Bateria selada 12 V', '1', '[PREENCHER]', '[PREENCHER]'],
-    ['Painel solar 10 W', '1', '[PREENCHER]', '[PREENCHER]'],
     ['Filamento PLA', '—', '[PREENCHER]', '[PREENCHER]'],
-    ['**Total**', '', '', '**[PREENCHER]**'],
 ], fonte='Orçamento da loja de componentes e notas de compra do grupo, 2026.', larguras=[8.6, 1.6, 2.9, 2.9])
 
 # =====================================================================  4 TESTES FÍSICOS
@@ -389,17 +390,16 @@ r.p(f'Com a estrutura parcialmente montada, os dois eixos foram acionados (Figur
 r.figura(f('f_teste_servos.png'), 'Teste dos servos na pré-montagem: diferentes posições da trave',
          fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
 r.h2('4.3 Falha: quebra de peça impressa na montagem')
-r.p(f'Durante a montagem da trave, uma das peças impressas quebrou (Figura {r.prox_fig()}). Em (a) vê-se o braço '
-    'acoplado ao servo pelo *horn* metálico, preso por quatro parafusos, com uma fratura próxima à fixação com a '
-    'placa; em (b) e (c), o braço livre, do lado oposto ao servo, que se apoia em um eixo. Peças impressas são '
-    'mais frágeis entre camadas e nas regiões com furos e encaixes, justamente onde se concentram os esforços '
-    'de aperto dos parafusos. [PREENCHER: causa identificada e solução adotada — por exemplo, reimpressão com '
-    'mais perímetros e preenchimento, ou alteração da orientação de impressão].')
+r.p(f'Durante a montagem da trave, a peça de suporte da placa quebrou no encaixe dos braços (Figura {r.prox_fig()}). '
+    'Em (a) vê-se o braço acoplado ao servo pelo *horn* metálico, preso por quatro parafusos, e a fratura junto ao '
+    'encaixe; em (b) e (c), o braço livre, do lado oposto ao servo. Peças impressas são mais frágeis entre camadas '
+    'e nas regiões com furos e encaixes, justamente onde se concentram o aperto dos parafusos e o momento causado '
+    'pelo peso da placa. A peça foi **reimpressa em versão mais resistente** e a montagem prosseguiu.')
 r.figura(f('f_quebra.png'), 'Montagem da trave: braço do servo com fratura (a) e braço livre (b, c)',
          fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
 r.h2('4.4 Migração para o ESP32')
 r.p(f'Na etapa de testes físicos, o controle migrou do Arduino Nano para um ESP32 em placa de expansão com bornes '
-    f'(Figura {r.prox_fig()}a), alimentado por um XL4015 (b) [PREENCHER: tensão ajustada no XL4015 da placa]. A '
+    f'(Figura {r.prox_fig()}a), alimentado por um XL4015 (b) ajustado para converter os 12 V da bateria em 6 V. A '
     'gravação pela Arduino IDE terminou com 100% escrito e verificação do *hash* (c) — o tamanho gravado, cerca '
     'de 950 kB, coincide com a compilação do `main.c`. A troca trouxe o Wi-Fi, o ADC de 12 bits e mais memória, '
     'mas exigiu reescrever o firmware — o que, como mostra o capítulo 5, reintroduziu dois problemas.')
@@ -418,16 +418,33 @@ r.p(f'No teste (Figura {r.prox_fig()}), o celular conectou-se à rede da torre, 
     'manuais em modo automático ou durante o repouso noturno.')
 r.figura(f('f_celular.png'), 'Página de controle no celular (a) e teste da torre pela interface (b)',
          fonte='Captura de tela e quadro de vídeo do grupo, 2026.', largura=12.5)
-r.h2('4.6 Resultados')
+r.h2('4.6 Rastreamento automático com lanterna')
+r.p('No teste de rastreamento automático com uma lanterna, a torre reagiu à luz, mas **girou para o lado '
+    'contrário**, afastando o painel da lanterna em vez de apontá-lo para ela. O resultado mostra que a cadeia '
+    'sensor–controlador–atuador funciona, mas que o sentido da correção está invertido em relação à montagem '
+    'real — situação prevista no plano de testes, pois o sinal de cada eixo depende de como o servo e os '
+    'sensores foram montados. As causas possíveis, da mais simples à mais trabalhosa, são:')
+r.itens([
+    '**sentido de montagem do servo:** se o servo foi fixado espelhado em relação ao modelo, o sinal do eixo se inverte; corrige-se trocando `+=` por `-=` naquele eixo do `main.c`;',
+    '**divisor dos LDRs invertido:** com o LDR no lado do GND, mais luz produz tensão **menor**, o que inverte os dois eixos de uma vez;',
+    '**sensores trocados de posição** entre os pinos 34, 35, 32 e 33, o que inverte um eixo ou cruza os dois;',
+    '**P10:** o teste usou a versão anterior às correções; se a inversão ocorreu só no eixo horizontal e com o painel inclinado para um dos lados, é o defeito corrigido na seção 5.5.',
+])
+r.p('Para identificar a causa, recomenda-se repetir o teste iluminando um lado de cada vez e anotar qual eixo se '
+    'move e em que sentido. A migração para o ESP32 retirou do monitor serial as leituras individuais dos LDRs, '
+    'que existiam na versão do Nano; reincluí-las facilita esse diagnóstico. No simulador, as opções “inverter '
+    'servo” reproduzem cada hipótese.')
+
+r.h2('4.7 Resultados')
 r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'], [
-    ['Impressão e montagem mecânica', 'Parcial: peça da trave quebrou (seção 4.3)', 'Fotos e vídeo'],
+    ['Impressão e montagem mecânica', 'Aprovado após reimpressão da peça quebrada', 'Fotos e vídeo'],
     ['Movimento dos dois servos', 'Aprovado', 'Vídeo'],
     ['Gravação do firmware no ESP32', 'Aprovado (100%, *hash* verificado)', 'Vídeo'],
     ['Rede Wi-Fi e página no celular', 'Aprovado', 'Captura e vídeo'],
     ['Comando manual pelo celular', 'Aprovado', 'Vídeo'],
-    ['Rastreamento automático (lanterna ou Sol)', '[PREENCHER]', '—'],
+    ['Rastreamento automático com lanterna', 'Falha: girou para o lado contrário (seção 4.6)', 'Teste do grupo'],
     ['Repouso noturno', 'Validado em simulação (seção 5.6); físico [PREENCHER]', '—'],
-    ['Ajuste dos XL4015', '[PREENCHER: tensões medidas]', '—'],
+    ['Ajuste do XL4015', 'Aprovado: 12 V → 6 V', 'Teste do grupo'],
     ['Correções P10 e P14 no protótipo', 'Validadas em simulação; físico [PREENCHER]', '—'],
     ['Tensão do painel, carga da bateria e saídas USB', 'Pendente (controlador e módulo USB não adquiridos)', '—'],
 ], larguras=[6.0, 6.5, 3.5])
@@ -510,7 +527,8 @@ r.tabela('Síntese dos problemas, soluções e lições', ['Problema', 'Como foi
     ['P10 – Inversão horizontal', 'Simulador, Sol ao Sul', 'Regrediu e restaurado', 'Testar de novo após reescrever'],
     ['Testes contaminados', 'Resultados idênticos', 'Corrigido', 'Condição inicial conhecida'],
     ['P13 – Sombra do painel', 'Simulação de dias', 'Proposta', 'Integrar mecânica e eletrônica'],
-    ['Quebra da peça impressa', 'Montagem física', '[PREENCHER]', 'Reforçar regiões de esforço'],
+    ['Quebra da peça impressa', 'Montagem física', 'Reimpressa', 'Reforçar regiões de esforço'],
+    ['Lanterna: sentido invertido', 'Teste físico', 'Em diagnóstico', 'Validar o sentido de cada eixo'],
     ['P7 – Noite', 'Simulação da madrugada', 'Resolvido (ESP32)', 'Prever todos os estados'],
     ['P14 – Tolerância 12 bits', 'Simulação do ESP32', 'Corrigido', 'Revisar unidades ao trocar de hardware'],
 ], larguras=[4.6, 3.9, 3.0, 4.5], quadro=True)
@@ -565,8 +583,9 @@ r.ps(
 r.h1('9 CONCLUSÃO')
 r.ps(
     'O objetivo foi atendido nos níveis de projeto e simulação e parcialmente no protótipo físico. A estrutura '
-    'foi impressa e montada, os servos foram testados, o ESP32 foi programado e a torre é controlada pelo '
-    'celular por sua própria rede Wi-Fi. A captação com controlador de carga, as saídas USB e a PCI estão '
+    'foi impressa e montada — com a reimpressão de uma peça que quebrou —, os servos foram testados, o ESP32 '
+    'foi programado e a torre é controlada pelo celular por sua própria rede Wi-Fi. No teste com lanterna, o '
+    'rastreamento reagiu à luz, mas no sentido contrário, o que indica um sinal de eixo invertido a corrigir. A captação com controlador de carga, as saídas USB e a PCI estão '
     'projetadas, mas ainda não foram construídas nem testadas.',
     'O principal resultado, contudo, foi o método. A combinação de revisão, simulação do mesmo código e testes '
     'físicos permitiu encontrar uma inversão no algoritmo, erros de método nos testes, o sombreamento dos '
@@ -576,7 +595,8 @@ r.ps(
     'Como próximos passos, recomenda-se:',
 )
 r.itens([
-    'validar no protótipo as correções P10 e P14, já aplicadas ao `main.c` e verificadas em simulação;',
+    'diagnosticar o sentido invertido observado com a lanterna (seção 4.6), iluminando um lado de cada vez, e ajustar o sinal do eixo correspondente;',
+    'validar no protótipo as correções P10 e P14, já aplicadas ao `main.c` e verificadas em simulação;'
     'elevar o suporte dos LDRs em ≈ 25 mm (P13) e validar com lanterna rasante;',
     'reforçar ou reimprimir as peças da trave sujeitas a esforço;',
     'adquirir controlador de carga, fusível e módulo USB, fabricar a PCI e medir a energia real com e sem rastreamento.',
