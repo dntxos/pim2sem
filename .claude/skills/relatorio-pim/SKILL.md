@@ -52,6 +52,9 @@ praça), sempre rotuladas "Ilustração conceitual gerada por IA" — nunca como
 - Pipeline: `graficos.py` / `diagramas.py` / `fotos.py` → `gerar_relatorio.py` (v4) →
   `exportar_pdf.sh PIM_Torre_Solar_v4` (Word atualiza sumário/listas e exporta o PDF). Os números do
   texto são lidos de `docs/relatorio/dados/` — gere dados novos pelo simulador (`sim.traco`/`sim.salvar`).
+- **Sempre dois PDFs:** `PIM_Torre_Solar_vN.pdf` (alta resolução, para imprimir/encadernar) e
+  `PIM_Torre_Solar_vN.low.pdf` (≤ 10 MB, para submeter na plataforma). O `exportar_pdf.sh` já gera
+  o `.low.pdf` via `reduzir_pdf.py` (reamostra só as imagens; texto segue vetorial). Entregar os dois.
 - Salvar em `docs/relatorio/` (`PIM_Torre_Solar_vN.docx`) + exportar PDF para conferência visual;
   revisar as páginas renderizadas antes de entregar (quebras, figuras cortadas, órfãs).
 - Entregar junto um `docs/relatorio/PENDENCIAS.md` com tudo que o grupo precisa preencher/medir.

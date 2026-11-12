@@ -32,3 +32,5 @@ end tell
 OSA
 cp "$W/$NOME.docx" "$W/$NOME.pdf" docs/relatorio/
 echo "OK docs/relatorio/$NOME.pdf ($(pdfinfo "docs/relatorio/$NOME.pdf" | awk '/Pages/{print $2}') páginas)"
+# Versão reduzida para submissão (plataforma aceita no máximo 10 MB); o PDF acima é o de impressão.
+python3 tools/relatorio/reduzir_pdf.py "docs/relatorio/$NOME.pdf"
