@@ -1,9 +1,9 @@
 # Relatório — versão 5 (final): sem pendências
 
 O projeto está concluído (24/11/2026): protótipo montado, `main.c` final, conclusão definida.
-A v5 é a versão final, **sem marcadores `[PREENCHER]`**. Gerar com `gerar_relatorio.py` →
-`exportar_pdf.sh PIM_Torre_Solar_v5` (sai `.pdf` para impressão e `.low.pdf` ≤ 10 MB para
-submissão). Limite: 40 páginas.
+**v5 gerada:** `PIM_Torre_Solar_v5.pdf` (39 páginas, impressão) e `PIM_Torre_Solar_v5.low.pdf`
+(3,8 MB, submissão), sem marcadores `[PREENCHER]`. Regenerar com
+`uv run --with python-docx python tools/relatorio/gerar_relatorio.py` → `exportar_pdf.sh PIM_Torre_Solar_v5`.
 
 ## O que muda da v4 para a v5
 

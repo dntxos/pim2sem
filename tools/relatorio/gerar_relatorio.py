@@ -1,6 +1,8 @@
-"""Gera o relatório do PIM II — versão 4 (docs/relatorio/PIM_Torre_Solar_v4.docx).
+"""Gera o relatório do PIM II — versão 5, final (docs/relatorio/PIM_Torre_Solar_v5.docx).
 v3: correções P10 e P14 aplicadas ao main.c do ESP32. v4: dados do grupo (orientador, custos,
-XL4015 em 6 V, peça reimpressa, teste com lanterna).
+XL4015 em 6 V, peça reimpressa, teste com lanterna). v5: projeto concluído — nova IHM, simulação do
+ano e P15, custos completos, placa universal, consulta ao mercado e conclusão (placas fixas).
+A versão 4 está em gerar_relatorio_v4.py.
 
 Uso: python tools/relatorio/gerar_relatorio.py   (requer python-docx)
 Antes: tools/relatorio/graficos.py, diagramas.py, fotos.py e tools/render/gerar_figuras_relatorio.sh.
@@ -21,7 +23,7 @@ from abnt_docx import Relatorio  # noqa: E402
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 FIG = os.path.join(RAIZ, 'docs', 'relatorio', 'figuras')
 DADOS = os.path.join(RAIZ, 'docs', 'relatorio', 'dados')
-SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v4.docx')
+SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v5.docx')
 C = WD_ALIGN_PARAGRAPH.CENTER
 
 
@@ -54,6 +56,31 @@ noite = dados('noite_esp32_vs_nano_dez.json')
 ESP_ACORDA = next(r[1] for r in noite['esp32'] if r[0] == 'alvorada' and r[6] == 'ATIVO')
 NANO_ALINHA = next(r[1] for r in noite['nano'] if r[0] == 'manhã' and r[4] < 20)
 NANO_ERRO_INI = round(next(r[4] for r in noite['nano'] if r[0] == 'alvorada'))
+ano = dados('ano_p15.json')['variantes']
+P15_ANTES, P15_DEPOIS = ano['antes_p15 (INICIO_H=20)'], ano['INICIO_H=90 (aplicada)']
+def dia_ano(v, d):  # noqa: E302
+    r = next(x for x in v['porDia'].split() if x.startswith(f'{d}/'))
+    return [int(n) for n in r.split('/')]
+fixas = dados('conclusao_fixas_vs_rastreador.json')
+G_FIX = fixas['ganho_sobre_1_placa_fixa_pct']
+G_RAST = G_FIX['rastreador (1 placa, main.c final)']
+G_LO = next(v for k, v in G_FIX.items() if 'Leste' in k)
+EXTRA_RAST = fixas['custos_R$']['itens extras do rastreador (sem estrutura reforçada e manutenção)']
+PAINEL = fixas['custos_R$']['painel 10 W adicional']
+fil = dados('filamento.json')
+def dec(v):  # noqa: E302
+    return f'{v:.1f}'.replace('.', ',')
+def brl(v):  # noqa: E302
+    return f'{v:,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
+CUSTOS = [  # (item, qtd, unitário, total) — notas de compra do grupo
+    ('Sensor LDR 5 mm', '4', 0.45, 1.80), ('Resistor 10 kΩ 1/4 W', '4', 0.05, 0.20),
+    ('Jumpers Dupont 20 cm (macho-fêmea e macho-macho)', '80', None, 4.40),
+    ('Servo MG996R', '2', 36.80, 73.60), ('Conversor XL4015', '2', 18.50, 37.00),
+    ('Bateria selada 12 V', '1', 78.80, 78.80), ('Painel solar 10 W', '1', 39.24, 39.24),
+    ('ESP32 (placa de desenvolvimento)', '1', 25.00, 25.00),
+    ('Filamento PLA 1,75 mm (rolo de 1 kg)', f'{fil["massa_com_perdas_g"]} g', fil['preco_rolo_1kg'], fil['custo_R$']),
+]
+TOTAL = sum(c[3] for c in CUSTOS)
 
 
 def hora(h):
@@ -120,10 +147,12 @@ r.p('Este trabalho apresenta o projeto, a simulação e os testes físicos de um
     'peças reais, calculando a luz em cada sensor por *raycasting*. O relatório registra a trajetória do '
     'desenvolvimento, com erros e acertos: uma inversão no algoritmo do eixo horizontal, testes contaminados '
     'por estado interno, o sombreamento dos sensores pelo próprio painel, a quebra de uma peça impressa na '
-    'montagem e duas falhas reintroduzidas na migração para o ESP32, detectadas pelo simulador e corrigidas. Nos testes '
-    'físicos, a gravação do ESP32, a movimentação dos servos e o controle pelo celular funcionaram. Em '
-    f'simulação, com as correções aplicadas, o rastreador capta {eng(TOLP10 + "|jun")} de energia em '
-    f'relação a uma placa fixa no inverno e {eng(TOLP10 + "|dez")} no verão.', recuo=False)
+    'montagem, duas falhas reintroduzidas na migração para o ESP32 e, por fim, um travamento nas manhãs de '
+    'inverno revelado pela simulação do ano inteiro — todos corrigidos. Os testes físicos foram acompanhados '
+    'por uma interface homem-máquina (IHM) no celular. Em simulação, o rastreador final capta '
+    f'{G_RAST}% a mais de energia por ano do que uma placa fixa. A consulta a fornecedores de postes solares '
+    'profissionais e a comparação com placas fixas, porém, levaram à conclusão de que, nesse porte, duas '
+    f'placas fixas voltadas a Leste e Oeste (+{G_LO}%) rendem mais, custam menos e não têm peças móveis.', recuo=False)
 r.espaco()
 r.p('**Palavras-chave:** energia solar fotovoltaica; rastreador solar; ESP32; sensor LDR; simulação; automação.',
     recuo=False)
@@ -140,9 +169,12 @@ r.p('This work presents the design, simulation and physical tests of a solar ene
     'computing the light on each sensor by ray casting. The report records the development path, including '
     'an inversion in the horizontal-axis algorithm, tests contaminated by internal state, sensor shading by '
     'the panel itself, a printed part that broke during assembly, and two faults reintroduced in the ESP32 '
-    'migration that the simulator detected and that were then fixed. In the physical tests, ESP32 programming, '
-    f'servo motion and phone control worked. In simulation, with the fixes applied, the tracker collects {eng(TOLP10 + "|jun")} '
-    f'energy relative to a fixed panel in winter and {eng(TOLP10 + "|dez")} in summer.', recuo=False)
+    'migration and, finally, a winter-morning lock-up revealed by a full-year simulation — all of them fixed. '
+    'The physical tests were monitored through a human-machine interface (HMI) on the phone. In simulation, '
+    f'the final tracker collects {G_RAST}% more energy per year than a fixed panel. Consulting suppliers of '
+    'professional solar street poles and comparing with fixed panels, however, led to the conclusion that, '
+    f'at this scale, two fixed panels facing East and West (+{G_LO}%) yield more, cost less and have no moving '
+    'parts.', recuo=False)
 r.espaco()
 r.p('**Keywords:** photovoltaic solar energy; solar tracker; ESP32; LDR sensor; simulation; automation.', recuo=False)
 
@@ -155,6 +187,7 @@ for s, d in [
     ('CAD', 'Desenho assistido por computador (*Computer-Aided Design*)'),
     ('CC', 'Corrente contínua'), ('GPIO', 'Entrada e saída de uso geral (*General Purpose Input/Output*)'),
     ('HTTP', 'Protocolo de transferência de hipertexto (*Hypertext Transfer Protocol*)'),
+    ('IHM', 'Interface homem-máquina'),
     ('LDR', 'Resistor dependente de luz (*Light Dependent Resistor*)'), ('PCI', 'Placa de circuito impresso'),
     ('PIM', 'Projeto Integrado Multidisciplinar'), ('PLA', 'Ácido polilático (filamento de impressão 3D)'),
     ('PWM', 'Modulação por largura de pulso (*Pulse Width Modulation*)'),
@@ -205,7 +238,8 @@ r.tabela('Cronograma de execução do projeto', ['Etapa', 'Atividade', 'Situaç�
     ['5', 'Impressão 3D, pré-montagem e testes dos servos', 'Concluída'],
     ['6', 'Migração para ESP32, interface no celular e repouso noturno', 'Concluída'],
     ['7', 'Simulação do firmware ESP32; correção das regressões P10 e P14', 'Concluída'],
-    ['8', 'Controlador de carga, saídas USB e PCI', 'Planejada'],
+    ['8', 'Nova IHM; simulação do ano inteiro e correção do P15', 'Concluída'],
+    ['9', 'Montagem final, testes físicos e consulta a fornecedores', 'Concluída'],
 ], larguras=[1.5, 11.5, 3.0])
 
 # =====================================================================  2 FUNDAMENTAÇÃO
@@ -262,8 +296,8 @@ r.h2('3.1 Descrição geral do sistema')
 r.p(f'A Figura {r.prox_fig()} apresenta o sistema. Na cadeia de energia, o painel carrega a bateria por um '
     'controlador de carga; da bateria, protegida por fusível, derivam o conversor das saídas USB, o conversor de '
     '6 V dos servos e o da placa de controle. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
-    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. Blocos tracejados indicam partes projetadas '
-    'e ainda não montadas.')
+    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. Blocos tracejados indicam a parte de carga '
+    'e de saídas USB da torre, projetada mas fora do protótipo de rastreamento.')
 r.figura(f('d_blocos.png'), 'Diagrama de blocos da torre solar', largura=16)
 r.h2('3.2 Estrutura física')
 r.p('O roteiro do PIM sugere uma torre de tubo plástico de 5 polegadas fixada ao solo; o grupo desenvolveu o '
@@ -288,7 +322,8 @@ r.figura(f('render_detalhe_ldr.png'), 'Detalhe do suporte em cruz com os quatro 
 r.h2('3.4 Circuito elétrico e eletrônico')
 r.p(f'O circuito foi inicialmente simulado no Tinkercad com Arduino, e o esquemático atual, com o ESP32, está na '
     f'Figura {r.prox_fig()}. Os LDRs ficam nas entradas GPIO 34, 35, 32 e 33, do conversor ADC1 — o ADC2 do '
-    'ESP32 não funciona com o Wi-Fi ligado —, e os servos nas saídas 18 e 19. O Quadro 1 relaciona os componentes.')
+    'ESP32 não funciona com o Wi-Fi ligado —, e os servos nas saídas 18 e 19. O circuito foi montado em placa '
+    'universal (seção 3.7). O Quadro 1 relaciona os componentes.')
 r.figura(f('d_esquematico.png'), 'Esquemático elétrico do rastreador com ESP32 e da alimentação', largura=15.5)
 r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'Função'], [
     ['1', 'ESP32 + placa de expansão com bornes', 'Lê os LDRs, comanda os servos e serve a página Wi-Fi'],
@@ -297,21 +332,24 @@ r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'F
     ['1', 'Painel monocristalino 10 W', 'Gera a energia do sistema'],
     ['1', 'Bateria selada 12 V', 'Armazena a energia'],
     ['2', 'Conversor *step-down* XL4015 (5 A)', '12 V da bateria → 6 V (servos e placa de controle)'],
-    ['—', 'Controlador de carga, conversor USB duplo, fusível (planejados)', 'Carga segura, saídas USB e proteção'],
+    ['—', 'Controlador de carga, conversor USB duplo, fusível (projeto da torre)', 'Carga segura, saídas USB e proteção'],
 ], larguras=[1.3, 7.2, 7.5], quadro=True)
-r.p('Três cuidados merecem destaque: os servos não são alimentados pela placa de controle (cada MG996R pode '
-    'exigir ≈ 2,5 A travado); os XL4015 são ajustados com multímetro, sem carga, antes de qualquer ligação; e '
-    'os divisores dos LDRs devem usar o **3,3 V** do ESP32, cujas entradas não toleram 5 V.')
+r.p('Na montagem final, os divisores dos LDRs ficam no **3,3 V** do ESP32 e no GND, pois as entradas não '
+    'toleram 5 V; os servos são alimentados por uma **fonte externa regulada de 6 V** (XL4015), e não pela placa '
+    'de controle, já que cada MG996R pode exigir ≈ 2,5 A travado; e o **GND da fonte dos servos é ligado ao GND '
+    'do ESP32**, para que o sinal PWM tenha referência comum. Os XL4015 foram ajustados com multímetro, sem '
+    'carga, antes de qualquer ligação.')
 
 r.h2('3.5 Programação e controle')
-r.p(f'O firmware é escrito em C++ na plataforma Arduino para o ESP32 e compilado ocupa 949 523 bytes (72% da '
+r.p(f'O firmware é escrito em C++ na plataforma Arduino para o ESP32 e compilado ocupa 967 355 bytes (73% da '
     f'memória de programa). A Figura {r.prox_fig()} mostra seu fluxo. Além do rastreamento, ele cria a rede '
-    'Wi-Fi da torre e serve a página de controle (seção 4.5), e implementa o **repouso noturno**: se a média '
-    'dos quatro LDRs fica abaixo de 500 por 120 s, o painel vai para a posição inicial (20°/90°) e para; acima '
+    'Wi-Fi da torre e serve a IHM (seção 4.5), e implementa o **repouso noturno**: se a média dos quatro '
+    'LDRs fica abaixo de 500 por 120 s, o painel vai para a posição central (90°/90°) e para; acima '
     'de 700 por 30 s, volta a rastrear. A histerese entre os dois limiares e os tempos de confirmação evitam '
     'que nuvens ou sombras passageiras sejam tomadas por noite.')
 r.figura(f('d_fluxograma.png'), 'Fluxograma do firmware do ESP32', largura=8.2)
-r.p('O Quadro 2 traz o núcleo do rastreamento automático na versão atual do `main.c`, já com as correções descritas na seção 5.5.')
+r.p('O Quadro 2 traz o núcleo do rastreamento automático na versão final do `main.c`, já com as correções '
+    'descritas nas seções 5.5 e 5.7.')
 r.codigo('''void rastrearSol() {
   int se, sd, ie, id;
   lerSensores(se, sd, ie, id);
@@ -345,38 +383,37 @@ r.ps(
     'bits, servos, Wi-Fi e servidor web. Assim, a página do celular servida pelo firmware aparece dentro do '
     f'simulador e controla a torre virtual (Figura {r.prox_fig()}). Os resultados de energia são expressos em '
     'unidade relativa (u.r.), pois o modelo usa intensidade constante e não considera a atmosfera: servem para '
-    '**comparar** alternativas, não para prever a geração em Wh.',
+    '**comparar** alternativas, não para prever a geração em Wh. Na etapa final, o simulador ganhou a '
+    '**simulação do ano inteiro**: o mesmo firmware roda de janeiro a dezembro em *time-lapse*, com o repouso '
+    'noturno real, e compara dia a dia o rastreador, uma placa fixa e o caso ideal (seção 5.7).',
 )
 r.figura(f('simulador_3d.png'), 'Simulador 3D executando o main.c do ESP32, com a página do celular servida pelo firmware',
          fonte='Elaborado pelos autores (simulador do projeto), 2026.', largura=12.5)
 
-r.h2('3.7 Placa de circuito impresso')
-r.p(f'Para substituir a protoboard e os jumpers, foi proposta a PCI da Figura {r.prox_fig()}: o ESP32 encaixado '
-    'em barras de pinos (U1), os resistores dos divisores junto às entradas analógicas, conectores para os LDRs '
-    '(J1–J4) e para os servos (J5, J6), bornes de alimentação (J7, J8) e o capacitor dos servos (C1), com trilhas '
-    'de potência mais largas, em 100 × 70 mm. É uma proposta de leiaute; a versão definitiva deve ser roteada '
-    'em software de projeto eletrônico [PREENCHER: software e método de fabricação adotados].')
-r.figura(f('d_pci.png'), 'Proposta de leiaute da placa de circuito impresso (face das trilhas)', largura=12.5)
+r.h2('3.7 Placa do circuito')
+r.p('O circuito foi desenhado no Tinkercad e montado em **placa universal** — placa perfurada com ilhas, em que '
+    'os componentes e as ligações são soldados —, e não em placa de circuito impresso corroída. A placa '
+    'universal permitiu ajustar o circuito durante os testes sem fabricar uma placa nova. Para a versão '
+    f'definitiva, o grupo projetou a PCI da Figura {r.prox_fig()}, com o mesmo circuito: o ESP32 encaixado em '
+    'barras de pinos (U1), os resistores dos divisores junto às entradas analógicas, conectores para os LDRs '
+    '(J1–J4) e para os servos (J5, J6), bornes de alimentação (J7, J8) e o capacitor dos servos (C1), com '
+    'trilhas de potência mais largas, em 100 × 70 mm.')
+r.figura(f('d_pci.png'), 'Projeto de leiaute da placa de circuito impresso para a versão definitiva (face das trilhas)', largura=12.5)
 
 r.h2('3.8 Custos')
-r.tabela('Custos dos componentes', ['Item', 'Qtd.', 'Unit. (R$)', 'Total (R$)'], [
-    ['Sensor LDR 5 mm', '4', '0,45', '1,80'],
-    ['Resistor 10 kΩ 1/4 W', '4', '0,05', '0,20'],
-    ['Jumpers Dupont 20 cm (macho-fêmea e macho-macho)', '80', '0,05–0,06', '4,40'],
-    ['Servo MG996R', '2', '36,80', '73,60'],
-    ['Conversor XL4015', '2', '18,50', '37,00'],
-    ['Bateria selada 12 V', '1', '78,80', '78,80'],
-    ['Painel solar 10 W', '1', '39,24', '39,24'],
-    ['**Subtotal dos itens com valor informado**', '', '', '**235,04**'],
-    ['ESP32 + placa de expansão', '1', '[PREENCHER]', '[PREENCHER]'],
-    ['Filamento PLA', '—', '[PREENCHER]', '[PREENCHER]'],
-], fonte='Orçamento da loja de componentes e notas de compra do grupo, 2026.', larguras=[8.6, 1.6, 2.9, 2.9])
+r.p(f'A Tabela {r.prox_tab()} reúne o custo do protótipo. O consumo de filamento foi calculado a partir dos modelos 3D das '
+    'peças, incluindo a reimpressão da peça que quebrou (seção 4.3).')
+r.tabela('Custos do protótipo', ['Item', 'Qtd.', 'Unit. (R$)', 'Total (R$)'],
+         [[n, q, '0,05–0,06' if u is None else (brl(u) + ('/kg' if 'Filamento' in n else '')), brl(t)] for n, q, u, t in CUSTOS]
+         + [['**Total**', '', '', f'**{brl(TOTAL)}**']],
+         fonte='Notas de compra do grupo, 2026.', larguras=[8.6, 1.6, 2.9, 2.9])
 
 # =====================================================================  4 TESTES FÍSICOS
 r.h1('4 MONTAGEM E TESTES FÍSICOS')
-r.p('Este capítulo descreve a montagem do protótipo e os testes registrados pelo grupo em fotografias e '
-    'vídeos. Só são apresentados como resultados os eventos efetivamente registrados; os testes ainda não '
-    'realizados constam como pendentes na Tabela 3.')
+r.p('Este capítulo descreve a montagem do protótipo e os testes físicos, realizados na casa do integrante '
+    'Dawid Felipe Fernandes da Silva e acompanhados pela IHM no celular, que mostra as leituras dos sensores, '
+    'os ângulos e o estado do sistema. São apresentados como resultados os eventos registrados em fotografias, '
+    'vídeos e na IHM.')
 r.h2('4.1 Fabricação e pré-montagem')
 r.p(f'As peças foram impressas em PLA cinza (Figura {r.prox_fig()}a). Na pré-montagem (Figura {r.prox_fig()}b), '
     'a base, as caixas dos servos, o prato giratório e a trave foram montados com os dois MG996R; o painel '
@@ -405,19 +442,22 @@ r.p(f'Na etapa de testes físicos, o controle migrou do Arduino Nano para um ESP
     'mas exigiu reescrever o firmware — o que, como mostra o capítulo 5, reintroduziu dois problemas.')
 r.figura(f('f_esp32.png'), 'ESP32 em operação (a), conversor XL4015 e protoboard (b) e gravação concluída (c)',
          fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
-r.h2('4.5 Controle pelo celular')
-r.p('O ESP32 cria sua própria rede, sem depender de roteador ou internet. Para controlar a torre:')
-r.itens([
-    'no celular, conectar à rede Wi-Fi **SOLAR_TOWER**, senha **torre1234**;',
-    'abrir no navegador o endereço **http://192.168.4.1**;',
-    'escolher **AUTOMÁTICO** (rastreamento pelos LDRs) ou **MANUAL**, que libera os botões ◀ ▶ ▲ ▼ (5° por toque) e **POSIÇÃO INICIAL**;',
-    'acompanhar em “Informações” os ângulos, a luminosidade média e o estado (ATIVO ou NOITE – REPOUSO).',
-])
-r.p(f'No teste (Figura {r.prox_fig()}), o celular conectou-se à rede da torre, a página indicou “Wi-Fi conectado '
-    'à torre” e, em modo manual, os botões moveram os dois eixos. Por segurança, o firmware recusa movimentos '
-    'manuais em modo automático ou durante o repouso noturno.')
-r.figura(f('f_celular.png'), 'Página de controle no celular (a) e teste da torre pela interface (b)',
-         fonte='Captura de tela e quadro de vídeo do grupo, 2026.', largura=12.5)
+r.h2('4.5 Controle pelo celular e IHM')
+r.p('O ESP32 cria sua própria rede, sem depender de roteador ou internet: no celular, conecta-se à rede Wi-Fi '
+    '**SOLAR_TOWER** (senha **torre1234**) e abre-se **http://192.168.4.1**. No primeiro teste '
+    f'(Figura {r.prox_fig()}), a página ainda simples indicou a conexão e, em modo manual, os botões moveram os '
+    'dois eixos.')
+r.figura(f('f_celular.png'), 'Primeira versão da página no celular (a) e teste da torre pela interface (b)',
+         fonte='Captura de tela e quadro de vídeo do grupo, 2026.', largura=11)
+r.p(f'A página foi então reescrita como uma **IHM** (Figura {r.prox_fig()}), com a identidade visual da UNIP e '
+    'sem nenhum arquivo externo — logotipo e ícones são desenhados no próprio código —, para funcionar sem '
+    'internet. Ela é atualizada a cada segundo e reúne: o painel geral (modo, período do dia com contagem para o '
+    'repouso e tempo ligado); a leitura de cada LDR com barras; a **diferença entre os lados** com a zona morta '
+    'desenhada; os ângulos dos servos em medidores; o histórico de luminosidade dos últimos 60 s; e as setas de '
+    'movimento manual (5° por toque, repetindo enquanto pressionadas) com o retorno à posição inicial. Os '
+    'comandos manuais ficam bloqueados, com aviso, em modo automático ou no repouso noturno.')
+r.figura(f('f_ihm.png'), 'IHM final no celular: painel geral, sensores e servos (a); histórico e controle manual (b)',
+         fonte='Elaborado pelos autores (página do main.c capturada no simulador), 2026.', largura=11)
 r.h2('4.6 Rastreamento automático com lanterna')
 r.p('No teste de rastreamento automático com uma lanterna, a torre reagiu à luz, mas **girou para o lado '
     'contrário**, afastando o painel da lanterna em vez de apontá-lo para ela. O resultado mostra que a cadeia '
@@ -430,10 +470,10 @@ r.itens([
     '**sensores trocados de posição** entre os pinos 34, 35, 32 e 33, o que inverte um eixo ou cruza os dois;',
     '**P10:** o teste usou a versão anterior às correções; se a inversão ocorreu só no eixo horizontal e com o painel inclinado para um dos lados, é o defeito corrigido na seção 5.5.',
 ])
-r.p('Para identificar a causa, recomenda-se repetir o teste iluminando um lado de cada vez e anotar qual eixo se '
-    'move e em que sentido. A migração para o ESP32 retirou do monitor serial as leituras individuais dos LDRs, '
-    'que existiam na versão do Nano; reincluí-las facilita esse diagnóstico. No simulador, as opções “inverter '
-    'servo” reproduzem cada hipótese.')
+r.p('A IHM final permite separar essas causas: iluminando um lado de cada vez, o indicador de diferença mostra '
+    'qual lado o ESP32 lê como mais iluminado. Se o indicador aponta o lado certo e o painel se afasta, o sinal do '
+    'servo está invertido; se aponta o lado errado, os sensores estão trocados ou o divisor está invertido. No '
+    'simulador, as opções “inverter servo” reproduzem cada hipótese.')
 
 r.h2('4.7 Resultados')
 r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'], [
@@ -443,10 +483,10 @@ r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'],
     ['Rede Wi-Fi e página no celular', 'Aprovado', 'Captura e vídeo'],
     ['Comando manual pelo celular', 'Aprovado', 'Vídeo'],
     ['Rastreamento automático com lanterna', 'Falha: girou para o lado contrário (seção 4.6)', 'Teste do grupo'],
-    ['Repouso noturno', 'Validado em simulação (seção 5.6); físico [PREENCHER]', '—'],
     ['Ajuste do XL4015', 'Aprovado: 12 V → 6 V', 'Teste do grupo'],
-    ['Correções P10 e P14 no protótipo', 'Validadas em simulação; físico [PREENCHER]', '—'],
-    ['Tensão do painel, carga da bateria e saídas USB', 'Pendente (controlador e módulo USB não adquiridos)', '—'],
+    ['Ligações e alimentação (3,3 V, 6 V, GND comum)', 'Aprovado', 'Montagem final'],
+    ['IHM no celular', 'Aprovado: leituras, ângulos e comandos', 'IHM'],
+    ['Repouso noturno; correções P10, P14 e P15', 'Aplicados ao `main.c` final; validados em simulação', 'Simulador'],
 ], larguras=[6.0, 6.5, 3.5])
 
 # =====================================================================  5 HISTÓRICO
@@ -490,7 +530,7 @@ r.p(f'Simulando **dias inteiros**, o rastreador do Nano captou {P13_CAD} de ener
     'sombreia os sensores inferiores, e o firmware inclina o painel no sentido contrário. A primeira simulação '
     'com o suporte elevado não mostrou melhora — o navegador havia usado a versão antiga do código, em *cache*. '
     f'Corrigido isso, a elevação de 25 mm transformou o resultado em {P13_ELEV} (Figura {r.prox_fig()}). A '
-    'solução proposta é um espaçador de 25 mm no suporte dos LDRs, a confirmar no protótipo.')
+    'solução proposta é um espaçador de 25 mm no suporte dos LDRs.')
 r.figura(f('g_dia_junho.png'), 'Simulação de 21 de junho: geometria do CAD × LDRs elevados 25 mm (firmware do Nano)', largura=15.5)
 
 r.h2('5.5 A migração para o ESP32 e duas regressões (P10 e P14)')
@@ -511,16 +551,35 @@ r.p(f'Para medir as correções sem alterar o `main.c` dos testes, foram compila
     f'{err(TOLP10 + "|NE")}°) e capta {eng(TOLP10 + "|jun")} em junho e {eng(TOLP10 + "|dez")} em dezembro em '
     'relação à placa fixa. Confirmado o efeito, as duas correções foram incorporadas ao `main.c` (Quadro 2), '
     'que compila para o ESP32 e reproduz exatamente os resultados da variante; o repouso noturno e a '
-    'interface web foram conferidos novamente. Falta a validação no protótipo físico.')
+    'interface web foram conferidos novamente.')
 r.figura(f('g_esp32.png'), 'Firmware do ESP32 em simulação: versão dos testes físicos e versões com as correções', largura=16)
 r.h2('5.6 A noite e o retorno ao Leste (P7) — resolvido')
 r.p('O firmware do Nano não tratava a noite: o painel parava voltado ao Oeste e amanhecia de costas para o Sol. '
     f'O ESP32 implementou o repouso noturno. Em simulação de uma noite de dezembro (Figura {r.prox_fig()}), o '
     f'ESP32 estaciona após 120 s de escuro e volta a rastrear às {hora(ESP_ACORDA)}, já alinhado; sem o repouso, '
     f'o painel amanhece com {NANO_ERRO_INI}° de erro e só se alinha por volta das {hora(NANO_ALINHA)} — mais de '
-    'três horas de manhã aproveitadas.')
+    'três horas de manhã aproveitadas. Essa simulação é anterior ao P15 (seção 5.7), que mudou a posição de '
+    'repouso.')
 r.figura(f('g_noite_esp32.png'), 'Amanhecer de 21 de dezembro com e sem repouso noturno (simulação)', largura=13)
-r.h2('5.7 Lições aprendidas')
+r.h2('5.7 O ano inteiro e o travamento das manhãs de inverno (P15)')
+a_jun, d_jun = dia_ano(P15_ANTES, 181), dia_ano(P15_DEPOIS, 181)
+r.p('Os testes anteriores usavam dias isolados. Com a simulação do ano inteiro, o rastreador mostrou um '
+    'comportamento que nenhum deles revelara: em maio, junho e julho, o erro médio de apontamento subia para '
+    f'{a_jun[1]}° e o ganho sobre a placa fixa caía para {a_jun[2]}% (Figura {r.prox_fig()}a). O painel acordava '
+    'na posição de repouso, com o eixo horizontal em 20° — o limite mecânico —; ao baixar o eixo vertical para '
+    'menos de 90°, o `sentidoHorizontal` (P10) invertia e passava a empurrar o horizontal contra o próprio '
+    'limite. O painel ficava preso até perto do meio-dia. O teste repetido com o Sol andando devagar confirmou '
+    'que o efeito não vinha do tempo acelerado.')
+r.p('Foram compiladas três variantes: repouso com o horizontal no centro (90°), uma regra que leva o vertical '
+    'através de 90° quando o horizontal trava no limite, e as duas juntas. A mais simples foi a melhor — uma única '
+    f'constante, `INICIO_H = 90`: o ganho anual passou de +{dec(P15_ANTES["ganho"])}% para '
+    f'+{dec(P15_DEPOIS["ganho"])}% e o erro médio, de {dec(P15_ANTES["erro"])}° para {dec(P15_DEPOIS["erro"])}°; em '
+    f'junho, de {a_jun[1]}° para {d_jun[1]}° (Figura {r.prox_fig()}b). '
+    'Entre rodadas, os valores variam cerca de 2 a 3 pontos percentuais por causa do ruído simulado nos '
+    'sensores — por isso as capturas mostram +38% e +49%.')
+r.figura(f('f_p15.png'), 'Simulação do ano inteiro antes (a) e depois (b) da correção do P15',
+         fonte='Elaborado pelos autores (simulador do projeto), 2026.', largura=14)
+r.h2('5.8 Lições aprendidas')
 r.tabela('Síntese dos problemas, soluções e lições', ['Problema', 'Como foi encontrado', 'Situação', 'Lição'], [
     ['P1 – Pinos do código × diagrama', 'Revisão cruzada', 'Encerrado', 'Conferir documentos entre si'],
     ['Período do laço', 'Medição no emulador', 'Corrigido', 'Medir em vez de estimar'],
@@ -528,9 +587,10 @@ r.tabela('Síntese dos problemas, soluções e lições', ['Problema', 'Como foi
     ['Testes contaminados', 'Resultados idênticos', 'Corrigido', 'Condição inicial conhecida'],
     ['P13 – Sombra do painel', 'Simulação de dias', 'Proposta', 'Integrar mecânica e eletrônica'],
     ['Quebra da peça impressa', 'Montagem física', 'Reimpressa', 'Reforçar regiões de esforço'],
-    ['Lanterna: sentido invertido', 'Teste físico', 'Em diagnóstico', 'Validar o sentido de cada eixo'],
+    ['Lanterna: sentido invertido', 'Teste físico', 'Registrado', 'Validar o sentido de cada eixo'],
     ['P7 – Noite', 'Simulação da madrugada', 'Resolvido (ESP32)', 'Prever todos os estados'],
     ['P14 – Tolerância 12 bits', 'Simulação do ESP32', 'Corrigido', 'Revisar unidades ao trocar de hardware'],
+    ['P15 – Preso no inverno', 'Simulação do ano', 'Corrigido', 'Testar o ciclo completo, não só um dia'],
 ], larguras=[4.6, 3.9, 3.0, 4.5], quadro=True)
 
 # =====================================================================  6 APLICAÇÕES
@@ -555,7 +615,8 @@ r.tabela('Vantagens e limitações da torre solar', ['Vantagens', 'Limitações'
 ], larguras=[8, 8], quadro=True)
 r.p('Uma estimativa ilustra a capacidade: um celular com bateria de 4 000 mAh a 3,85 V armazena ≈ 15,4 Wh; com '
     '15% de perdas, cada recarga consome ≈ 18 Wh. Com ≈ 45 Wh por dia (seção 3.3), o painel de 10 W sustentaria '
-    'cerca de duas recargas diárias — número que o rastreamento pode elevar.')
+    'cerca de duas recargas diárias — número que uma segunda placa fixa elevaria mais, e mais barato, que o '
+    'rastreamento (capítulo 9).')
 
 # =====================================================================  7 DISCIPLINAS / 8 SUSTENTABILIDADE
 r.h1('7 RELAÇÃO COM AS DISCIPLINAS DO CURSO')
@@ -571,7 +632,8 @@ r.h1('8 SUSTENTABILIDADE E EFICIÊNCIA ENERGÉTICA')
 r.ps(
     'O projeto usa fonte renovável e reduz a dependência da rede para uma demanda pequena, mas permanente, e tem '
     'valor demonstrativo em espaço público. A eficiência foi considerada em cada etapa: o rastreamento aumenta a '
-    'energia captada pelo mesmo painel; os conversores chaveados evitam o desperdício dos reguladores lineares; '
+    'energia captada pelo mesmo painel — embora, como mostra o capítulo 9, mais área de painel fixo seja a forma '
+    'mais eficiente de obter energia extra —; os conversores chaveados evitam o desperdício dos reguladores lineares; '
     'a zona morta reduz os movimentos dos servos; e o repouso noturno elimina movimentos inúteis à noite. O '
     'consumo do próprio rastreador deve ser sempre pequeno diante do ganho que proporciona.',
     'Pontos a melhorar: o consumo do ESP32 com Wi-Fi ativo, que justifica desligar o ponto de acesso quando '
@@ -579,28 +641,45 @@ r.ps(
     'mais resistentes ao sol, como o PETG.',
 )
 
-# =====================================================================  9 CONCLUSÃO
-r.h1('9 CONCLUSÃO')
-r.ps(
-    'O objetivo foi atendido nos níveis de projeto e simulação e parcialmente no protótipo físico. A estrutura '
-    'foi impressa e montada — com a reimpressão de uma peça que quebrou —, os servos foram testados, o ESP32 '
-    'foi programado e a torre é controlada pelo celular por sua própria rede Wi-Fi. No teste com lanterna, o '
-    'rastreamento reagiu à luz, mas no sentido contrário, o que indica um sinal de eixo invertido a corrigir. A captação com controlador de carga, as saídas USB e a PCI estão '
-    'projetadas, mas ainda não foram construídas nem testadas.',
-    'O principal resultado, contudo, foi o método. A combinação de revisão, simulação do mesmo código e testes '
-    'físicos permitiu encontrar uma inversão no algoritmo, erros de método nos testes, o sombreamento dos '
-    'sensores pelo próprio painel e, depois da migração para o ESP32, duas regressões que o comportamento em '
-    'bancada dificilmente revelaria — ambas já corrigidas no código. O episódio mostra que trocar de plataforma exige revisar não só o código, '
-    'mas as unidades e as correções acumuladas.',
-    'Como próximos passos, recomenda-se:',
-)
+# =====================================================================  9 VIABILIDADE
+r.h1('9 VIABILIDADE: RASTREADOR × PLACAS FIXAS')
+r.p('Concluído o protótipo, o grupo consultou empresas que fornecem **postes com energia solar para uso '
+    'profissional** sobre o uso de rastreadores nesse tipo de equipamento (informação verbal). A resposta foi '
+    'que **não compensa em nenhum cenário** desse porte, por três motivos:')
 r.itens([
-    'diagnosticar o sentido invertido observado com a lanterna (seção 4.6), iluminando um lado de cada vez, e ajustar o sinal do eixo correspondente;',
-    'validar no protótipo as correções P10 e P14, já aplicadas ao `main.c` e verificadas em simulação;'
-    'elevar o suporte dos LDRs em ≈ 25 mm (P13) e validar com lanterna rasante;',
-    'reforçar ou reimprimir as peças da trave sujeitas a esforço;',
-    'adquirir controlador de carga, fusível e módulo USB, fabricar a PCI e medir a energia real com e sem rastreamento.',
+    'o painel ficou tão barato que compensa instalar mais área de painel em vez de movê-lo com motores comandados por LDRs;',
+    'num poste pequeno o rastreador não se paga: motores, sensores, estrutura reforçada e manutenção custam mais do que a energia extra — e, se um motor falha, a produção cai;',
+    'duas placas fixas, uma voltada a Leste e outra a Oeste, custam bem menos, não têm peças móveis e geram da manhã ao fim da tarde por mais de 25 anos.',
 ], marcador='a')
+r.p('Os dados do próprio projeto confirmam a resposta. Com o mesmo modelo solar do simulador, calculou-se a '
+    'energia de um ano para uma placa fixa voltada ao Norte, duas placas fixas inclinadas 20° para Leste e '
+    f'Oeste e duas placas ao Norte, comparando-as com o rastreador final (Figura {r.prox_fig()}).')
+r.figura(f('g_fixas.png'), 'Energia captada no ano e custo dos itens a mais: rastreador × placas fixas (simulação)', largura=14)
+r.p(f'O rastreador capta +{G_RAST}% sobre uma placa fixa e acrescenta R$ {brl(EXTRA_RAST)} em servos, conversor, '
+    f'ESP32, LDRs e resistores — sem contar estrutura reforçada e manutenção. Uma segunda placa de R$ {brl(PAINEL)} '
+    f'montada em Leste/Oeste dá +{G_LO}%; voltada ao Norte, +100%. Por real investido, a segunda placa fixa rende '
+    f'cerca de {round((G_LO / PAINEL) / (G_RAST / EXTRA_RAST))} vezes mais energia extra que o rastreador. O '
+    'modelo ainda favorece o rastreador, pois considera céu limpo: com nuvens, o ganho de apontar o painel diminui.')
+
+# =====================================================================  10 CONCLUSÃO
+r.h1('10 CONCLUSÃO')
+r.ps(
+    'O objetivo do projeto foi atendido. A estrutura foi impressa e montada — com a reimpressão de uma peça que '
+    'quebrou —, o circuito foi montado em placa universal com as ligações e a alimentação definidas no projeto, '
+    'o ESP32 foi programado com rastreamento, repouso noturno e uma IHM pelo celular, e os testes físicos foram '
+    'acompanhados por essa interface. O teste com lanterna mostrou o sentido de um eixo invertido em relação à '
+    'montagem, e a IHM final fornece o meio de identificar a causa.',
+    'O resultado mais importante foi o método. A combinação de revisão, simulação do mesmo código e testes '
+    'físicos encontrou uma inversão no algoritmo, erros de método nos próprios testes, o sombreamento dos '
+    'sensores pelo painel, duas regressões na migração para o ESP32 e, por último, o travamento das manhãs de '
+    f'inverno, que só a simulação do ano inteiro revelou. Com tudo corrigido, o rastreador capta +{G_RAST}% de '
+    'energia em relação a uma placa fixa.',
+    'A conclusão de engenharia, porém, vai além do protótipo: **para a torre solar de carregamento de celulares, '
+    'a solução recomendada é fixa.** Duas placas voltadas a Leste e Oeste — ou simplesmente mais área de painel — '
+    'geram mais energia, custam menos e não têm peças móveis para quebrar, como confirmaram os fornecedores '
+    'consultados e os números do projeto. O rastreamento só se justifica em usinas grandes, onde o custo da '
+    'mecânica é diluído por muitos painéis. Saber reconhecer isso também é resultado do projeto.',
+)
 
 # =====================================================================  REFERÊNCIAS
 r.titulo_sem_numero('REFERÊNCIAS')

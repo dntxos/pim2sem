@@ -93,11 +93,14 @@ def linha_do_tempo():
         ('Testes físicos', 'Migração para ESP32: Wi-Fi e controle pelo celular', 'acerto'),
         ('Simulador × ESP32', 'Correção P10 perdida na migração — restaurada no main.c', 'corrigido'),
         ('Simulador × ESP32', 'TOLERANCIA não escalada para ADC de 12 bits (P14) — 40 → 160', 'corrigido'),
-        ('Teste com lanterna', 'Rastreamento reage, mas gira para o lado contrário', 'pendente'),
+        ('Teste com lanterna', 'Rastreamento reage, mas gira para o lado contrário', 'registrado'),
+        ('IHM no celular', 'Nova IHM: 4 LDRs, diferença entre lados, gráfico e controle', 'acerto'),
+        ('Simulação do ano', 'Preso em H = 20° nas manhãs de inverno (P15) — repouso em 90°', 'corrigido'),
+        ('Consulta ao mercado', 'Duas placas fixas Leste/Oeste compensam mais que o rastreador', 'conclusao'),
     ]
-    cores = {'corrigido': '#2e7d4f', 'pendente': '#b23a3a', 'proposta': '#d9822b', 'acerto': '#1f4e8c', 'encerrado': '#6b7280'}
-    rot = {'corrigido': 'Corrigido', 'pendente': 'Pendente', 'proposta': 'Solução proposta', 'acerto': 'Acerto', 'encerrado': 'Encerrado'}
-    fig, ax = plt.subplots(figsize=(10.5, 7.2))
+    cores = {'corrigido': '#2e7d4f', 'registrado': '#b23a3a', 'conclusao': '#0b2a5b', 'proposta': '#d9822b', 'acerto': '#1f4e8c', 'encerrado': '#6b7280'}
+    rot = {'corrigido': 'Corrigido', 'registrado': 'Registrado', 'conclusao': 'Conclusão', 'proposta': 'Solução proposta', 'acerto': 'Acerto', 'encerrado': 'Encerrado'}
+    fig, ax = plt.subplots(figsize=(10.5, 8.6))
     plt.rcParams['font.family'] = 'serif'
     n = len(eventos)
     ax.plot([0.08, 0.08], [0.3, n + 0.2], color='#9ca3af', lw=2, zorder=0)

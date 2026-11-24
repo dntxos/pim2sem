@@ -23,7 +23,24 @@ PAINEIS = {
                      ('problema_peça_impressa_quebrou_na_montagem.mp4', 36)],
     'f_esp32.png': [('mudança_para_esp32.mp4', 2), ('mudança_para_esp32.mp4', 22), ('mudança_para_esp32.mp4', 12.5)],
     'f_celular.png': [('screenshot_interface_no_celular.jpeg', None), ('testando_pela_interface_no_celular.mp4', 25)],
+    'f_p15.png': [('ganho_anual_antes_da_correcao_p15.jpeg', None), ('ganho_anual_depois_da_correcao_p15.jpeg', None)],
 }
+
+
+def ihm():
+    """Painel da IHM final: captura de tools/relatorio/capturar_ihm.mjs dividida em duas colunas."""
+    im = Image.open(os.path.join(FIG, 'ihm_captura.png')).convert('RGB')
+    k = im.width / 390  # px por pixel CSS
+    cortes = [(0, 905), (905, 1580)]
+    partes = [im.crop((0, int(a * k), im.width, int(b * k))) for a, b in cortes]
+    alt = max(p.height for p in partes)
+    caminhos = []
+    for i, p in enumerate(partes):
+        topo = int(alt * 0.06)  # faixa para o rótulo (a)/(b) não cobrir a página
+        tela = Image.new('RGB', (p.width, alt + topo), (238, 241, 246))
+        tela.paste(p, (0, topo))
+        c = os.path.join(TMP, f'ihm_{i}.png'); tela.save(c); caminhos.append(c)
+    painel('f_ihm.png', [(c, None) for c in caminhos], altura=1600)
 
 
 def fonte(tam):
@@ -34,7 +51,7 @@ def fonte(tam):
 
 
 def abrir(arquivo, t):
-    caminho = os.path.join(MIDIA, arquivo)
+    caminho = arquivo if os.path.isabs(arquivo) else os.path.join(MIDIA, arquivo)
     if t is None:
         return Image.open(caminho).convert('RGB')
     saida = os.path.join(TMP, f'{abs(hash((arquivo, t)))}.jpg')
@@ -65,3 +82,4 @@ def painel(nome, itens, altura=1100, espaco=24):
 if __name__ == '__main__':
     for nome, itens in PAINEIS.items():
         painel(nome, itens)
+    ihm()

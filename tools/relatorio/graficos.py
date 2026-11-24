@@ -221,7 +221,7 @@ def g_noite_esp32():
     cols = d.pop('cols')
     fig, ax = plt.subplots(figsize=(6.6, 3.3))
     for k, cor, rot in (('nano', VERMELHO, 'Nano (sem repouso noturno): amanhece voltado a Oeste'),
-                        ('esp32', AZUL, 'ESP32 (com repouso noturno em 20°/90°)')):
+                        ('esp32', AZUL, 'ESP32 (com repouso noturno; simulação anterior ao P15)')):
         s = [r for r in d[k] if r[0] != 'tarde' and r[0] != 'noite (140 s)']
         ax.plot([r[1] for r in s], [r[4] for r in s], color=cor, lw=2, marker='o', ms=3, label=rot)
     ax.set(xlabel='Hora solar (h)', ylabel='Erro de apontamento (°)', ylim=(0, 140), xlim=(5.2, 10.9),
@@ -230,6 +230,34 @@ def g_noite_esp32():
     salvar(fig, 'g_noite_esp32.png')
 
 
+def g_fixas():
+    """Conclusão: energia no ano e custo extra — 1 placa fixa, rastreador e 2 placas fixas."""
+    d = json.load(open(os.path.join(DADOS, 'conclusao_fixas_vs_rastreador.json')))
+    g = d['ganho_sobre_1_placa_fixa_pct']
+    custo = d['custos_R$']
+    extra_r = custo['itens extras do rastreador (sem estrutura reforçada e manutenção)']
+    painel = custo['painel 10 W adicional']
+    k_r = next(k for k in g if k.startswith('rastreador'))
+    k_lo = next(k for k in g if 'Leste' in k)
+    nomes = ['1 placa fixa\n(Norte)', '1 placa com\nrastreador', '2 placas fixas\nLeste/Oeste', '2 placas fixas\n(Norte)']
+    energia = [100, 100 + g[k_r], 100 + g[k_lo], 200]
+    extra = [0, extra_r, painel, painel]
+    cores = [CINZA, LARANJA, AZUL, VERDE]
+    fig, ax = plt.subplots(1, 2, figsize=(9.4, 3.4))
+    b = ax[0].bar(nomes, energia, color=cores)
+    ax[0].bar_label(b, labels=['referência'] + [f'+{e - 100:.0f}%' for e in energia[1:]], fontsize=9, padding=2)
+    ax[0].set(ylabel='Energia no ano (% de 1 placa fixa)', title='Energia captada (simulação, céu limpo)', ylim=(0, 230))
+    b = ax[1].bar(nomes, extra, color=cores)
+    ax[1].bar_label(b, labels=['—'] + [f'R$ {v:.2f}'.replace('.', ',') for v in extra[1:]], fontsize=9, padding=2)
+    ax[1].set(ylabel='Custo a mais (R$)', title='Custo dos itens a mais (preços pagos)', ylim=(0, 140))
+    for a in ax:
+        a.tick_params(axis='x', labelsize=8.5)
+        a.grid(axis='x', visible=False)
+    fig.tight_layout()
+    salvar(fig, 'g_fixas.png')
+
+
 if __name__ == '__main__':
     g_esp32()
     g_noite_esp32()
+    g_fixas()
