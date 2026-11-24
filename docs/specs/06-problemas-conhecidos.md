@@ -1,6 +1,7 @@
 # 06 — Problemas conhecidos e melhorias
 
-Resultado da análise do repositório (nov/2026). Ordenado por impacto.
+Resultado da análise do repositório e das simulações (nov/2026). Abertos: P2, P5, P6, P8, P9, P11, P12, P13 e o
+sentido invertido no teste com lanterna (em diagnóstico). Corrigidos no `main.c` atual: P1, P7, P10, P14, P15. P3 só valia para o Nano; P4 confirmado na montagem.
 
 ## <a id="p1"></a>P1 — Pinos dos LDRs divergem entre código e diagrama — encerrado com a migração para o ESP32
 
@@ -21,12 +22,15 @@ abre *sketches* `.ino` dentro de uma pasta com o mesmo nome. **Correção sugeri
 e/ou imprimir a cada N ciclos, e/ou formato compacto (CSV: `e,d,s,i,h,v`), que também facilita
 plotar no Serial Plotter da IDE.
 
-## <a id="p4"></a>P4 — Alimentação dos servos (resolvido no projeto físico — conferir a montagem)
+## <a id="p4"></a>P4 — Alimentação dos servos — ✅ resolvido (montagem confirmada pelo grupo em 24/11/2026)
 
 O diagrama do Tinkercad alimenta os servos pelo 5 V do Arduino, o que não funciona com MG996R
 (até ~2,5 A cada). O projeto físico usa bateria 12 V + XL4015 dedicado aos servos (6 V). Riscos que
 continuam: XL4015 desajustado (medir antes de ligar), GND não interligado, jumpers Dupont finos
 demais para a corrente dos servos. Ver [02-hardware.md](02-hardware.md#alimentação).
+
+**Confirmado pelo grupo:** servos numa fonte externa regulada de 6 V, GND dessa fonte ligado ao GND
+do ESP32, LDRs no 3,3 V do ESP32.
 
 ## <a id="p12"></a>P12 — Sem controlador de carga entre painel e bateria (alto, se forem ligados)
 

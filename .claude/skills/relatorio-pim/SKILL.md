@@ -8,7 +8,9 @@ description: Redigir e gerar o relatório do PIM II (UNIP, Automação Industria
 Antes de escrever, leia **sempre**:
 1. `references/roteiro-pim2.md` — tema oficial, exigências do guia do curso e sumário proposto.
 2. `references/normas-unip-abnt.md` — formatação e citação conforme o guia da biblioteca UNIP 2025.
-3. `docs/specs/` e `main.c` — fonte de verdade técnica (Nano, MG996R, XL4015, bateria 12 V, painel 10 W).
+3. `docs/specs/` e `main.c` — fonte de verdade técnica (ESP32, MG996R, XL4015, bateria 12 V, painel 10 W).
+4. `docs/relatorio/PENDENCIAS.md` — o que entra na próxima versão (dados novos, figuras) e o que
+   ainda depende do grupo. Atualizar ao fim de cada versão.
 
 ## Regras inegociáveis
 
@@ -23,6 +25,8 @@ Antes de escrever, leia **sempre**:
   4 LDR + 10 kΩ, 2 × **XL4015**, bateria **12 V** Elgin, painel **10 W**. Wi-Fi `SOLAR_TOWER` /
   `torre1234` / `http://192.168.4.1`. Integrantes: ver `INTEGRANTES` em `tools/relatorio/gerar_relatorio.py`.
 - **Limite: no máximo 40 páginas no total** (v4: 37). Conferir após cada mudança com `exportar_pdf.sh`.
+- Capturas do simulador também ficam em `docs/imagens_videos_testes_fisicos/` (ex.:
+  `ganho_anual_*_correcao_p15.jpeg`): são **simulação**, nunca legendar como teste físico.
 - Testes físicos: só o que está em `docs/imagens_videos_testes_fisicos/` ou foi informado pelo grupo
   (painéis de fotos: `tools/relatorio/fotos.py`).
 - Português formal, impessoal, termos estrangeiros em itálico, siglas por extenso na 1ª ocorrência.

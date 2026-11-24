@@ -77,6 +77,10 @@ no simulador como variante `esp32:esp32_testes_fisicos`.
 | **P15** — repouso noturno em H = 20° (24/11/2026) | Inverno: acorda preso no limite até ~meio-dia; ano: +34,5%, erro médio 27,7° | `INICIO_H = 90`: ano +47,1%, erro médio 16,9° |
 
 Repouso noturno e interface web conferidos após a correção. **Validação física: pendente.**
+
+`INICIO_H = 90` (P15) também muda o botão **Posição inicial** da IHM: agora leva o painel ao centro
+(90°/90°). Comparação do ano inteiro antes/depois: `docs/relatorio/dados/ano_p15.json` e capturas
+`docs/imagens_videos_testes_fisicos/ganho_anual_{antes,depois}_da_correcao_p15.jpeg` (simulação).
 Dados: `docs/relatorio/dados/esp32_corrigido_vs_testes.json`.
 
 ## Build

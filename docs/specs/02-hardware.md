@@ -27,14 +27,14 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | Item | Por que é necessário |
 |------|----------------------|
 | **Controlador de carga solar 12 V** (PWM, ≥ 5 A) | Um painel de 12 V "nominal" chega a ~21 V em aberto. Ligado direto na bateria, sobrecarrega e danifica a bateria selada, e à noite a bateria descarrega pelo painel. Só dispensável se o painel **não** for ligado à bateria (ex.: só medido com multímetro). |
-| Protoboard ou placa perfurada | Montar os divisores dos LDRs e distribuir 5 V/GND. |
+| Protoboard ou placa perfurada | Montar os divisores dos LDRs e distribuir 3,3 V/6 V/GND. |
 | Cabo USB do ESP32 | Gravar o firmware e ler o Monitor Serial (115 200 baud). |
 | Capacitor eletrolítico 470–1000 µF / 16 V | Junto aos servos, absorve os picos de corrente do MG996R. |
 | Fusível (2–5 A) + porta-fusível na saída da bateria | Bateria selada fornece corrente alta em curto-circuito. |
 | Chave liga/desliga e fios mais grossos (≥ 0,5 mm²) | Os jumpers Dupont de 20 cm não são adequados para a corrente dos servos (até ~2,5 A cada em travamento). |
 | Multímetro | Ajustar a saída dos XL4015 **antes** de ligar qualquer coisa. |
 
-## Mapa de pinos (ESP32 — `main.c` atual)
+## Mapa de pinos (ESP32 — `main.c` atual, confirmado pelo grupo em 24/11/2026)
 
 | Sinal | GPIO | Observação |
 |-------|------|------------|
@@ -47,8 +47,8 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 
 Os LDRs estão no **ADC1** de propósito: o ADC2 do ESP32 não funciona com o Wi-Fi ligado.
 
-> ⚠️ **3,3 V:** as entradas do ESP32 não toleram 5 V. Os divisores dos LDRs devem ser alimentados
-> pelo pino **3V3** (não pelo 5V/VIN). Confirmar na montagem.
+> ✅ **3,3 V (confirmado pelo grupo):** os divisores dos LDRs estão no **3V3** do ESP32 e no GND.
+> As entradas do ESP32 não toleram 5 V — não mudar para 5V/VIN.
 
 **Histórico (Nano):** o código usava A1–A4 e o diagrama A0–A3 (P1) — divergência encerrada com a
 migração, pois o ESP32 tem pinos próprios.
@@ -71,38 +71,56 @@ montado invertido (LDR no GND), os sentidos dos eixos se invertem.
 
 ## Servos MG996R
 
-- Marrom → GND; vermelho → **+6 V do XL4015 dos servos** (não do Nano); laranja → sinal (D9/D10).
+- Marrom → GND; vermelho → **+6 V da fonte regulada dos servos** (XL4015 #1, nunca do ESP32);
+  laranja → sinal (horizontal **GPIO 18**, vertical **GPIO 19**).
 - Tensão de trabalho 4,8–7,2 V; torque ~9,4 kg·cm a 4,8 V e ~11 kg·cm a 6 V (o "15 kg" do anúncio é
   otimista). Corrente: ~0,5–0,9 A em movimento e **até ~2,5 A travado**, cada.
 - O CAD já foi desenhado para ele: o servo modelado no AMF tem 54 × 20 × 40 mm (corpo + abas).
 - Carga estimada no eixo de elevação: o centro da placa fica a ~64 mm do pino da trave. Com um
   painel de 10 W de ~1 kg (pesar o real), o torque é ~6,4 kg·cm no pior caso — dentro do MG996R,
   com pouca folga a 4,8 V. Por isso a recomendação de **6 V**.
-- A biblioteca `Servo` usa o Timer1 do ATmega328P (desativa `analogWrite` em D9/D10, sem impacto
-  aqui). O pulso padrão da biblioteca (544–2400 µs) funciona com o MG996R; se o servo bater no fim
-  de curso, use `attach(pino, 1000, 2000)`.
+- Biblioteca **ESP32Servo**, 50 Hz, pulso 500–2400 µs (`attach(pino, 500, 2400)`). O sinal de
+  3,3 V do ESP32 é aceito pelo MG996R. Se o servo bater no fim de curso, estreitar para 1000–2000 µs.
+- *Histórico (Nano):* biblioteca `Servo` (Timer1), sinais em D9/D10.
 
 ## Alimentação
+
+**Como está montado (informado pelo grupo em 24/11/2026):**
+
+| Circuito | Alimentação |
+|----------|-------------|
+| LDRs (divisores com 10 kΩ) | **3,3 V do ESP32** e GND |
+| Servos MG996R | **Fonte externa regulada de 6 V** (XL4015 #1, a partir da bateria de 12 V) |
+| Referência | **GND da fonte dos servos ligado ao GND do ESP32** (terra comum — sem ele o sinal PWM não tem referência) |
+
+Esquema completo:
 
 ```
                   [fusível]
 Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]── servos (+ capacitor 1000 µF)
   (não comprado — ver acima)                          │
                                                       └──[XL4015 #2 → 6 V]── placa de expansão do ESP32
-GND da bateria, dos dois XL4015, dos servos e do Nano: TODOS INTERLIGADOS
+GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
 ```
 
 1. **Ajustar os XL4015 sem carga, com multímetro, antes de ligar:** o potenciômetro azul vem em
-   qualquer posição — um XL4015 saindo 12 V queima o Nano ou os servos na hora.
+   qualquer posição — um XL4015 saindo 12 V queima a placa ou os servos na hora.
 2. **XL4015 #1 (servos): 6,0 V.** Cabos curtos e mais grossos que os jumpers; capacitor perto dos
    servos.
 3. **XL4015 #2 (placa do ESP32): 6 V** — valor ajustado pelo grupo nos testes físicos (12 V → 6 V).
    *Histórico (Nano):* 7,5 V no pino VIN. O regulador do Nano baixa para 5 V e protege contra um
-   ajuste descuidado. (Alternativa: 5,0 V direto no pino 5V — sem proteção, exige ajuste preciso.)
+   ajuste descuidado.
 4. Com a bateria ligada, pode-se conectar o USB ao computador para ver o Monitor Serial — os GNDs
    ficam em comum pelo USB, o que é esperado.
-5. **Nunca** ligar servos ou Nano direto nos 12 V da bateria.
+5. **Nunca** ligar servos ou ESP32 direto nos 12 V da bateria.
 
-Consumo médio estimado: Nano + LDRs ~30 mA; servos parados ~10–20 mA cada, picos curtos ao mover.
+Consumo médio estimado: ESP32 com Wi-Fi em modo AP ~100–150 mA (picos de ~250 mA na transmissão);
+LDRs ~1 mA; servos parados ~10–20 mA cada, picos curtos ao mover.
 Uma bateria de 7 Ah (capacidade típica desse modelo — conferir a etiqueta) alimenta o sistema por
 vários dias mesmo sem o painel.
+
+## Medição da bateria (não implementada)
+
+A IHM não mostra a carga da bateria porque nada mede a tensão dela. Para isso: divisor resistivo
+(ex.: 100 kΩ + 22 kΩ → 12,6 V vira ~2,3 V) numa entrada do **ADC1** livre (ex.: GPIO 36 ou 39) e a
+conversão tensão → % pela curva da bateria selada. Fica como melhoria.
