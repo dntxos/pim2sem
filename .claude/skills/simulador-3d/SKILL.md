@@ -50,6 +50,16 @@ tempo das ferramentas). `s.estado.linhasSerial` tem a saída serial do firmware.
 
 - `?elevacaoLdr=25` na URL eleva o suporte dos LDRs 25 mm (variante de projeto do P13).
 - `sim.bloqueios()` → para cada LDR, a peça que bloqueia o raio ao Sol (`-` = livre).
+
+**Ano inteiro:** painel "📅 Ano inteiro" ou `await sim.ano()` (devolve `[{dia, track, fixa, ideal, erro}]`;
+`sim.anoTotais()` dá o ganho anual). Roda o firmware em time-lapse: o Sol anda 30 min (ou 15) a cada
+1,5 s simulados, a noite dura 125 s simulados (repouso noturno real) e, ao amanhecer, o Sol sobe de
+2 em 2 min e para enquanto o firmware conta os 30 s de luz. ~70 s na amostragem rápida (a cada
+15 dias). Achado: P15 (inverno, preso em H = 20° de manhã).
+
+**Vídeos:** `node tools/video/gravar.mjs` (IHM) e
+`node tools/video/gravar.mjs docs/video/demo_simulador.mp4 roteiro_simulador.js 1.2` (funções do
+simulador, ano acelerado 6×). Exigem o servidor do simulador em `127.0.0.1:8000`.
 - **Cache:** depois de editar `simulator/js/*.js`, force o recarregamento
   (`await fetch('/simulator/js/main.js',{cache:'reload'})` + `location.reload()`) e confirme que a
   função/variante nova existe antes de confiar no resultado — uma rodada "elevada" já saiu inválida
