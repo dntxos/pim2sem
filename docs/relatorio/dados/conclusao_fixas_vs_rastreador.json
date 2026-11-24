@@ -1,0 +1,25 @@
+{
+ "descricao": "Energia relativa no ano (horas-equivalentes de sol pleno), modelo do simulador (céu limpo, só luz direta), lat -23,55, amostragem a cada 15 dias.",
+ "energia_relativa_ano": {
+  "fixa_norte": 2732,
+  "leste": 2491,
+  "oeste": 2491,
+  "rastreador": 4016
+ },
+ "ganho_sobre_1_placa_fixa_pct": {
+  "rastreador (1 placa, main.c final)": 47,
+  "2 placas fixas Leste/Oeste (20°)": 82,
+  "2 placas fixas ao Norte": 100
+ },
+ "duas_LO_vs_rastreador_pct": 24,
+ "custos_R$": {
+  "painel 10 W adicional": 39.24,
+  "itens extras do rastreador (sem ESP32, estrutura e manutenção)": 94.1,
+  "itens extras detalhados": {
+   "2 servos MG996R": 73.6,
+   "XL4015 dos servos": 18.5,
+   "4 LDR": 1.8,
+   "4 resistores 10 kΩ": 0.2
+  }
+ }
+}

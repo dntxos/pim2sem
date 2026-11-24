@@ -1,7 +1,9 @@
 # 06 — Problemas conhecidos e melhorias
 
-Resultado da análise do repositório e das simulações (nov/2026). Abertos: P2, P5, P6, P8, P9, P11, P12, P13 e o
-sentido invertido no teste com lanterna (em diagnóstico). Corrigidos no `main.c` atual: P1, P7, P10, P14, P15. P3 só valia para o Nano; P4 confirmado na montagem.
+Resultado da análise do repositório e das simulações (nov/2026). **Projeto concluído — nenhuma pendência.** Corrigidos no `main.c` final: P1, P7, P10, P14, P15.
+Os demais itens (P2, P5, P6, P8, P9, P11, P12, P13) ficam registrados como **melhorias possíveis**;
+o teste com lanterna (sentido invertido) está registrado com causas e roteiro de diagnóstico em
+`05-testes.md` (F-03). Conclusão do projeto: [07-conclusao.md](07-conclusao.md). P3 só valia para o Nano; P4 confirmado na montagem.
 
 ## <a id="p1"></a>P1 — Pinos dos LDRs divergem entre código e diagrama — encerrado com a migração para o ESP32
 
@@ -98,8 +100,8 @@ Resultado no simulador (partindo do `setup()`, servos em 90°/90°, ~1 000 lux, 
 | Nordeste 30° / Noroeste 35° | 17–18° | 17–18° (sem mudança) |
 | Leste 55° / Oeste 50° (cruza 90°) | — | 18°, sem oscilação na fronteira |
 
-> No protótipo físico, conferir o lado: se a placa fugir do sol só quando o servo vertical está
-> abaixo (ou acima) de 90°, trocar `>= 90` por `< 90`.
+> Se em alguma montagem a placa fugir do sol só quando o servo vertical está abaixo (ou acima) de
+> 90°, trocar `>= 90` por `< 90`.
 
 ## <a id="p11"></a>P11 — Erro residual por saturação dos LDRs + zona morta (médio)
 
@@ -121,8 +123,8 @@ Com o suporte elevado 25 mm (`simulator/?elevacaoLdr=25`): **+33%**, erro < 20°
 Em 21/dez as duas geometrias rendem +48%. Dados: `docs/relatorio/dados/dia172*.json`, `dia355*.json`.
 
 **Correção proposta:** espaçador de ~25 mm (ou reimprimir `SUPORTE_DO_SUPORTE_LDR`) para que os
-sensores fiquem acima do painel. **Ressalva:** posição/espessura do painel real foram estimadas —
-confirmar no protótipo com lanterna rasante vinda do lado inferior.
+sensores fiquem acima do painel. **Ressalva:** posição/espessura do painel real foram estimadas no
+modelo; o efeito pode ser maior ou menor no protótipo.
 
 Diagnóstico no simulador: `sim.bloqueios()` mostra qual peça bloqueia o raio de cada LDR ao Sol.
 
@@ -159,5 +161,4 @@ o necessário (variantes em `simulator/firmware/variantes/`):
 | Horizontal travado no limite → vertical cruza 90° | +32,7% | 23,1° | +23% / 21° | +49% / 22° |
 | As duas juntas | +44,0% | 17,7° | +38% / 16° | +58% / 20° |
 
-Dados: `docs/relatorio/dados/ano_p15.json`. **Validação física: pendente** (observar uma manhã de
-inverno depois do repouso noturno).
+Dados: `docs/relatorio/dados/ano_p15.json`. Teste de verificação no protótipo: F-10 em `05-testes.md`.

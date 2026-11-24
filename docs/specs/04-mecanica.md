@@ -16,13 +16,13 @@
 | `PAREDE_ESTRUTURAL_02-1` | Parede estrutural (provavelmente com recortes para cabos/USB). |
 | `PAREDE_ESTRUTURAL_03-1` | Parede estrutural menor. |
 | `COLUNA_INTERNA-1` | Coluna central que sustenta o conjunto giratório. |
-| `PRATO_GIRATORIO-1` | Prato do eixo horizontal (azimute), acoplado ao servo de D9. |
+| `PRATO_GIRATORIO-1` | Prato do eixo horizontal (azimute), acoplado ao servo horizontal (GPIO 18). |
 | `PAREDE_APOIO_MOTOR_01-1`, `PAREDE_APOIO_MOTOR_02-1` | Suportes do servo do eixo vertical sobre o prato. |
-| `TRAVE-2` | Trave/eixo que inclina a placa (elevação), acoplada ao servo de D10. |
+| `TRAVE-2` | Trave/eixo que inclina a placa (elevação), acoplada ao servo vertical (GPIO 19). |
 | `SUPORTE_LDR-2` | Cruz/anteparo que separa os 4 LDRs (cria sombra diferencial). |
 | `SUPORTE_DO_SUPORTE_LDR-1` | Fixação do suporte dos LDRs na placa/trave. |
 
-> As funções acima foram inferidas pelos nomes dos arquivos — confirmar com o modelo CAD original.
+> As funções acima foram inferidas pelos nomes dos arquivos e pela geometria da montagem.
 > Os sufixos `-1`/`-2` vêm da exportação da montagem (instância da peça), não indicam quantidade.
 
 ## Recomendações de impressão (FDM)
@@ -38,14 +38,14 @@
 | Componente | Observação |
 |------------|------------|
 | 2 × MG996R | O CAD foi modelado com eles (54 × 20 × 40 mm com abas, no AMF). São mais pesados e fortes que um SG90: usar os parafusos do kit e reforçar o encaixe do *horn* metálico. |
-| Painel 10 W | No AMF a placa tem 280 × 250 × 16 mm. **Conferir com o painel real** (medir e pesar) — o simulador e o cálculo de torque usam essas medidas e ~1 kg. |
-| Arduino Nano | Menor que o UNO; cabe com folga na caixa inferior. |
+| Painel 10 W | No AMF a placa tem 280 × 250 × 16 mm; o simulador e o cálculo de torque usam essas medidas e ~1 kg (estimativa). |
+| ESP32 + placa de expansão | Fica na caixa inferior; o Wi-Fi dispensa cabo até o celular. (Fase inicial: Arduino Nano.) |
 | Bateria 12 V | Não cabe na estrutura impressa — fica ao lado, ligada por cabos. Deixar folga nos cabos que sobem pelo eixo de azimute (o prato gira ±70°). |
 | 2 × XL4015 | Ficam perto da bateria ou na caixa inferior; o dissipador precisa de ventilação. |
 
 ## Montagem (ordem sugerida)
 
-1. Base + paredes estruturais formando a caixa; Arduino Nano e protoboard dentro.
+1. Base + paredes estruturais formando a caixa; ESP32 (placa de expansão) e ligações dentro.
 2. Servo horizontal fixado na coluna interna; prato giratório no *horn*.
 3. Paredes de apoio do motor sobre o prato; servo vertical entre elas.
 4. Trave no *horn* do servo vertical; placa fotovoltaica sobre a trave.

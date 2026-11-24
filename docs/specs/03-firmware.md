@@ -76,7 +76,8 @@ no simulador como variante `esp32:esp32_testes_fisicos`.
 | **P14** — `TOLERANCIA = 40` em 12 bits | 21/jun: painel foge do Sol (−100% vs. placa fixa) | +35% (dez: +49%) |
 | **P15** — repouso noturno em H = 20° (24/11/2026) | Inverno: acorda preso no limite até ~meio-dia; ano: +34,5%, erro médio 27,7° | `INICIO_H = 90`: ano +47,1%, erro médio 16,9° |
 
-Repouso noturno e interface web conferidos após a correção. **Validação física: pendente.**
+Repouso noturno e interface web conferidos no simulador após a correção. Esta é a versão final do
+`main.c` do projeto (P10, P14 e P15 aplicados).
 
 `INICIO_H = 90` (P15) também muda o botão **Posição inicial** da IHM: agora leva o painel ao centro
 (90°/90°). Comparação do ano inteiro antes/depois: `docs/relatorio/dados/ano_p15.json` e capturas

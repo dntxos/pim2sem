@@ -22,10 +22,10 @@
 
 | ID | Cenário | Resultado esperado |
 |----|---------|--------------------|
-| F-00 | Antes de tudo: XL4015 sem carga, medir com multímetro | #1 = 6,0 V (servos); #2 = 6 V (placa do ESP32). Só então ligar as cargas. ✅ feito (12 V → 6 V). |
+| F-00 | Antes de tudo: XL4015 sem carga, medir com multímetro | #1 = 6,0 V (servos); #2 = 6 V (placa do ESP32). Só então ligar as cargas. **Feito** (12 V → 6 V). |
 | F-01 | Lanterna movida lentamente em arco | Placa acompanha a lanterna. |
 | F-02 | Lanterna parada | Placa estabiliza sem "tremer" (sem oscilação contínua). |
-| F-03 | Sentido dos eixos | Placa vai **em direção** à luz. ❌ no teste com lanterna girou para o lado contrário — refazer iluminando **um lado de cada vez** e olhando os indicadores de diferença da IHM: se a IHM aponta o lado certo e o painel foge → sinal do servo; se aponta o lado errado → LDRs trocados ou divisor invertido. |
+| F-03 | Sentido dos eixos | Placa vai **em direção** à luz. **Resultado registrado:** no teste com lanterna (firmware anterior às correções) o painel girou para o lado contrário. Diagnóstico: iluminar **um lado de cada vez** e olhar os indicadores de diferença da IHM — se a IHM aponta o lado certo e o painel foge → sinal do servo (`+=`/`-=`); se aponta o lado errado → LDRs trocados ou divisor invertido; se só o horizontal inverte com o painel inclinado → P10 (corrigido no `main.c` final). |
 | F-04 | Alimentação | ESP32 não reinicia (IHM não cai) quando os dois servos se movem juntos; XL4015 #1 não esquenta demais. |
 | F-05 | Sol real (opcional) | Ao longo de algumas horas, placa segue o sol. |
 | F-06 | Torque na elevação | Com o painel montado, o servo vertical segura a placa em 20° e 160° sem "cair" nem zumbir forte. |
@@ -50,7 +50,12 @@ voltada ao Norte. Resultado atual (`?elevacaoLdr=25`, a cada 15 dias): **+47% a 
 fixa, erro médio ~17° (antes do P15: +35% a +38%, ~28°). Os valores variam ~±2 p.p. entre rodadas
 por causa do ruído simulado nos LDRs.
 
-## Ensaio comparativo para o relatório (sugestão)
+## Placas fixas × rastreador
+
+Comparação de energia no ano com 1 placa fixa, 2 placas fixas Leste/Oeste e o rastreador:
+`python3 tools/relatorio/comparar_fixas.py` (resultado e conclusão em [07-conclusao.md](07-conclusao.md)).
+
+## Ensaio comparativo no protótipo (trabalho futuro)
 
 Para demonstrar o ganho do rastreador, medir a tensão/corrente da placa em dois cenários
 (placa fixa vs. rastreando) ao longo do mesmo período e comparar a energia. Exige ligar a placa a

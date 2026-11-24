@@ -1,5 +1,8 @@
 # 01 — Visão geral e requisitos
 
+> **Projeto concluído (24/11/2026)** — protótipo montado, `main.c` final e conclusão em
+> [07-conclusao.md](07-conclusao.md).
+
 ## Contexto
 
 Projeto Integrado Multidisciplinar (PIM) — UNIP. Protótipo de **rastreador solar de dois eixos**
@@ -62,3 +65,4 @@ astronômico da posição do sol.
 - [04-mecanica.md](04-mecanica.md) — peças 3D e montagem
 - [05-testes.md](05-testes.md) — plano de testes e calibração
 - [06-problemas-conhecidos.md](06-problemas-conhecidos.md) — achados da análise e melhorias
+- [07-conclusao.md](07-conclusao.md) — resultados, consulta ao mercado e conclusão (placas fixas × rastreador)

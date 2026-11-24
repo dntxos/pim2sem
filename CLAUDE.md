@@ -7,6 +7,10 @@ Alimentação: bateria 12 V + 2 conversores XL4015. O projeto começou com Ardui
 etapa de testes físicos); o diagrama do Tinkercad (UNO) é da fase inicial.
 Lista de materiais real: `docs/specs/02-hardware.md` — não citar SG90, UNO ou fonte USB como hardware do projeto.
 
+**Estado: projeto concluído (24/11/2026).** Protótipo montado; `main.c` final (P10, P14, P15).
+Conclusão (consulta a fornecedores de postes solares + simulação): rastreador não compensa nesse
+porte — duas placas fixas Leste/Oeste rendem mais e custam menos ([07-conclusao.md](docs/specs/07-conclusao.md)).
+
 ## Contexto do PIM II
 
 O tema oficial do semestre é uma **torre solar que carrega celulares por 2 saídas USB** (bateria
@@ -37,7 +41,8 @@ docs/relatorio/         Relatório do PIM II (.docx) e figuras
 
 Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-hardware.md) ·
 [firmware](docs/specs/03-firmware.md) · [mecânica](docs/specs/04-mecanica.md) ·
-[testes](docs/specs/05-testes.md) · [problemas conhecidos](docs/specs/06-problemas-conhecidos.md)
+[testes](docs/specs/05-testes.md) · [problemas conhecidos](docs/specs/06-problemas-conhecidos.md) ·
+[conclusão](docs/specs/07-conclusao.md)
 
 ## Pontos de atenção (não óbvios)
 
@@ -46,7 +51,7 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 - **Não remover do `main.c`:** `sentidoHorizontal` (P10 — sem ele o servo horizontal trava no limite
   com o vertical abaixo de 90°; já regrediu uma vez na migração) e `TOLERANCIA = 160` (P14 — escala
   de 12 bits; 40 era o valor do Nano) e `INICIO_H = 90` (P15 — repouso em 20° prendia o painel no
-  limite nas manhãs de inverno). Validação física dessas correções ainda pendente.
+  limite nas manhãs de inverno). É a versão final do projeto.
 - **Convenção do sensor:** leitura maior = mais luz (LDR no lado do 5 V do divisor). Inverter o
   divisor inverte o sentido dos eixos.
 - **Sinais dos eixos** (`+=`/`-=`) dependem da montagem mecânica; o eixo vertical é propositalmente

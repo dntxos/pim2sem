@@ -25,15 +25,19 @@ Depois acesse http://localhost:8000/simulator/
 
 - **Mover o sol**: arrastando o ☀️ na cena, pelos controles manuais (azimute/elevação) ou pela
   trajetória real de um dia (latitude, data e hora, com reprodução acelerada).
+- **Simular o ano inteiro** (seção 📅): o mesmo firmware de janeiro a dezembro em time-lapse, com
+  repouso noturno real, comparando rastreador × placa fixa × ideal dia a dia (gráfico, totais e CSV).
+  Rápida (a cada 15 dias, ~70 s) ou detalhada (a cada 5 dias).
+- **Usar a IHM do celular** (seção 📱): a página servida pelo `main.c` comanda a torre simulada.
 - **Ver o firmware reagindo**: leituras dos 4 LDRs (lux, volts, ADC), ângulos dos servos, monitor
   serial idêntico ao da Arduino IDE (com download do log) e gráfico dos ângulos e do erro de
-  apontamento.
-- **Testar defeitos de montagem**: fiação do diagrama (A0–A3) × do código (A1–A4), servos
-  invertidos, variação entre LDRs e ruído.
+  apontamento. (O firmware ESP32 só imprime o início na serial; as leituras ficam na IHM.)
+- **Testar defeitos de montagem**: servos invertidos (o painel foge da luz, como no teste com
+  lanterna), variação entre LDRs, ruído e, na versão Nano, a fiação do diagrama (A0–A3).
 - **Comparar energia**: no modo "trajetória do dia", acumula a energia do rastreador e de uma
   placa fixa (voltada ao Norte, inclinada na latitude) e mostra o ganho.
-- **Rodar outro firmware**: carregue qualquer `.hex` para Arduino Nano/Uno (ex.: exportado pela
-  Arduino IDE em *Sketch → Exportar binário compilado*).
+- **Comparar versões do firmware**: variantes em `firmware/variantes/` (ex.: `esp32_testes_fisicos`,
+  `esp32_antes_p15`) com `sim.reiniciar('esp32:<variante>')`, ou um `.hex` qualquer de Nano/Uno.
 
 ## Atualizar o firmware depois de editar o `main.c`
 
@@ -50,7 +54,8 @@ falha indicando qual — basta implementá-la em `esp32/nucleo/`.
 
 | Parte | Arquivo | Detalhe |
 |-------|---------|---------|
-| Emulador | `js/arduino.js` | [avr8js](https://github.com/wokwi/avr8js): CPU, timers, ADC, USART e GPIO do ATmega328P a 16 MHz. Os ângulos dos servos são medidos pela largura do pulso em D9/D10 (biblioteca Servo: 544–2400 µs ↔ 0–180°). |
+| Firmware ESP32 | `js/esp32.js` + `esp32/nucleo/` | O `main.c` compilado com `em++` junto com o núcleo simulado; `sim_avancar` chama `loop()` a cada 1 ms de tempo simulado. GPIO 34/35/32/33 ← tensão dos LDRs (ADC de 12 bits, 3,3 V); GPIO 18/19 → ângulo dos servos. |
+| Emulador Nano (histórico) | `js/arduino.js` | [avr8js](https://github.com/wokwi/avr8js): CPU, timers, ADC, USART e GPIO do ATmega328P a 16 MHz. Os ângulos dos servos são medidos pela largura do pulso em D9/D10 (biblioteca Servo: 544–2400 µs ↔ 0–180°). |
 | Montagem | `js/montagem.js` | Os STLs foram exportados nas coordenadas da montagem; as peças são agrupadas em fixo / azimute / elevação. Eixos extraídos da geometria (centro do prato e pino da trave). O painel (280 × 250 mm, medida do AMF — conferir com o painel de 10 W real), os servos MG996R e os LDRs são desenhados à parte. |
 | Sensores | `js/sensores.js` + `main.js` | Luz direta em cada LDR por *raycasting* contra as peças (a sombra do divisor em cruz é a da peça real) + luz difusa. Lux → resistência (curva do GL5528, R10 = 15 kΩ, γ = 0,7) → divisor com 10 kΩ → tensão no ADC. |
 | Sol | `js/sol.js` | Posição solar simplificada (declinação + ângulo horário). Convenção: Norte = −X, Leste = −Z. |
@@ -69,6 +74,8 @@ sim.sondar(90, 90)   // posiciona os servos e mostra a luz em cada LDR (sem firm
 sim.avancar(10)      // avança 10 s de simulação de uma vez
 sim.erro()           // ângulo entre a normal da placa e o sol (°)
 sim.perf             // tempo gasto em emulação, sensores e renderização
+await sim.ano()      // simula o ano inteiro; sim.anoTotais() -> ganho anual e erro médio
+sim.http('/estado')  // JSON da IHM (LDRs, ângulos, período do dia...)
 ```
 
 ## Bibliotecas incluídas (`vendor/`)
@@ -77,3 +84,10 @@ sim.perf             // tempo gasto em emulação, sensores e renderização
 - avr8js 0.21.1 — MIT (`vendor/avr8js.LICENSE`), empacotado em um único módulo com esbuild
 
 Ficam no repositório para o simulador funcionar sem internet.
+
+## Vídeos de demonstração
+
+`node tools/video/gravar.mjs` grava o simulador no Chrome headless (sem dependências npm) e monta o
+MP4 com ffmpeg: IHM (`docs/video/demo_ihm.mp4`) e funções do simulador
+(`node tools/video/gravar.mjs docs/video/demo_simulador.mp4 roteiro_simulador.js 1.2`). O servidor
+acima precisa estar rodando.

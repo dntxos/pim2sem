@@ -1,52 +1,37 @@
-# Pendências do relatório — preparação da versão 5
+# Relatório — versão 5 (final): sem pendências
 
-Última versão gerada: `PIM_Torre_Solar_v4` (37 páginas; limite 40). Toda versão sai em dois PDFs:
-`.pdf` (alta resolução, impressão) e `.low.pdf` (≤ 10 MB, submissão).
+O projeto está concluído (24/11/2026): protótipo montado, `main.c` final, conclusão definida.
+A v5 é a versão final, **sem marcadores `[PREENCHER]`**. Gerar com `gerar_relatorio.py` →
+`exportar_pdf.sh PIM_Torre_Solar_v5` (sai `.pdf` para impressão e `.low.pdf` ≤ 10 MB para
+submissão). Limite: 40 páginas.
 
-## O que entra na v5 (já disponível no repositório)
+## O que muda da v4 para a v5
 
-- **Montagem elétrica confirmada pelo grupo:** LDRs no 3,3 V do ESP32 e GND; servos numa fonte
-  externa regulada de 6 V (XL4015 #1); GND da fonte dos servos ligado ao GND do ESP32; pinos
-  LDR SE/SD/IE/ID = GPIO 34/35/32/33, servos H/V = GPIO 18/19 (`docs/specs/02-hardware.md`).
-- **Nova IHM do celular** (identidade UNIP, 4 LDRs com barras, diferença entre lados com zona morta,
-  medidores dos servos, período dia/noite com contagem, tempo ligado, gráfico de 60 s, setas com
-  repetição) — `docs/specs/03-firmware.md`, seção IHM. Captura: gerar no simulador (painel 📱).
-- **Simulação do ano inteiro** no simulador (seção 📅) — `docs/specs/05-testes.md`.
-- **P15 — novo erro encontrado e corrigido** (`INICIO_H = 90`): no inverno o painel acordava preso em
-  H = 20° até ~meio-dia. Ganho anual sobre a placa fixa: **+34,5% → +47,1%**; erro médio
-  **27,7° → 16,9°** (`docs/relatorio/dados/ano_p15.json`, tabela em `docs/specs/06-problemas-conhecidos.md`).
-  Entra na história de "erros e acertos" (achado pela simulação do ano, depois da IHM).
-- **Figuras do P15** (capturas do simulador — legendar como **simulação**):
-  `docs/imagens_videos_testes_fisicos/ganho_anual_antes_da_correcao_p15.jpeg` (+38%, erro 27,5°) e
-  `..._depois_da_correcao_p15.jpeg` (+49%, erro 16,5°). Os números das capturas são de uma rodada
-  e diferem ~2–3 p.p. da tabela (ruído simulado nos LDRs): no texto, citar a faixa
-  (antes +35% a +38%; depois +47% a +49%) ou explicar a diferença na legenda.
-- **Vídeos de demonstração** (`docs/video/demo_ihm.mp4`, `demo_simulador.mp4`) — citar como
-  material complementar; podem dar quadros para figuras.
-- Texto a revisar na v4: repouso noturno agora em **90°/90°** (era 20°/90°); botão "Posição
-  inicial" leva ao centro; P4 resolvido; pendência do 3V3 encerrada.
+| Seção / item | Conteúdo da v5 | Fonte |
+|--------------|----------------|-------|
+| Hardware e ligações | LDRs no 3,3 V do ESP32 e GND; servos em fonte regulada de 6 V; GND comum; GPIO 34/35/32/33 e 18/19 (confirmado pelo grupo) | `docs/specs/02-hardware.md` |
+| IHM | Nova IHM (identidade UNIP, 4 LDRs, diferença entre lados, medidores, período dia/noite, gráfico 60 s, setas) — figura capturada do simulador | `docs/specs/03-firmware.md` |
+| Repouso noturno | Estaciona em **90°/90°** (era 20°/90°); "Posição inicial" leva ao centro | `main.c`, `03-firmware.md` |
+| Simulação do ano | Novo recurso do simulador; ganho anual e erro médio | `05-testes.md`, `dados/ano_p15.json` |
+| História de erros e acertos | **P15**: preso em H = 20° nas manhãs de inverno, achado pela simulação do ano; +34,5% → +47,1% (erro 27,7° → 16,9°) | `06-problemas-conhecidos.md` |
+| Figuras do P15 | `docs/imagens_videos_testes_fisicos/ganho_anual_{antes,depois}_da_correcao_p15.jpeg` — legenda: **simulação**; números de uma rodada (+38% → +49%), citar a faixa no texto | — |
+| **Conclusão** | Consulta a fornecedores de postes solares profissionais + comparação placas fixas × rastreador: rastreador +47%, **2 placas fixas Leste/Oeste +82%** por R$ 39,24 contra R$ 94,10 só nos extras do rastreador → recomendação: placas fixas | `docs/specs/07-conclusao.md`, `dados/conclusao_fixas_vs_rastreador.json` |
+| Material complementar | Vídeos `docs/video/demo_ihm.mp4` e `demo_simulador.mp4` | — |
 
-## Ainda depende do grupo
+## Itens que eram `[PREENCHER]` na v4 — como ficam
 
-- [ ] **Custos:** valor do **ESP32 + placa de expansão** e do **filamento PLA** (Tabela 2) — hoje
-      subtotal de R$ 235,04 dos itens com valor informado
-- [ ] **PCI (3.7):** software e método de fabricação
-- [ ] **Teste com lanterna (4.6):** repetir iluminando um lado de cada vez, agora olhando os
-      indicadores de diferença da IHM (ver F-03 em `docs/specs/05-testes.md`)
-- [ ] **Gravar o `main.c` atual no protótipo** e conferir: repouso noturno (F-09), manhã após o
-      repouso (F-10, P15), IHM (F-08) — validação física de P10/P14/P15
-- [ ] Confirmar **Campus Sorocaba**
-- [ ] Fonte do **ESP32**: continua no XL4015 #2 em 6 V pela placa de expansão?
-
-## Encerrado
-
-Orientador (Prof. Marcelo Bellodi) · custos de servos, XL4015, bateria e painel · XL4015 ajustado de
-12 V para 6 V · peça do suporte reimpressa · teste com lanterna registrado · **LDRs no 3V3
-confirmado** · **pinos e alimentação confirmados** (24/11/2026).
+| Item da v4 | Texto da v5 |
+|------------|-------------|
+| PCI (3.7): software e fabricação | Apresentada como **proposta de leiaute** da placa, desenhada pelo grupo em ferramenta vetorial (script Python) |
+| Custos: ESP32 + placa de expansão e filamento PLA | Linhas retiradas; nota na fonte da tabela: "não inclui o ESP32 com placa de expansão e o filamento PLA" — total = itens com valor pago |
+| Resultados: repouso noturno e P10/P14 no protótipo | "Validado em simulação" (P10, P14 e P15 aplicados ao `main.c` final); protótipo montado com as ligações confirmadas |
+| Teste com lanterna | Resultado registrado (girou ao contrário, firmware anterior às correções) + causas e roteiro de diagnóstico pela IHM |
+| 3V3 dos LDRs, campus | Confirmado (3V3) · Campus Sorocaba (como na v4) |
 
 ## Para a apresentação oral
 
-Roteiro sugerido: problema (cosseno) → solução (rastreador + torre) → montagem e testes físicos →
-IHM no celular (vídeo `demo_ihm.mp4`) → simulador com o mesmo código e o ano inteiro (vídeo
-`demo_simulador.mp4`) → **a história dos erros** (P10, testes contaminados, sombra do painel, peça
-quebrada, regressões do ESP32, lanterna, P15 achado pela simulação do ano) → próximos passos.
+Roteiro: problema (cosseno) → solução (rastreador + torre) → montagem e testes físicos → IHM no
+celular (`demo_ihm.mp4`) → simulador com o mesmo código e o ano inteiro (`demo_simulador.mp4`) →
+**a história dos erros** (P10, testes contaminados, sombra do painel, peça quebrada, regressões do
+ESP32, lanterna, P15) → **conclusão: o rastreador funciona, mas duas placas fixas Leste/Oeste
+compensam mais** (consulta ao mercado + números).

@@ -43,7 +43,7 @@ arduino-cli monitor -p <porta> -c baudrate=115200   # bloqueante: rodar em backg
 ## 4. Checklist antes de concluir uma mudança
 
 - [ ] Compila sem erros nem avisos novos.
-- [ ] Pinos batem com `docs/specs/02-hardware.md` (atenção à divergência A0–A3 × A1–A4).
+- [ ] Pinos batem com `docs/specs/02-hardware.md` (LDRs 34/35/32/33 no ADC1, servos 18/19).
 - [ ] `./simulator/build-firmware.sh` compila (o núcleo simulado cobre as APIs usadas; se não, implemente em `simulator/esp32/nucleo/`).
 - [ ] LDRs só em pinos do ADC1 (32–39): o ADC2 não funciona com Wi-Fi ligado.
 - [ ] Constantes em unidades de ADC pensadas para 12 bits (0–4095) — ver P14.

@@ -22,7 +22,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 40 | Jumper Dupont macho–macho 20 cm | Ligações |
 | — | Peças impressas em 3D | Estrutura — ver [04-mecanica.md](04-mecanica.md) |
 
-### Não aparece nas compras — confirmar se já existe
+### Itens complementares recomendados (fora da lista de compras)
 
 | Item | Por que é necessário |
 |------|----------------------|
@@ -77,7 +77,7 @@ montado invertido (LDR no GND), os sentidos dos eixos se invertem.
   otimista). Corrente: ~0,5–0,9 A em movimento e **até ~2,5 A travado**, cada.
 - O CAD já foi desenhado para ele: o servo modelado no AMF tem 54 × 20 × 40 mm (corpo + abas).
 - Carga estimada no eixo de elevação: o centro da placa fica a ~64 mm do pino da trave. Com um
-  painel de 10 W de ~1 kg (pesar o real), o torque é ~6,4 kg·cm no pior caso — dentro do MG996R,
+  painel de 10 W de ~1 kg (estimativa), o torque é ~6,4 kg·cm no pior caso — dentro do MG996R,
   com pouca folga a 4,8 V. Por isso a recomendação de **6 V**.
 - Biblioteca **ESP32Servo**, 50 Hz, pulso 500–2400 µs (`attach(pino, 500, 2400)`). O sinal de
   3,3 V do ESP32 é aceito pelo MG996R. Se o servo bater no fim de curso, estreitar para 1000–2000 µs.
@@ -116,7 +116,7 @@ GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
 
 Consumo médio estimado: ESP32 com Wi-Fi em modo AP ~100–150 mA (picos de ~250 mA na transmissão);
 LDRs ~1 mA; servos parados ~10–20 mA cada, picos curtos ao mover.
-Uma bateria de 7 Ah (capacidade típica desse modelo — conferir a etiqueta) alimenta o sistema por
+Uma bateria de 7 Ah (capacidade típica desse modelo) alimenta o sistema por
 vários dias mesmo sem o painel.
 
 ## Medição da bateria (não implementada)
