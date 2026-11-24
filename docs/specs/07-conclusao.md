@@ -25,9 +25,9 @@
 | Bateria selada 12 V | 78,80 |
 | Painel solar 10 W | 39,24 |
 | ESP32 | 25,00 |
-| Filamento (~356 g das peças, incluindo a trave reimpressa, de um rolo de 1 kg a R$ 49,90) | 17,74 |
+| Filamento PLA (~347 g das peças, incluindo a trave reimpressa, de um rolo de 1 kg a R$ 80,00) | 27,78 |
 | LDRs, resistores e jumpers | 6,40 |
-| **Total** | **277,78** |
+| **Total** | **287,82** |
 
 Consumo de filamento calculado pelas peças 3D: `tools/relatorio/estimar_filamento.py` →
 `docs/relatorio/dados/filamento.json`.

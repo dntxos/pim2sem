@@ -20,7 +20,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
 | 40 | Jumper Dupont macho–macho 20 cm | Ligações |
-| ~356 g | Filamento 1,75 mm (rolo de 1 kg a R$ 49,90) — R$ 17,74 | Peças impressas em 3D — ver [04-mecanica.md](04-mecanica.md) |
+| ~347 g | Filamento PLA 1,75 mm (rolo de 1 kg a R$ 80,00) — R$ 27,78 | Peças impressas em 3D — ver [04-mecanica.md](04-mecanica.md) |
 
 ### Itens complementares recomendados (fora da lista de compras)
 
@@ -34,7 +34,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | Chave liga/desliga e fios mais grossos (≥ 0,5 mm²) | Os jumpers Dupont de 20 cm não são adequados para a corrente dos servos (até ~2,5 A cada em travamento). |
 | Multímetro | Ajustar a saída dos XL4015 **antes** de ligar qualquer coisa. |
 
-Custo total do protótipo: **R$ 277,78** (detalhe em [07-conclusao.md](07-conclusao.md#custo-do-protótipo)).
+Custo total do protótipo: **R$ 287,82** (detalhe em [07-conclusao.md](07-conclusao.md#custo-do-protótipo)).
 
 ## Mapa de pinos (ESP32 — `main.c` atual, confirmado pelo grupo em 24/11/2026)
 

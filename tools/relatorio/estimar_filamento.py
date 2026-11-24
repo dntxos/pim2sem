@@ -8,7 +8,7 @@ Modelo de fatiador simplificado, com as recomendações de docs/specs/04-mecanic
   preenchimento: 25% (prato giratório e trave: 40%, recebem o eixo do servo)
   + 10% de perdas (saia, suportes, purga)
   + reimpressão da peça que quebrou na montagem (a trave que segura a placa).
-Preço: rolo de 1 kg, 1,75 mm, R$ 49,90 (referência informada pelo grupo).
+Preço: rolo de PLA de 1 kg, 1,75 mm, R$ 80,00 (informado pelo grupo).
 
 Saída: docs/relatorio/dados/filamento.json
 Uso: python3 tools/relatorio/estimar_filamento.py
@@ -19,12 +19,12 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 STL = RAIZ / "3d_material/stl"
-DENSIDADE = 1.27        # g/cm³ (PETG; PLA ≈ 1,24 — diferença < 3%)
+DENSIDADE = 1.24        # g/cm³ (PLA)
 PAREDE_MM = 1.2
 INFILL = 0.25
 INFILL_EIXO = 0.40
 PERDAS = 0.10
-PRECO_KG = 49.90
+PRECO_KG = 80.00
 REIMPRESSA = "TRAVE-2"  # peça do suporte da placa que quebrou no encaixe dos braços
 
 

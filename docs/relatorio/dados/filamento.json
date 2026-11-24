@@ -4,78 +4,78 @@
   {
    "peca": "BASE_FECHAMENTO-2",
    "volume_cm3": 55.0,
-   "massa_g": 61.9,
+   "massa_g": 60.5,
    "impressoes": 1
   },
   {
    "peca": "COLUNA_INTERNA-1",
    "volume_cm3": 24.6,
-   "massa_g": 31.2,
+   "massa_g": 30.5,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_APOIO_MOTOR_01-1",
    "volume_cm3": 5.1,
-   "massa_g": 6.5,
+   "massa_g": 6.4,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_APOIO_MOTOR_02-1",
    "volume_cm3": 3.5,
-   "massa_g": 4.5,
+   "massa_g": 4.4,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_ESTRUTURAL_01-1",
    "volume_cm3": 3.4,
-   "massa_g": 4.3,
+   "massa_g": 4.2,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_ESTRUTURAL_01-2",
    "volume_cm3": 3.4,
-   "massa_g": 4.3,
+   "massa_g": 4.2,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_ESTRUTURAL_02-1",
    "volume_cm3": 2.8,
-   "massa_g": 3.6,
+   "massa_g": 3.5,
    "impressoes": 1
   },
   {
    "peca": "PAREDE_ESTRUTURAL_03-1",
    "volume_cm3": 5.1,
-   "massa_g": 6.4,
+   "massa_g": 6.3,
    "impressoes": 1
   },
   {
    "peca": "PRATO_GIRATORIO-1",
    "volume_cm3": 12.1,
-   "massa_g": 15.4,
+   "massa_g": 15.0,
    "impressoes": 1
   },
   {
    "peca": "SUPORTE_DO_SUPORTE_LDR-1",
    "volume_cm3": 9.5,
-   "massa_g": 12.1,
+   "massa_g": 11.8,
    "impressoes": 1
   },
   {
    "peca": "SUPORTE_LDR-2",
    "volume_cm3": 3.1,
-   "massa_g": 4.0,
+   "massa_g": 3.9,
    "impressoes": 1
   },
   {
    "peca": "TRAVE-2",
    "volume_cm3": 67.6,
-   "massa_g": 84.5,
+   "massa_g": 82.5,
    "impressoes": 2
   }
  ],
- "massa_pecas_g": 323,
- "massa_com_perdas_g": 356,
- "preco_rolo_1kg": 49.9,
- "custo_R$": 17.74
+ "massa_pecas_g": 316,
+ "massa_com_perdas_g": 347,
+ "preco_rolo_1kg": 80.0,
+ "custo_R$": 27.78
 }
