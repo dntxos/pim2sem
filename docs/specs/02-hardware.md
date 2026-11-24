@@ -27,7 +27,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | Item | Por que é necessário |
 |------|----------------------|
 | **Controlador de carga solar 12 V** (PWM, ≥ 5 A) | Um painel de 12 V "nominal" chega a ~21 V em aberto. Ligado direto na bateria, sobrecarrega e danifica a bateria selada, e à noite a bateria descarrega pelo painel. Só dispensável se o painel **não** for ligado à bateria (ex.: só medido com multímetro). |
-| Protoboard ou placa perfurada | Montar os divisores dos LDRs e distribuir 3,3 V/6 V/GND. |
+| Placa universal (perfurada) | Usada no protótipo para os divisores dos LDRs e a distribuição de 3,3 V/6 V/GND. |
 | Cabo USB do ESP32 | Gravar o firmware e ler o Monitor Serial (115 200 baud). |
 | Capacitor eletrolítico 470–1000 µF / 16 V | Junto aos servos, absorve os picos de corrente do MG996R. |
 | Fusível (2–5 A) + porta-fusível na saída da bateria | Bateria selada fornece corrente alta em curto-circuito. |
@@ -55,10 +55,16 @@ Os LDRs estão no **ADC1** de propósito: o ADC2 do ESP32 não funciona com o Wi
 **Histórico (Nano):** o código usava A1–A4 e o diagrama A0–A3 (P1) — divergência encerrada com a
 migração, pois o ESP32 tem pinos próprios.
 
-## Placa de circuito impresso
+## Placa do circuito
 
-O circuito e a placa de circuito impresso (PCI) foram desenhados no **Tinkercad** (Circuits): ESP32,
-os 4 divisores dos LDRs, conectores dos servos e entradas de 6 V.
+O circuito foi desenhado no **Tinkercad** (Circuits) e montado numa **placa universal** (placa
+perfurada de ilhas soldadas — não é protoboard nem placa de circuito impresso corroída): ESP32 na
+placa de expansão, os 4 divisores dos LDRs, conectores dos servos e entradas de 6 V, com ligações
+soldadas.
+
+Não houve fabricação de placa de circuito impresso (PCI). O leiaute de PCI que o guia do PIM pede
+aparece no relatório como **projeto** para uma versão definitiva (100 × 70 mm, mesmo circuito da
+placa universal).
 
 ## Circuito dos LDRs
 

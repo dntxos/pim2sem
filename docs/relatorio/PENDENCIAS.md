@@ -22,7 +22,7 @@ submissão). Limite: 40 páginas.
 
 | Item da v4 | Texto da v5 |
 |------------|-------------|
-| PCI (3.7): software e fabricação | Circuito e PCI desenhados no **Tinkercad** (Circuits) |
+| PCI (3.7): software e fabricação | Circuito desenhado no **Tinkercad** e montado em **placa universal** (perfurada, ligações soldadas) — sem PCI fabricada. A seção mantém o leiaute de PCI (exigência do guia) como **projeto** para a versão definitiva, com o mesmo circuito |
 | Custos: ESP32 e filamento | ESP32 **R$ 25,00**; filamento **R$ 17,74** (~356 g das peças, incluindo a trave reimpressa, de rolo de 1 kg a R$ 49,90 — `dados/filamento.json`); **total R$ 277,78**, sem subtotal parcial |
 | Resultados: repouso noturno e P10/P14 no protótipo | Testes físicos feitos na casa do Dawid, acompanhados pela IHM; correções P10, P14 e P15 validadas em simulação e aplicadas ao `main.c` final |
 | Teste com lanterna | Resultado registrado (girou ao contrário, firmware anterior às correções) + causas e roteiro de diagnóstico pela IHM |
