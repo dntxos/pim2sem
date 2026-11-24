@@ -74,8 +74,8 @@
         <summary>🔌 Montagem e firmware</summary>
         <label class="campo">Fiação dos LDRs
           <select id="inFiacao">
-            <option value="codigo" selected>Como o código espera (A1–A4)</option>
-            <option value="diagrama">Como no diagrama Tinkercad (A0–A3)</option>
+            <option value="codigo" selected>Como o código espera</option>
+            <option value="diagrama">Como no diagrama Tinkercad (Nano: A0–A3)</option>
           </select></label>
         <div class="linha">
           <label class="check"><input type="checkbox" id="inInvH"> Inverter servo horizontal</label>
@@ -117,6 +117,31 @@
           <p class="nota">* Placa fixa voltada ao Norte, inclinada na latitude. Unidade relativa (lux·h ÷ 1000). Zera ao mudar a data ou o modo.</p>
         </div>
         <canvas id="grafico" height="150"></canvas>
+      </details>
+
+      <details open id="boxAno">
+        <summary>📅 Ano inteiro</summary>
+        <p class="nota">Roda o mesmo firmware do 1º de janeiro a 31 de dezembro: a cada amostra o sol avança e o
+          firmware tem alguns segundos simulados para reagir (inclui o repouso noturno). Compara com uma placa
+          fixa voltada ao Norte e inclinada na latitude. Céu limpo, só luz direta.</p>
+        <div class="linha">
+          <label class="campo curto">Amostragem
+            <select id="inAnoPasso">
+              <option value="15,0.5" selected>Rápida · a cada 15 dias</option>
+              <option value="5,0.25">Detalhada · a cada 5 dias</option>
+            </select></label>
+          <button id="btnAno" class="destaque">▶ Simular o ano</button>
+        </div>
+        <div class="progresso"><i id="anoBarra"></i></div>
+        <p class="nota" id="anoStatus">Use a latitude e a montagem acima; o resultado aparece mês a mês.</p>
+        <canvas id="graficoAno" height="170"></canvas>
+        <div class="energia">
+          <div><span>Rastreador · ano</span><b id="anoTrack">–</b></div>
+          <div><span>Placa fixa · ano</span><b id="anoFixa">–</b></div>
+          <div><span>Ganho anual</span><b id="anoGanho">–</b></div>
+          <div><span>Erro médio de apontamento</span><b id="anoErro">–</b></div>
+        </div>
+        <button id="btnAnoCsv" disabled>Baixar resultados (.csv)</button>
       </details>
 
       <details open id="boxCelular" hidden>

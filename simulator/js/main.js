@@ -40,6 +40,7 @@ const estado = {
   servoV: 90,
   energiaTrack: 0,
   energiaFixa: 0,
+  energiaIdeal: 0,
   linhasSerial: [],
   amostras: [],
   flutuante: 2.5,
@@ -385,7 +386,7 @@ function avancar(dtReal) {
   {
     if (estado.modoSol === 'dia' && estado.horasPorSegundo > 0) {
       estado.hora += dtReal * estado.horasPorSegundo;
-      if (estado.hora > 19) estado.hora = 5;
+      if (estado.hora > 19 && !ano.rodando) estado.hora = 5;
       $('inHora').value = estado.hora;
       $('outHora').value = fmtHora(estado.hora);
     }
@@ -421,6 +422,9 @@ window.sim = {
   estado,
   /** Câmera e controles da cena (usado pelo roteiro do vídeo de demonstração). */
   cena: { camera, controls },
+  /** Simula o ano inteiro (mesmo que o botão). Devolve [{dia, track, fixa, ideal, erro}]. */
+  ano: () => simularAno(),
+  anoTotais: () => totaisAno(),
   avancar: (seg) => {
     for (let t = 0; t < seg; t += 0.05) avancar(0.05);
     atualizarCenaAuxiliar();
@@ -498,12 +502,16 @@ function integrarEnergia(dtReal) {
   normalDaPlaca(vN);
   const s = new THREE.Vector3(...estado.sol);
   estado.energiaTrack += estado.luxDireta * Math.max(0, vN.dot(s)) * dh / 1000;
-  // placa fixa: voltada ao equador (Norte no hemisfério sul), inclinada na latitude
-  const inc = Math.abs(estado.latitude) * GRAU;
-  const azFixa = estado.latitude < 0 ? 0 : 180;
-  const h = direcaoSolar(azFixa, 0);
-  const nf = new THREE.Vector3(h[0] * Math.sin(inc), Math.cos(inc), h[2] * Math.sin(inc));
+  estado.energiaIdeal += estado.luxDireta * dh / 1000;
+  const nf = normalFixa();
   estado.energiaFixa += estado.luxDireta * Math.max(0, nf.dot(s)) * dh / 1000;
+}
+
+/** Placa fixa de referência: voltada ao equador (Norte no hemisfério sul), inclinada na latitude. */
+function normalFixa() {
+  const inc = Math.abs(estado.latitude) * GRAU;
+  const h = direcaoSolar(estado.latitude < 0 ? 0 : 180, 0);
+  return new THREE.Vector3(h[0] * Math.sin(inc), Math.cos(inc), h[2] * Math.sin(inc));
 }
 
 function amostrar() {
@@ -622,7 +630,7 @@ function desenharGrafico() {
 
 // controles
 function ligar(id, evento, fn) { $(id).addEventListener(evento, fn); }
-function zerarEnergia() { estado.energiaTrack = 0; estado.energiaFixa = 0; }
+function zerarEnergia() { estado.energiaTrack = 0; estado.energiaFixa = 0; estado.energiaIdeal = 0; }
 function sincronizarSaidas() {
   $('outHora').value = fmtHora(estado.hora);
   $('outDia').value = fmtDia(estado.dia);
@@ -685,6 +693,135 @@ ligar('inHex', 'change', async (e) => {
   } catch (err) {
     alert(`Não foi possível carregar o .hex: ${err.message}`);
   }
+});
+
+
+// ---------------------------------------------------------------- ano inteiro
+// O mesmo firmware roda dia após dia, em "time-lapse": o sol anda continuamente, 30 min (ou 15) a cada
+// 1,5 s simulados (~5°/s, bem abaixo dos ~20°/s do rastreador), e a energia é integrada como no modo
+// "Trajetória do dia". A noite é simulada (125 s no escuro) para o repouso noturno acontecer como no
+// protótipo; ao amanhecer o sol sobe devagar (2 min por passo) e PARA enquanto o firmware conta os 30 s
+// de luz que exige para acordar — senão, com o tempo comprimido, ele acordaria horas atrasado.
+const ano = { rodando: false, parar: false, dias: [], passoDias: 15 };
+function avancarSim(seg) { for (let t = 0; t < seg - 1e-9; t += 0.05) avancar(Math.min(0.05, seg - t)); }
+/** Devolve o controle ao navegador para desenhar a cena (aba visível) sem travar em aba oculta. */
+function ceder() {
+  // quadro novo ou, se o navegador estiver segurando os quadros (aba em segundo plano), segue mesmo assim
+  return new Promise((r) => {
+    let feito = false; const ok = () => { if (!feito) { feito = true; r(); } };
+    requestAnimationFrame(ok); setTimeout(ok, 40);
+    const c = new MessageChannel(); c.port1.onmessage = () => document.visibilityState !== 'visible' && ok(); c.port2.postMessage(0);
+  });
+}
+function estadoFirmware() {
+  try { return uno && uno.http ? JSON.parse(uno.http('/estado').corpo) : null; } catch { return null; }
+}
+async function simularAno() {
+  if (ano.rodando) { ano.parar = true; return ano.dias; }
+  const [passoDias, passoH] = $('inAnoPasso').value.split(',').map(Number);
+  const salvo = { dia: estado.dia, hora: estado.hora, hps: estado.horasPorSegundo, vel: estado.velSim, rod: estado.rodando, modo: estado.modoSol };
+  Object.assign(ano, { rodando: true, parar: false, dias: [], passoDias });
+  $('btnAno').textContent = '■ Parar'; $('btnAnoCsv').disabled = true;
+  definirModo('dia');
+  estado.horasPorSegundo = 0; estado.velSim = 1; estado.rodando = false;
+  await iniciarFirmware(); // RESET: começa do setup(), como ligar a torre em 1º de janeiro
+  estado.servoH = 90; estado.servoV = 90; aplicarPose();
+  const lista = []; for (let d = 1; d <= 365; d += passoDias) lista.push(d);
+  let tQuadro = performance.now();
+  const passoSim = 1.5;
+  for (const [k, dia] of lista.entries()) {
+    estado.dia = dia;
+    estado.horasPorSegundo = 0; estado.hora = 4; atualizarSol(); avancarSim(125); // noite: repouso noturno
+    zerarEnergia();
+    const reg = { dia, eSoma: 0, ePeso: 0 };
+    while (estado.hora < 20 && !ano.parar) {
+      atualizarSol();
+      if (estado.sol[1] <= 0) { estado.hora += passoH; continue; }
+      const f = estadoFirmware();
+      if (f && (f.periodo === 'NOITE' || f.periodo === 'AMANHECENDO')) {
+        // estacionado: o sol sobe de 2 em 2 min até a luz passar do limite de dia; aí o sol para
+        // enquanto o firmware confirma os 30 s de claridade (acorda na hora certa, como no protótipo)
+        estado.horasPorSegundo = 0;
+        if (f.luz > f.limDia) avancarSim(32); else { estado.hora += 2 / 60; avancarSim(0.1); }
+        continue;
+      }
+      estado.horasPorSegundo = passoH / passoSim;
+      avancarSim(passoSim);
+      if (estado.sol[1] > 0) { const p = estado.sol[1]; reg.eSoma += anguloErro() * p; reg.ePeso += p; }
+      if (performance.now() - tQuadro > 25) {
+        $('anoStatus').textContent = `${fmtDia(dia)} · ${fmtHora(estado.hora)} · dia ${k + 1} de ${lista.length}`;
+        $('anoBarra').style.width = `${((k + estado.hora / 24) / lista.length) * 100}%`;
+        $('inDia').value = dia; $('inHora').value = Math.min(19, Math.max(5, estado.hora)); sincronizarSaidas();
+        await ceder();
+        tQuadro = performance.now();
+      }
+    }
+    estado.horasPorSegundo = 0;
+    Object.assign(reg, { track: estado.energiaTrack, fixa: estado.energiaFixa, ideal: estado.energiaIdeal });
+    if (ano.parar) break;
+    reg.erro = reg.ePeso ? reg.eSoma / reg.ePeso : 0;
+    ano.dias.push(reg);
+    mostrarAno();
+  }
+  const fim = !ano.parar;
+  $('anoBarra').style.width = fim ? '100%' : $('anoBarra').style.width;
+  $('anoStatus').textContent = fim ? `Concluído: ${ano.dias.length} dias simulados, latitude ${fmt(estado.latitude, 1)}°.` : 'Interrompido.';
+  Object.assign(estado, { dia: salvo.dia, hora: salvo.hora, horasPorSegundo: salvo.hps, velSim: salvo.vel, rodando: salvo.rod });
+  definirModo(salvo.modo);
+  $('inDia').value = estado.dia; $('inHora').value = estado.hora; sincronizarSaidas();
+  ano.rodando = false; $('btnAno').textContent = '▶ Simular o ano'; $('btnAnoCsv').disabled = !ano.dias.length;
+  return ano.dias;
+}
+function totaisAno() {
+  const d = ano.dias; const soma = (k) => d.reduce((a, r) => a + r[k], 0) * ano.passoDias;
+  const track = soma('track'); const fixa = soma('fixa'); const ideal = soma('ideal');
+  const erro = d.reduce((a, r) => a + r.erro, 0) / Math.max(1, d.length);
+  return { track, fixa, ideal, ganho: fixa > 0 ? (track / fixa - 1) * 100 : 0, erro };
+}
+function mostrarAno() {
+  const t = totaisAno();
+  $('anoTrack').textContent = fmt(t.track / 1000, 1) + ' mil';
+  $('anoFixa').textContent = fmt(t.fixa / 1000, 1) + ' mil';
+  const g = $('anoGanho'); g.textContent = `${t.ganho >= 0 ? '+' : ''}${fmt(t.ganho, 0)} %`; g.className = t.ganho >= 0 ? 'bom' : 'mau';
+  const e = $('anoErro'); e.textContent = `${fmt(t.erro, 1)}°`; e.className = t.erro < 10 ? 'bom' : t.erro > 30 ? 'mau' : '';
+  desenharGraficoAno();
+}
+function desenharGraficoAno() {
+  const cv = $('graficoAno'); const w = cv.clientWidth; const h = 170;
+  if (!w) return;
+  if (cv.width !== w * devicePixelRatio) { cv.width = w * devicePixelRatio; cv.height = h * devicePixelRatio; }
+  const g = cv.getContext('2d'); g.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0); g.clearRect(0, 0, w, h);
+  const css = getComputedStyle(document.documentElement);
+  const cor = { track: css.getPropertyValue('--acento'), fixa: css.getPropertyValue('--acento-2'), ideal: css.getPropertyValue('--suave') };
+  const pad = { l: 30, r: 8, t: 20, b: 16 }; const W = w - pad.l - pad.r; const H = h - pad.t - pad.b;
+  const d = ano.dias; const max = Math.max(1, ...d.map((r) => r.ideal)) * 1.05;
+  const X = (dia) => pad.l + ((dia - 1) / 364) * W; const Y = (v) => pad.t + H - (v / max) * H;
+  g.font = '10px system-ui'; g.lineWidth = 1; g.strokeStyle = css.getPropertyValue('--borda'); g.fillStyle = css.getPropertyValue('--suave');
+  'JFMAMJJASOND'.split('').forEach((m, i) => {
+    const x = X(i * 30.4 + 15); g.textAlign = 'center'; g.fillText(m, x, h - 4);
+    g.beginPath(); g.moveTo(X(i * 30.4 + 1), pad.t); g.lineTo(X(i * 30.4 + 1), pad.t + H); g.stroke();
+  });
+  g.textAlign = 'right';
+  [0, 0.5, 1].forEach((f) => g.fillText(fmt((max * f) / 1.05, 0), pad.l - 4, Y((max * f) / 1.05) + 3));
+  [['track', 'rastreador'], ['fixa', 'placa fixa'], ['ideal', 'ideal (sempre de frente)']].forEach(([k, nome], i) => {
+    g.fillStyle = cor[k]; g.fillRect(pad.l + i * 78, 6, 10, 3); g.textAlign = 'left'; g.fillText(nome, pad.l + 14 + i * 78, 11);
+  });
+  for (const k of ['ideal', 'fixa', 'track']) {
+    if (d.length < 1) break;
+    g.strokeStyle = cor[k]; g.lineWidth = k === 'track' ? 2.2 : 1.5; g.setLineDash(k === 'ideal' ? [4, 3] : []);
+    g.beginPath(); d.forEach((r, i) => (i ? g.lineTo(X(r.dia), Y(r[k])) : g.moveTo(X(r.dia), Y(r[k])))); g.stroke();
+    if (d.length === 1) { g.fillStyle = cor[k]; g.fillRect(X(d[0].dia) - 2, Y(d[0][k]) - 2, 4, 4); }
+  }
+  g.setLineDash([]);
+}
+ligar('btnAno', 'click', () => simularAno());
+ligar('btnAnoCsv', 'click', () => {
+  const linhas = ['dia;data;rastreador;placa_fixa;ideal;ganho_pct;erro_medio_graus',
+    ...ano.dias.map((r) => [r.dia, fmtDia(r.dia), r.track.toFixed(2), r.fixa.toFixed(2), r.ideal.toFixed(2),
+      ((r.track / r.fixa - 1) * 100).toFixed(1), r.erro.toFixed(1)].join(';'))];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([linhas.join('\n') + '\n'], { type: 'text/csv' }));
+  a.download = `ano_lat${estado.latitude}.csv`; a.click(); URL.revokeObjectURL(a.href);
 });
 
 // arrastar o sol

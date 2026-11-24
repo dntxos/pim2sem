@@ -132,3 +132,18 @@ com `TOLERANCIA = 160` (variante `esp32_tol160`): +35% sobre a placa fixa.
 
 **Correção:** `TOLERANCIA = 160` (ou tolerância relativa à soma das leituras — ver P11) e calibrar
 com o painel real.
+
+## <a id="p15"></a>P15 — No inverno, depois do repouso noturno, o painel acorda preso no limite (médio) — encontrado em simulação (24/11/2026)
+
+Encontrado pela simulação do ano inteiro (painel "📅 Ano inteiro" do simulador). Em junho, o painel
+acorda na posição de repouso (H = 20°, V = 90°); o eixo vertical desce para baixo de 90°, o
+`sentidoHorizontal` inverte (P10) e empurra o horizontal contra o limite de 20°. O painel fica
+preso em H = 20° até perto do meio-dia (erro de ~55° a manhã toda) e só então se solta. Confirmado
+também com o Sol andando devagar (não é efeito do tempo acelerado). Em dezembro não acontece.
+
+Efeito no ano (`?elevacaoLdr=25`, amostragem a cada 15 dias): ganho anual de ~+38% sobre a placa
+fixa, mas erro médio de apontamento de ~40° em maio–julho contra ~18° no verão.
+
+**Correções a testar (no simulador, como variante):** estacionar à noite numa posição que não fique
+no limite (ex.: H = 90°), ou tratar o horizontal travado no limite (se `anguloH` está no limite e
+a luz continua desequilibrada, inverter o `sentidoHorizontal`). Validar depois no protótipo.

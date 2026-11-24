@@ -4,7 +4,10 @@
 //
 // Usa a variante com o suporte dos LDRs 25 mm acima do painel (correção sugerida para o P13).
 // Uso: (servidor do simulador em http://127.0.0.1:8000 — ver .claude/launch.json)
-//   node tools/video/gravar.mjs [saida.mp4]
+//   node tools/video/gravar.mjs [saida.mp4] [roteiro.js] [escala]
+//   - demo da IHM (padrão):  node tools/video/gravar.mjs
+//   - funções do simulador:  node tools/video/gravar.mjs docs/video/demo_simulador.mp4 roteiro_simulador.js 1.2
+// O roteiro pode acelerar trechos: window.__marcas.push({ t: Date.now() / 1000, fator: 4 }) (fator 1 = normal).
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -15,6 +18,8 @@ const AQUI = dirname(fileURLToPath(import.meta.url));
 const SAIDA = process.argv[2] ?? join(AQUI, '../../docs/video/demo_ihm.mp4');
 const URL_SIM = process.env.URL_SIM ?? 'http://127.0.0.1:8000/simulator/?elevacaoLdr=25';
 const CHROME = process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const ROTEIRO = process.argv[3] ?? 'roteiro_ihm.js';
+const ESCALA = Number(process.argv[4] ?? 1); // zoom da página (1.2 = interface 20% maior no vídeo)
 const L = 1920, A = 1080, PORTA = 9339, FPS = 30;
 
 const tmp = mkdtempSync(join(tmpdir(), 'demo-ihm-'));
@@ -50,15 +55,17 @@ function enviar(method, params = {}) {
 }
 
 await enviar('Page.enable'); await enviar('Runtime.enable');
-await enviar('Emulation.setDeviceMetricsOverride', { width: L, height: A, deviceScaleFactor: 1, mobile: false });
+await enviar('Emulation.setDeviceMetricsOverride', { width: Math.round(L / ESCALA), height: Math.round(A / ESCALA), deviceScaleFactor: ESCALA, mobile: false });
 await enviar('Page.navigate', { url: URL_SIM });
 await espera(6000); // módulos, STLs e WebAssembly
 const pronto = await enviar('Runtime.evaluate', { expression: 'typeof sim !== "undefined" && !!sim.estado', returnByValue: true });
 if (!pronto.result?.result?.value) throw new Error('simulador não carregou');
 
 await enviar('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: L, maxHeight: A, everyNthFrame: 1 });
-const r = await enviar('Runtime.evaluate', { expression: readFileSync(join(AQUI, 'roteiro_ihm.js'), 'utf8'), awaitPromise: true, returnByValue: true });
+const r = await enviar('Runtime.evaluate', { expression: 'window.__marcas = [];' + readFileSync(join(AQUI, ROTEIRO), 'utf8'), awaitPromise: true, returnByValue: true });
 await enviar('Page.stopScreencast');
+const marcas = (await enviar('Runtime.evaluate', { expression: 'window.__marcas', returnByValue: true })).result?.result?.value ?? [];
+const fatorEm = (t) => { let f = 1; for (const m of marcas) if (m.t <= t) f = m.fator; return f; };
 if (r.result?.exceptionDetails) throw new Error(JSON.stringify(r.result.exceptionDetails));
 ws.close(); chrome.kill();
 
@@ -69,7 +76,7 @@ let lista = 'ffconcat version 1.0\n';
 quadros.forEach((q, i) => {
   const f = join(pasta, `${String(i).padStart(6, '0')}.jpg`);
   writeFileSync(f, Buffer.from(q.data, 'base64'));
-  const dur = i + 1 < quadros.length ? quadros[i + 1].t - q.t : 1 / FPS;
+  const dur = (i + 1 < quadros.length ? quadros[i + 1].t - q.t : 1 / FPS) / fatorEm(q.t);
   lista += `file '${f}'\nduration ${Math.max(dur, 0.001).toFixed(4)}\n`;
 });
 lista += `file '${join(pasta, `${String(quadros.length - 1).padStart(6, '0')}.jpg`)}'\n`;
@@ -79,5 +86,5 @@ execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0'
   '-vf', `fps=${FPS},scale=${L}:${A}:flags=lanczos,format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '20',
   '-movflags', '+faststart', SAIDA], { stdio: 'inherit' });
 const dur = quadros.at(-1).t - quadros[0].t;
-console.log(`OK ${SAIDA} — ${quadros.length} quadros capturados em ${dur.toFixed(1)} s (~${(quadros.length / dur).toFixed(0)} fps)`);
+console.log(`OK ${SAIDA} — ${quadros.length} quadros capturados em ${dur.toFixed(1)} s (~${(quadros.length / dur).toFixed(0)} fps), ${marcas.length} marcas de velocidade`);
 rmSync(tmp, { recursive: true, force: true });
