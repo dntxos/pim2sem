@@ -419,6 +419,8 @@ const perf = { sensores: 0, emulador: 0, render: 0, quadros: 0 };
 window.sim = {
   perf,
   estado,
+  /** Câmera e controles da cena (usado pelo roteiro do vídeo de demonstração). */
+  cena: { camera, controls },
   avancar: (seg) => {
     for (let t = 0; t < seg; t += 0.05) avancar(0.05);
     atualizarCenaAuxiliar();

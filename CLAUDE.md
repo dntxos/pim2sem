@@ -30,6 +30,7 @@ simulator/              Simulador 3D: o mesmo main.c compilado p/ WebAssembly (n
 simulator/esp32/nucleo/ Núcleo ESP32 simulado (Arduino.h, WiFi.h, WebServer.h, ESP32Servo.h)
 docs/imagens_videos_testes_fisicos/  Fotos e vídeos dos testes físicos (fonte do cap. de testes)
 tools/render/           Renders fotorrealistas da montagem no Blender (figuras do relatório)
+tools/video/            Vídeo de demonstração da IHM (Chrome headless + ffmpeg) → docs/video/demo_ihm.mp4
 docs/relatorio/         Relatório do PIM II (.docx) e figuras
 .claude/skills/         Skills do projeto
 ```

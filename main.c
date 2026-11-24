@@ -89,6 +89,7 @@ const char pagina[] PROGMEM = R"rawliteral(
 :root{--azul:#0b2a5b;--azul2:#16407f;--ouro:#f5b800;--fundo:#eef1f6;--card:#fff;--txt:#14213d;--sub:#66728a;--linha:#e3e7ee;--ok:#12805c;--erro:#c0392b;--r:14px}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+html{scrollbar-width:none}::-webkit-scrollbar{display:none}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fundo);color:var(--txt);font-size:15px;line-height:1.35;-webkit-tap-highlight-color:transparent}
 .num{font-variant-numeric:tabular-nums}
 header{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;border-bottom:4px solid var(--ouro)}
@@ -101,20 +102,20 @@ header{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;pa
 .pilula i{width:8px;height:8px;border-radius:50%;background:#9aa4b5}
 .pilula.ok i{background:#3ddc97;box-shadow:0 0 0 3px rgba(61,220,151,.25)}
 .pilula.erro i{background:#ff6b5e}
-main{max-width:520px;margin:0 auto;padding:14px 12px calc(24px + env(safe-area-inset-bottom));display:grid;gap:12px}
+main{max-width:520px;margin:0 auto;padding:14px 12px calc(24px + env(safe-area-inset-bottom));display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .card{background:var(--card);border-radius:var(--r);padding:14px;box-shadow:0 1px 2px rgba(11,42,91,.06),0 4px 14px rgba(11,42,91,.05)}
 .card h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--sub);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
 .card h2 span{text-transform:none;letter-spacing:0;font-weight:600;color:var(--sub)}
-.resumo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.chip{background:var(--card);border-radius:12px;padding:10px;box-shadow:0 1px 2px rgba(11,42,91,.06)}
+.resumo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chip{min-width:0;background:var(--card);border-radius:12px;padding:10px;box-shadow:0 1px 2px rgba(11,42,91,.06)}
 .chip small{display:block;font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
-.chip b{display:flex;align-items:center;gap:5px;font-size:14.5px;margin-top:3px;white-space:nowrap}
+.chip b{display:block;font-size:14.5px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip em{display:block;font-style:normal;font-size:11px;color:var(--sub);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--fundo);border-radius:12px;padding:4px;gap:4px}
 .seg button{border:0;border-radius:9px;padding:12px 6px;font:inherit;font-weight:700;font-size:14px;background:transparent;color:var(--sub);cursor:pointer}
 .seg button.ativo{background:var(--azul);color:#fff;box-shadow:0 2px 6px rgba(11,42,91,.3)}
-.ldrs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ldr{border:1px solid var(--linha);border-radius:11px;padding:9px 10px}
+.ldrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ldr{min-width:0;border:1px solid var(--linha);border-radius:11px;padding:9px 10px}
 .ldr div{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);font-weight:600}
 .ldr b{font-size:20px;display:block;margin:2px 0 6px}
 .barra{height:6px;background:var(--fundo);border-radius:9px;overflow:hidden}
@@ -128,7 +129,7 @@ main{max-width:520px;margin:0 auto;padding:14px 12px calc(24px + env(safe-area-i
 .trilho .meio{position:absolute;left:50%;top:3px;bottom:3px;width:1px;background:#b9c1cf}
 .trilho .cursor{position:absolute;top:2px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--azul);border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .4s;left:50%}
 .eq p{font-size:12px;margin-top:4px;color:var(--sub)}
-.medidores{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
+.medidores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;text-align:center}
 .medidores svg{width:100%;height:auto;display:block}
 .medidores b{font-size:22px;display:block;margin-top:-6px}
 .medidores small{font-size:11.5px;color:var(--sub);font-weight:600}
@@ -144,6 +145,7 @@ canvas{width:100%;height:170px;display:block}
 .bloqueio{opacity:.4;pointer-events:none;filter:grayscale(1)}
 .aviso{font-size:12.5px;text-align:center;color:var(--sub);margin-top:10px;min-height:17px}
 footer{text-align:center;font-size:11px;color:var(--sub);padding:2px 0 8px;line-height:1.6}
+@media (max-width:360px){body{font-size:14px}main{padding-left:8px;padding-right:8px}.card{padding:12px}.chip{padding:8px}.chip b{font-size:13px}.ldr b{font-size:18px}.card h2 span{display:none}}
 #toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,30px);background:#14213d;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
