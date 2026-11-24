@@ -8,7 +8,7 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 
 1. **Rastreamento automático** pelos 4 LDRs (mesma lógica de médias por lado da versão Nano).
 2. **Modo manual** pelo celular: o ESP32 cria a rede Wi-Fi `SOLAR_TOWER` (senha `torre1234`) e
-   serve uma página em `http://192.168.4.1` com botões ◀ ▶ ▲ ▼, posição inicial e leituras.
+   serve em `http://192.168.4.1` a **IHM** (ver abaixo), com modo, controle manual e leituras.
 3. **Repouso noturno:** média dos LDRs < 500 por 120 s → painel vai para a posição inicial
    (H = 20°, V = 90°) e para; média > 700 por 30 s → volta a rastrear (resolve o P7).
 
@@ -28,11 +28,41 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 
 | Rota | Função |
 |------|--------|
-| `GET /` | Página "SOLAR SMART TOWER" |
-| `GET /estado` | `{"h":…, "v":…, "luz":…, "modo":"AUTO"|"MANUAL", "estado":"ATIVO"|"NOITE - REPOUSO"}` |
+| `GET /` | IHM "Solar Smart Tower" (HTML/CSS/JS embutidos no `main.c`, sem arquivos externos) |
+| `GET /estado` | JSON abaixo |
 | `GET /modo?valor=auto|manual` | Troca o modo |
 | `GET /mover?eixo=h|v&direcao=±1` | Move 5° (só em modo manual; senão HTTP 409) |
 | `GET /inicio` | Posição inicial (só em modo manual) |
+
+`/estado` devolve:
+
+| Campo | Conteúdo |
+|-------|----------|
+| `h`, `v` | Ângulos dos servos (°) |
+| `luz` | Média dos 4 LDRs (0–4095) |
+| `se`, `sd`, `ie`, `id` | Última leitura de cada LDR (0–4095) |
+| `tol`, `limNoite`, `limDia` | `TOLERANCIA`, `LIMITE_NOITE`, `LIMITE_DIA` (para a IHM desenhar zona morta e limites) |
+| `periodo` | `DIA`, `ANOITECENDO` (contando para o repouso), `NOITE` ou `AMANHECENDO` (contando para retomar) |
+| `faltam` | Segundos até a próxima transição de período (0 se nenhuma em curso) |
+| `ligado` | Segundos desde que o ESP32 ligou |
+| `modo` | `AUTO` ou `MANUAL` |
+| `estado` | `ATIVO` ou `NOITE - REPOUSO` (mantido por compatibilidade) |
+
+## IHM (página do celular)
+
+Página única, leve e sem dependências (o celular fica na rede da torre, sem internet): identidade
+UNIP (azul `#0b2a5b` e amarelo `#f5b800`, logotipo em SVG inline), fundo claro para leitura ao sol.
+Atualiza `/estado` a cada 1 s.
+
+- **Resumo:** modo, período do dia (com contagem para repouso/retomada), tempo ligado e estado da
+  conexão (Online/Offline, tempo de resposta).
+- **Sensores:** os 4 LDRs na disposição física (SE/SD/IE/ID) com barras, média, e a **diferença
+  esquerda × direita e superior × inferior** com a zona morta (`TOLERANCIA`) desenhada — útil para
+  diagnosticar sentido invertido (ex.: o teste com lanterna).
+- **Servos:** medidores semicirculares de H e V com a faixa útil 20°–160°.
+- **Gráfico:** histórico dos últimos 60 s (4 LDRs + média) com os limites noite/dia.
+- **Controle manual:** setas (toque = 5°, segurar repete) e posição inicial; bloqueado com aviso em
+  modo automático ou repouso noturno; erros HTTP 409 aparecem como aviso na tela.
 
 ## Correções aplicadas após os testes físicos (11/11/2026)
 
