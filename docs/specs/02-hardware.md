@@ -10,7 +10,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 
 | Qtd | Componente | Função |
 |-----|------------|--------|
-| 1 | ESP32 (placa de desenvolvimento + placa de expansão com bornes) | Lê os 4 LDRs, comanda os 2 servos e serve a interface web por Wi-Fi |
+| 1 | ESP32 (placa de desenvolvimento + placa de expansão com bornes) — R$ 25,00 | Lê os 4 LDRs, comanda os 2 servos e serve a interface web por Wi-Fi |
 | (1) | Arduino Nano (ATmega328P) | Usado até a migração para o ESP32 |
 | 4 | LDR 5 mm | Sensores de luz |
 | 4 | Resistor 10 kΩ 1/4 W | Divisor de tensão com cada LDR |
@@ -20,7 +20,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
 | 40 | Jumper Dupont macho–macho 20 cm | Ligações |
-| — | Peças impressas em 3D | Estrutura — ver [04-mecanica.md](04-mecanica.md) |
+| ~356 g | Filamento 1,75 mm (rolo de 1 kg a R$ 49,90) — R$ 17,74 | Peças impressas em 3D — ver [04-mecanica.md](04-mecanica.md) |
 
 ### Itens complementares recomendados (fora da lista de compras)
 
@@ -33,6 +33,8 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | Fusível (2–5 A) + porta-fusível na saída da bateria | Bateria selada fornece corrente alta em curto-circuito. |
 | Chave liga/desliga e fios mais grossos (≥ 0,5 mm²) | Os jumpers Dupont de 20 cm não são adequados para a corrente dos servos (até ~2,5 A cada em travamento). |
 | Multímetro | Ajustar a saída dos XL4015 **antes** de ligar qualquer coisa. |
+
+Custo total do protótipo: **R$ 277,78** (detalhe em [07-conclusao.md](07-conclusao.md#custo-do-protótipo)).
 
 ## Mapa de pinos (ESP32 — `main.c` atual, confirmado pelo grupo em 24/11/2026)
 
@@ -52,6 +54,11 @@ Os LDRs estão no **ADC1** de propósito: o ADC2 do ESP32 não funciona com o Wi
 
 **Histórico (Nano):** o código usava A1–A4 e o diagrama A0–A3 (P1) — divergência encerrada com a
 migração, pois o ESP32 tem pinos próprios.
+
+## Placa de circuito impresso
+
+O circuito e a placa de circuito impresso (PCI) foram desenhados no **Tinkercad** (Circuits): ESP32,
+os 4 divisores dos LDRs, conectores dos servos e entradas de 6 V.
 
 ## Circuito dos LDRs
 

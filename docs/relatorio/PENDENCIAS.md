@@ -15,16 +15,16 @@ submissão). Limite: 40 páginas.
 | Simulação do ano | Novo recurso do simulador; ganho anual e erro médio | `05-testes.md`, `dados/ano_p15.json` |
 | História de erros e acertos | **P15**: preso em H = 20° nas manhãs de inverno, achado pela simulação do ano; +34,5% → +47,1% (erro 27,7° → 16,9°) | `06-problemas-conhecidos.md` |
 | Figuras do P15 | `docs/imagens_videos_testes_fisicos/ganho_anual_{antes,depois}_da_correcao_p15.jpeg` — legenda: **simulação**; números de uma rodada (+38% → +49%), citar a faixa no texto | — |
-| **Conclusão** | Consulta a fornecedores de postes solares profissionais + comparação placas fixas × rastreador: rastreador +47%, **2 placas fixas Leste/Oeste +82%** por R$ 39,24 contra R$ 94,10 só nos extras do rastreador → recomendação: placas fixas | `docs/specs/07-conclusao.md`, `dados/conclusao_fixas_vs_rastreador.json` |
+| **Conclusão** | Consulta a fornecedores de postes solares profissionais + comparação placas fixas × rastreador: rastreador +47%, **2 placas fixas Leste/Oeste +82%** por R$ 39,24 contra R$ 119,10 nos extras do rastreador (servos, XL4015, ESP32, LDRs) → recomendação: placas fixas | `docs/specs/07-conclusao.md`, `dados/conclusao_fixas_vs_rastreador.json` |
 | Material complementar | Vídeos `docs/video/demo_ihm.mp4` e `demo_simulador.mp4` | — |
 
 ## Itens que eram `[PREENCHER]` na v4 — como ficam
 
 | Item da v4 | Texto da v5 |
 |------------|-------------|
-| PCI (3.7): software e fabricação | Apresentada como **proposta de leiaute** da placa, desenhada pelo grupo em ferramenta vetorial (script Python) |
-| Custos: ESP32 + placa de expansão e filamento PLA | Linhas retiradas; nota na fonte da tabela: "não inclui o ESP32 com placa de expansão e o filamento PLA" — total = itens com valor pago |
-| Resultados: repouso noturno e P10/P14 no protótipo | "Validado em simulação" (P10, P14 e P15 aplicados ao `main.c` final); protótipo montado com as ligações confirmadas |
+| PCI (3.7): software e fabricação | Circuito e PCI desenhados no **Tinkercad** (Circuits) |
+| Custos: ESP32 e filamento | ESP32 **R$ 25,00**; filamento **R$ 17,74** (~356 g das peças, incluindo a trave reimpressa, de rolo de 1 kg a R$ 49,90 — `dados/filamento.json`); **total R$ 277,78**, sem subtotal parcial |
+| Resultados: repouso noturno e P10/P14 no protótipo | Testes físicos feitos na casa do Dawid, acompanhados pela IHM; correções P10, P14 e P15 validadas em simulação e aplicadas ao `main.c` final |
 | Teste com lanterna | Resultado registrado (girou ao contrário, firmware anterior às correções) + causas e roteiro de diagnóstico pela IHM |
 | 3V3 dos LDRs, campus | Confirmado (3V3) · Campus Sorocaba (como na v4) |
 

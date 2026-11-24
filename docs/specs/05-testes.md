@@ -20,6 +20,10 @@
 
 ## Testes no protótipo físico
 
+Realizados na casa do integrante **Dawid Felipe Fernandes da Silva**, com o protótipo montado; os
+resultados foram acompanhados pela **IHM no celular** (leituras dos LDRs, ângulos, modo e
+período do dia). Registros: `docs/imagens_videos_testes_fisicos/` (fotos, vídeos e capturas da IHM).
+
 | ID | Cenário | Resultado esperado |
 |----|---------|--------------------|
 | F-00 | Antes de tudo: XL4015 sem carga, medir com multímetro | #1 = 6,0 V (servos); #2 = 6 V (placa do ESP32). Só então ligar as cargas. **Feito** (12 V → 6 V). |

@@ -22,7 +22,7 @@ DIAS = list(range(1, 366, 15))  # mesma amostragem da simulação do ano
 
 # Preços pagos pelo grupo (R$)
 PAINEL_10W = 39.24
-EXTRAS_RASTREADOR = {"2 servos MG996R": 73.60, "XL4015 dos servos": 18.50, "4 LDR": 1.80, "4 resistores 10 kΩ": 0.20}
+EXTRAS_RASTREADOR = {"2 servos MG996R": 73.60, "XL4015 dos servos": 18.50, "ESP32": 25.00, "4 LDR": 1.80, "4 resistores 10 kΩ": 0.20}
 
 
 def sol(dia, hora):
@@ -80,7 +80,7 @@ def main():
         "duas_LO_vs_rastreador_pct": round((lo / tot["rastreador"] - 1) * 100),
         "custos_R$": {
             "painel 10 W adicional": PAINEL_10W,
-            "itens extras do rastreador (sem ESP32, estrutura e manutenção)": round(extras, 2),
+            "itens extras do rastreador (sem estrutura reforçada e manutenção)": round(extras, 2),
             "itens extras detalhados": EXTRAS_RASTREADOR,
         },
     }

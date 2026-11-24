@@ -14,7 +14,23 @@
 | IHM pelo celular | Rede `SOLAR_TOWER`, `http://192.168.4.1`: modo, dia/noite, 4 LDRs, servos, gráfico, controle manual |
 | Simulador 3D | Mesmo `main.c` em WebAssembly sobre as peças reais; dia, ano inteiro e testes de falha |
 | Correções achadas pela simulação | P10 (sentido horizontal), P14 (tolerância de 12 bits), P15 (preso no limite no inverno); P13 (sombra do painel nos LDRs) com correção mecânica proposta |
-| Testes físicos | Fabricação, servos, quebra e reimpressão da peça, ajuste do XL4015 (12 V → 6 V), IHM no celular e teste com lanterna (girou para o lado contrário — causas e diagnóstico em [05-testes.md](05-testes.md), F-03) |
+| Testes físicos | Na casa do integrante Dawid, acompanhados pela IHM no celular: fabricação, servos, quebra e reimpressão da peça, ajuste do XL4015 (12 V → 6 V) e teste com lanterna (girou para o lado contrário — causas e diagnóstico em [05-testes.md](05-testes.md), F-03) |
+
+## Custo do protótipo
+
+| Item | Valor (R$) |
+|------|-----------:|
+| 2 servos MG996R | 73,60 |
+| 2 conversores XL4015 | 37,00 |
+| Bateria selada 12 V | 78,80 |
+| Painel solar 10 W | 39,24 |
+| ESP32 | 25,00 |
+| Filamento (~356 g das peças, incluindo a trave reimpressa, de um rolo de 1 kg a R$ 49,90) | 17,74 |
+| LDRs, resistores e jumpers | 6,40 |
+| **Total** | **277,78** |
+
+Consumo de filamento calculado pelas peças 3D: `tools/relatorio/estimar_filamento.py` →
+`docs/relatorio/dados/filamento.json`.
 
 ## Ganho de energia do rastreador (simulação)
 
@@ -43,12 +59,12 @@ Os números do próprio projeto confirmam a resposta (mesmo modelo de sol do sim
 | Configuração | Energia no ano × 1 placa fixa (Norte) | Custo a mais (preços pagos pelo grupo) |
 |--------------|----------------------------------------|----------------------------------------|
 | 1 placa fixa ao Norte | referência | — |
-| **1 placa com rastreador** (`main.c` final) | **+47%** | **R$ 94,10** só em servos, XL4015 dos servos, LDRs e resistores — sem contar ESP32, estrutura reforçada e manutenção |
+| **1 placa com rastreador** (`main.c` final) | **+47%** | **R$ 119,10** em servos (R$ 73,60), XL4015 dos servos (R$ 18,50), ESP32 (R$ 25,00), LDRs e resistores — sem contar estrutura reforçada e manutenção |
 | **2 placas fixas, Leste e Oeste** (20° de inclinação) | **+82%** (24% a mais que o rastreador) | **R$ 39,24** (um painel de 10 W) + suporte fixo |
 | 2 placas fixas ao Norte | +100% | R$ 39,24 + suporte fixo |
 
-Por real investido, a segunda placa fixa rende cerca de **4 vezes mais** energia extra que o
-rastreador (+82% por R$ 39,24 contra +47% por R$ 94,10, sem contar o ESP32 e a manutenção). E o
+Por real investido, a segunda placa fixa rende cerca de **5 vezes mais** energia extra que o
+rastreador (+82% por R$ 39,24 contra +47% por R$ 119,10, sem contar estrutura e manutenção). E o
 modelo ainda favorece o rastreador: considera céu limpo e só luz direta; com nuvens, a luz difusa
 chega de todas as direções e o ganho de apontar o painel diminui.
 

@@ -14,10 +14,11 @@
  "duas_LO_vs_rastreador_pct": 24,
  "custos_R$": {
   "painel 10 W adicional": 39.24,
-  "itens extras do rastreador (sem ESP32, estrutura e manutenção)": 94.1,
+  "itens extras do rastreador (sem estrutura reforçada e manutenção)": 119.1,
   "itens extras detalhados": {
    "2 servos MG996R": 73.6,
    "XL4015 dos servos": 18.5,
+   "ESP32": 25.0,
    "4 LDR": 1.8,
    "4 resistores 10 kΩ": 0.2
   }
