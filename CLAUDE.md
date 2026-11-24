@@ -45,7 +45,8 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
   Divisores dos LDRs em **3V3** (entradas não toleram 5 V). ADC de 12 bits (0–4095).
 - **Não remover do `main.c`:** `sentidoHorizontal` (P10 — sem ele o servo horizontal trava no limite
   com o vertical abaixo de 90°; já regrediu uma vez na migração) e `TOLERANCIA = 160` (P14 — escala
-  de 12 bits; 40 era o valor do Nano). Validação física dessas correções ainda pendente.
+  de 12 bits; 40 era o valor do Nano) e `INICIO_H = 90` (P15 — repouso em 20° prendia o painel no
+  limite nas manhãs de inverno). Validação física dessas correções ainda pendente.
 - **Convenção do sensor:** leitura maior = mais luz (LDR no lado do 5 V do divisor). Inverter o
   divisor inverte o sentido dos eixos.
 - **Sinais dos eixos** (`+=`/`-=`) dependem da montagem mecânica; o eixo vertical é propositalmente

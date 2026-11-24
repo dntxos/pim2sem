@@ -133,7 +133,7 @@ com `TOLERANCIA = 160` (variante `esp32_tol160`): +35% sobre a placa fixa.
 **Correção:** `TOLERANCIA = 160` (ou tolerância relativa à soma das leituras — ver P11) e calibrar
 com o painel real.
 
-## <a id="p15"></a>P15 — No inverno, depois do repouso noturno, o painel acorda preso no limite (médio) — encontrado em simulação (24/11/2026)
+## <a id="p15"></a>P15 — No inverno, depois do repouso noturno, o painel acorda preso no limite — ✅ corrigido (`INICIO_H = 90`, 24/11/2026)
 
 Encontrado pela simulação do ano inteiro (painel "📅 Ano inteiro" do simulador). Em junho, o painel
 acorda na posição de repouso (H = 20°, V = 90°); o eixo vertical desce para baixo de 90°, o
@@ -144,6 +144,16 @@ também com o Sol andando devagar (não é efeito do tempo acelerado). Em dezemb
 Efeito no ano (`?elevacaoLdr=25`, amostragem a cada 15 dias): ganho anual de ~+38% sobre a placa
 fixa, mas erro médio de apontamento de ~40° em maio–julho contra ~18° no verão.
 
-**Correções a testar (no simulador, como variante):** estacionar à noite numa posição que não fique
-no limite (ex.: H = 90°), ou tratar o horizontal travado no limite (se `anguloH` está no limite e
-a luz continua desequilibrada, inverter o `sentidoHorizontal`). Validar depois no protótipo.
+**Correção aplicada:** estacionar à noite com o horizontal no centro, `INICIO_H = 90` (era 20).
+Comparação no simulador, ano inteiro (`?elevacaoLdr=25`, a cada 15 dias), mesmo `main.c` mudando só
+o necessário (variantes em `simulator/firmware/variantes/`):
+
+| Variante | Ganho anual × placa fixa | Erro médio | 21/jun (ganho / erro) | 21/dez |
+|----------|-------------------------|------------|-----------------------|--------|
+| Antes (`esp32_antes_p15`, repouso em H = 20°) | +34,5% | 27,7° | +4% / 42° | +63% / 19° |
+| **`INICIO_H = 90` (aplicada)** | **+47,1%** | **16,9°** | **+38% / 16°** | +67% / 18° |
+| Horizontal travado no limite → vertical cruza 90° | +32,7% | 23,1° | +23% / 21° | +49% / 22° |
+| As duas juntas | +44,0% | 17,7° | +38% / 16° | +58% / 20° |
+
+Dados: `docs/relatorio/dados/ano_p15.json`. **Validação física: pendente** (observar uma manhã de
+inverno depois do repouso noturno).

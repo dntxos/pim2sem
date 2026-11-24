@@ -55,7 +55,8 @@ tempo das ferramentas). `s.estado.linhasSerial` tem a saída serial do firmware.
 `sim.anoTotais()` dá o ganho anual). Roda o firmware em time-lapse: o Sol anda 30 min (ou 15) a cada
 1,5 s simulados, a noite dura 125 s simulados (repouso noturno real) e, ao amanhecer, o Sol sobe de
 2 em 2 min e para enquanto o firmware conta os 30 s de luz. ~70 s na amostragem rápida (a cada
-15 dias). Achado: P15 (inverno, preso em H = 20° de manhã).
+15 dias). Achado: P15 (inverno, preso em H = 20° de manhã) — corrigido com `INICIO_H = 90`;
+esperado no ano: ~+47% sobre a placa fixa, erro médio ~17° (antes: variante `esp32:esp32_antes_p15`, ~+35%).
 
 **Vídeos:** `node tools/video/gravar.mjs` (IHM) e
 `node tools/video/gravar.mjs docs/video/demo_simulador.mp4 roteiro_simulador.js 1.2` (funções do
@@ -76,7 +77,8 @@ simulador, ano acelerado 6×). Exigem o servidor do simulador em `127.0.0.1:8000
 | Sol SE 40° / SO 35° / NE 30° (8 s) | erro 18° / 17° / 18° | 54° / 59° / 14° (P10) |
 | Dia 172 (6h30, 0,5 h/s, 22 s) | +35% vs. placa fixa | −100% (P14) |
 | Dia 355 (6h, 0,5 h/s, 24 s) | +49% | +50% |
-| Noite: 140 s de escuro → alvorada lenta | `NOITE - REPOUSO` em 20°/90°; volta ~5h30 | igual |
+| Noite: 140 s de escuro → alvorada lenta | `NOITE - REPOUSO` em 90°/90°; volta ~5h30 | idem, em 20°/90° |
+| Ano inteiro (`sim.ano()`, rápida) | ~+47%, erro médio ~17° | `esp32_antes_p15`: ~+35%, ~28° (P15) |
 
 ## Cenários de regressão — firmware Nano (histórico, `?firmware=nano`)
 

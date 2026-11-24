@@ -10,7 +10,7 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 2. **Modo manual** pelo celular: o ESP32 cria a rede Wi-Fi `SOLAR_TOWER` (senha `torre1234`) e
    serve em `http://192.168.4.1` a **IHM** (ver abaixo), com modo, controle manual e leituras.
 3. **Repouso noturno:** média dos LDRs < 500 por 120 s → painel vai para a posição inicial
-   (H = 20°, V = 90°) e para; média > 700 por 30 s → volta a rastrear (resolve o P7).
+   (H = 90°, V = 90°) e para; média > 700 por 30 s → volta a rastrear (resolve o P7).
 
 ## Parâmetros
 
@@ -20,7 +20,7 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 | `PASSO_AUTO` / `PASSO_MANUAL` | 2° / 5° | Passo por ciclo automático / por toque no celular |
 | `INTERVALO_MOVIMENTO` | 100 ms | Período do rastreamento (não depende mais da serial) |
 | `LIMITE_*` | 20°–160° | Limites dos dois eixos |
-| `INICIO_H` / `INICIO_V` | 20° / 90° | Posição inicial / de repouso noturno |
+| `INICIO_H` / `INICIO_V` | 90° / 90° | Posição inicial / de repouso noturno (H era 20° — P15) |
 | `LIMITE_NOITE` / `LIMITE_DIA` | 500 / 700 | Média dos LDRs (0–4095) para noite / dia (histerese) |
 | `TEMPO_NOITE` / `TEMPO_DIA` | 120 s / 30 s | Tempo contínuo para confirmar noite / dia |
 
@@ -74,6 +74,7 @@ no simulador como variante `esp32:esp32_testes_fisicos`.
 |-------|------------------------|-------------------------|
 | **P10** — faltava `sentidoHorizontal` | Sol a SE/SO: erro 54°/59°, servo H travado no limite | 18°/17° |
 | **P14** — `TOLERANCIA = 40` em 12 bits | 21/jun: painel foge do Sol (−100% vs. placa fixa) | +35% (dez: +49%) |
+| **P15** — repouso noturno em H = 20° (24/11/2026) | Inverno: acorda preso no limite até ~meio-dia; ano: +34,5%, erro médio 27,7° | `INICIO_H = 90`: ano +47,1%, erro médio 16,9° |
 
 Repouso noturno e interface web conferidos após a correção. **Validação física: pendente.**
 Dados: `docs/relatorio/dados/esp32_corrigido_vs_testes.json`.

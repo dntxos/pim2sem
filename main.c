@@ -34,7 +34,9 @@ int anguloH = 90;
 int anguloV = 90;
 
 // Ajustar conforme a montagem mecanica
-const int INICIO_H = 20;
+// Repouso noturno no centro do horizontal (P15): estacionado em 20 graus,
+// no inverno o painel acordava preso no limite ate perto do meio-dia.
+const int INICIO_H = 90;
 const int INICIO_V = 90;
 
 const int LIMITE_H_MIN = 20;
