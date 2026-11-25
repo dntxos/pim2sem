@@ -18,11 +18,12 @@ XL4015. O ESP32 cria a rede Wi-Fi **`SOLAR_TOWER`** e serve uma **IHM** para o c
 | `main.c` | Firmware do ESP32 (sketch Arduino em C++): rastreamento, repouso noturno, Wi-Fi e IHM |
 | `docs/specs/` | Especificações: visão geral, hardware, firmware, mecânica, testes, problemas, conclusão |
 | `docs/relatorio/` | Relatório do PIM II (`.docx` + `.pdf` para impressão + `.low.pdf` ≤ 10 MB para submissão) |
+| `docs/etiquetas/` | Etiquetas adesivas da torre (título 90 × 32 mm e Wi-Fi com QR 90 × 60 mm): `etiquetas_A4.pdf`, imprimir em 100% |
 | `docs/video/` | Vídeos de demonstração: IHM (`demo_ihm.mp4`) e simulador (`demo_simulador.mp4`) |
 | `docs/imagens_videos_testes_fisicos/` | Fotos e vídeos dos testes físicos (e capturas do simulador do P15) |
 | `3d_material/` | Peças para impressão 3D (`stl/`) e montagem completa (`amf/`) |
 | `simulator/` | Simulador 3D no navegador: o mesmo `main.c` compilado para WebAssembly sobre as peças 3D |
-| `tools/` | Geração do relatório, renders do Blender e gravação dos vídeos |
+| `tools/` | Geração do relatório, renders do Blender, gravação dos vídeos e etiquetas |
 
 ## Hardware e ligações
 

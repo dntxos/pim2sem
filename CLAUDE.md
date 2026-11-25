@@ -35,6 +35,7 @@ simulator/esp32/nucleo/ Núcleo ESP32 simulado (Arduino.h, WiFi.h, WebServer.h, 
 docs/imagens_videos_testes_fisicos/  Fotos e vídeos dos testes físicos (fonte do cap. de testes)
 tools/render/           Renders fotorrealistas da montagem no Blender (figuras do relatório)
 tools/video/            Vídeos de demonstração (IHM e simulador; Chrome headless + ffmpeg) → docs/video/
+tools/etiquetas/        Etiquetas adesivas da torre (identidade da IHM, QR do Wi-Fi) → docs/etiquetas/
 docs/relatorio/         Relatório do PIM II (.docx) e figuras
 .claude/skills/         Skills do projeto
 ```
