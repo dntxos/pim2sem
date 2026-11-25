@@ -294,10 +294,11 @@ r.ps(
 r.h1('3 DESENVOLVIMENTO DO PROJETO')
 r.h2('3.1 Descrição geral do sistema')
 r.p(f'A Figura {r.prox_fig()} apresenta o sistema. Na cadeia de energia, o painel carrega a bateria por um '
-    'controlador de carga; da bateria, protegida por fusível, derivam dois conversores XL4015: o #1, de '
-    '6 V, alimenta os servos e a placa do ESP32; o #2 reduz os 12 V para os 5 V das duas saídas USB. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
-    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. Blocos tracejados indicam '
-    'itens planejados para a versão definitiva (controlador de carga e fusível).')
+    'controlador de carga, e uma das duas portas USB do controlador alimenta o ESP32; da bateria, protegida '
+    'por fusível, derivam dois conversores XL4015: o #1, de 6 V, alimenta os servos; o #2 reduz os 12 V para '
+    'os 5 V das duas saídas USB de carga de celulares. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
+    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. O bloco tracejado (fusível) '
+    'é um item planejado para a versão definitiva.')
 r.figura(f('d_blocos.png'), 'Diagrama de blocos da torre solar', largura=16)
 r.h2('3.2 Estrutura física')
 r.p('O roteiro do PIM sugere uma torre de tubo plástico de 5 polegadas fixada ao solo; o grupo desenvolveu o '
@@ -331,8 +332,9 @@ r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'F
     ['2', 'Servo MG996R (engrenagens metálicas)', 'Azimute (GPIO 18) e elevação (GPIO 19)'],
     ['1', 'Painel monocristalino 10 W', 'Gera a energia do sistema'],
     ['1', 'Bateria selada 12 V', 'Armazena a energia'],
-    ['2', 'Conversor *step-down* XL4015 (5 A)', '#1: 12 V → 6 V (servos e ESP32); #2: 12 V → 5 V (2 saídas USB)'],
-    ['—', 'Controlador de carga e fusível (planejados)', 'Carga segura da bateria e proteção'],
+    ['2', 'Conversor *step-down* XL4015 (5 A)', '#1: 12 V → 6 V (servos); #2: 12 V → 5 V (2 saídas USB)'],
+    ['1', 'Controlador de carga solar 12 V com 2 portas USB', 'Carga segura da bateria; uma porta USB alimenta o ESP32'],
+    ['—', 'Fusível (planejado)', 'Proteção da saída da bateria'],
 ], larguras=[1.3, 7.2, 7.5], quadro=True)
 r.p('Na montagem final, os divisores dos LDRs ficam no **3,3 V** do ESP32 e no GND, pois as entradas não '
     'toleram 5 V; os servos são alimentados por uma **fonte externa regulada de 6 V** (XL4015 #1), e não pela placa '
@@ -436,7 +438,8 @@ r.figura(f('f_quebra.png'), 'Montagem da trave: braço do servo com fratura (a) 
          fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
 r.h2('4.4 Migração para o ESP32')
 r.p(f'Na etapa de testes físicos, o controle migrou do Arduino Nano para um ESP32 em placa de expansão com bornes '
-    f'(Figura {r.prox_fig()}a), alimentado por um XL4015 (b) ajustado para converter os 12 V da bateria em 6 V. A '
+    f'(Figura {r.prox_fig()}a), alimentado por um XL4015 (b) ajustado para converter os 12 V da bateria em 6 V; na montagem final, o ESP32 passou a ser alimentado por '
+    'uma das portas USB do controlador de carga. A '
     'gravação pela Arduino IDE terminou com 100% escrito e verificação do *hash* (c) — o tamanho gravado, cerca '
     'de 950 kB, coincide com a compilação do `main.c`. A troca trouxe o Wi-Fi, o ADC de 12 bits e mais memória, '
     'mas exigiu reescrever o firmware — o que, como mostra o capítulo 5, reintroduziu dois problemas.')

@@ -34,7 +34,9 @@ XL4015. O ESP32 cria a rede Wi-Fi **`SOLAR_TOWER`** e serve uma **IHM** para o c
 | Servo horizontal / vertical (sinal) | GPIO 18 / GPIO 19 |
 
 - **LDRs:** divisores com 10 kΩ no **3,3 V do ESP32** e GND (as entradas não toleram 5 V).
-- **Servos:** fonte externa regulada de **6 V** (XL4015 a partir da bateria de 12 V).
+- **ESP32:** porta USB (5 V) do controlador de carga solar.
+- **Servos:** fonte externa regulada de **6 V** (XL4015 #1 a partir da bateria de 12 V).
+- **Carga de celulares:** XL4015 #2 (12 V → 5 V) para as 2 saídas USB.
 - **GND da fonte dos servos ligado ao GND do ESP32.**
 
 Lista de materiais e detalhes: [02-hardware.md](docs/specs/02-hardware.md).

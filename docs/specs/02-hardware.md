@@ -15,7 +15,8 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 4 | LDR 5 mm | Sensores de luz |
 | 4 | Resistor 10 kΩ 1/4 W | Divisor de tensão com cada LDR |
 | 2 | Servo MG996R (15 kg·cm, engrenagem metálica) | Giro horizontal (azimute) e inclinação (elevação) |
-| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | #1: 12 V → 6 V para os servos e a placa do ESP32; #2: 12 V → 5 V para as 2 saídas USB |
+| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | #1: 12 V → 6 V para os servos; #2: 12 V → 5 V para as 2 saídas USB de carga de celulares |
+| 1 | Controlador de carga solar 12 V com 2 portas USB (preço não informado) | Carrega a bateria pelo painel; uma das portas USB alimenta o ESP32 |
 | 1 | Bateria selada 12 V (Elgin, tipo alarme/cerca) | Fonte de energia do sistema |
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
@@ -26,7 +27,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 
 | Item | Por que é necessário |
 |------|----------------------|
-| **Controlador de carga solar 12 V** (PWM, ≥ 5 A) | Um painel de 12 V "nominal" chega a ~21 V em aberto. Ligado direto na bateria, sobrecarrega e danifica a bateria selada, e à noite a bateria descarrega pelo painel. Só dispensável se o painel **não** for ligado à bateria (ex.: só medido com multímetro). |
+| ~~Controlador de carga solar 12 V~~ — **usado na montagem final** (ver lista acima) | Um painel de 12 V "nominal" chega a ~21 V em aberto. Ligado direto na bateria, sobrecarrega e danifica a bateria selada, e à noite a bateria descarrega pelo painel. Só dispensável se o painel **não** for ligado à bateria (ex.: só medido com multímetro). |
 | Placa universal (perfurada) | Usada no protótipo para os divisores dos LDRs e a distribuição de 3,3 V/6 V/GND. |
 | Cabo USB do ESP32 | Gravar o firmware e ler o Monitor Serial (115 200 baud). |
 | Capacitor eletrolítico 470–1000 µF / 16 V | Junto aos servos, absorve os picos de corrente do MG996R. |
@@ -103,6 +104,7 @@ montado invertido (LDR no GND), os sentidos dos eixos se invertem.
 | Circuito | Alimentação |
 |----------|-------------|
 | LDRs (divisores com 10 kΩ) | **3,3 V do ESP32** e GND |
+| ESP32 | **Porta USB (5 V) do controlador de carga** |
 | Servos MG996R | **Fonte externa regulada de 6 V** (XL4015 #1, a partir da bateria de 12 V) |
 | Referência | **GND da fonte dos servos ligado ao GND do ESP32** (terra comum — sem ele o sinal PWM não tem referência) |
 
@@ -110,9 +112,9 @@ Esquema completo:
 
 ```
                   [fusível]
-Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]──┬── servos (+ capacitor 1000 µF)
-  (não comprado — ver acima)                          │                        └── placa de expansão do ESP32
-                                                      └──[XL4015 #2 → 5 V]──── 2 saídas USB (celulares)
+Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]── servos (+ capacitor 1000 µF)
+                      │                               │
+                      └─ porta USB (5 V) ── ESP32     └──[XL4015 #2 → 5 V]──── 2 saídas USB (celulares)
 GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
 ```
 
@@ -120,8 +122,8 @@ GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
    qualquer posição — um XL4015 saindo 12 V queima a placa ou os servos na hora.
 2. **XL4015 #1 (servos): 6,0 V.** Cabos curtos e mais grossos que os jumpers; capacitor perto dos
    servos.
-3. **A placa de expansão do ESP32 também sai do XL4015 #1 (6 V)** — valor ajustado pelo grupo nos
-   testes físicos (12 V → 6 V).
+3. **ESP32: porta USB do controlador de carga** (5 V) na montagem final. Nos testes físicos, a
+   placa de expansão foi alimentada por um XL4015 ajustado de 12 V para 6 V.
 4. **XL4015 #2 (saídas USB): 5 V** — alimenta as duas saídas USB de carga de celulares.
    *Histórico (Nano):* 7,5 V no pino VIN. O regulador do Nano baixa para 5 V e protege contra um
    ajuste descuidado.

@@ -30,7 +30,7 @@ digraph G {{
   edge [color="#374151", penwidth=1.4, fontname="{FONTE}", fontsize=11, arrowsize=0.8];
   subgraph cluster_e {{ label="Captação e armazenamento"; fontname="{FONTE}"; fontsize=14; color="#9ca3af"; style="rounded,dashed";
     painel [label="Painel fotovoltaico\\n10 W (≈18 V)", fillcolor="#fff7e6", color="#d9822b"];
-    ctrl [label="Controlador de carga\\nPWM 12 V\\n(planejado)", style="rounded,dashed,filled", fillcolor="#ffffff"];
+    ctrl [label="Controlador de carga\\n12 V (2 portas USB)"];
     bat [label="Bateria selada\\n12 V", fillcolor="#e7f3ec", color="#2e7d4f"];
     fus [label="Fusível\\n(planejado)", style="rounded,dashed,filled", fillcolor="#ffffff"];
   }}
@@ -48,7 +48,7 @@ digraph G {{
   }}
   painel -> ctrl -> bat -> fus;
   fus -> usbc; usbc -> usb1; usbc -> usb2;
-  x1 -> nano [xlabel="6 V"];
+  ctrl -> nano [xlabel="USB 5 V"];
   cel -> nano [dir=both, style=dashed, color="#d9822b", xlabel="Wi-Fi"];
   fus -> x1; x1 -> sh; x1 -> sv;
   ldr -> nano [xlabel="GPIO 32–35"];
@@ -142,7 +142,7 @@ def esquematico():
         ], size=(3.2, 5.4)).theta(0).at((0, 0))
         d += nano
         d += elm.Label().at((1.6, 5.9)).label('U1 — ESP32 (placa de desenvolvimento)', fontsize=11)
-        rede(d, nano['5V'], '+6 V', 'left', V)
+        rede(d, nano['5V'], '+5 V (USB do controlador de carga)', 'left', V)
         rede(d, nano['3V3'], '+3,3 V', 'left', V)
         rede(d, nano.GND, 'GND', 'left')
         for p in ('IO34', 'IO35', 'IO32', 'IO33', 'IO18', 'IO19'):
@@ -180,7 +180,7 @@ def esquematico():
         d += elm.Fuse().right().at(topo).label('F1 3 A', loc='top')
         no12 = d.here
         d += elm.Dot()
-        for j, (nome, saida) in enumerate((('XL4015 #1 (servos e ESP32)', '+6 V'), ('XL4015 #2 (saídas USB)', '+5 V → USB 1 e USB 2'))):
+        for j, (nome, saida) in enumerate((('XL4015 #1 (servos)', '+6 V'), ('XL4015 #2 (saídas USB)', '+5 V → USB 1 e USB 2'))):
             y = topo[1] - 0.8 - j * 3.2
             conv = elm.Ic(pins=[elm.IcPin(name='IN+', side='left', slot='2/2'), elm.IcPin(name='IN−', side='left', slot='1/2'),
                                 elm.IcPin(name='OUT+', side='right', slot='2/2'), elm.IcPin(name='OUT−', side='right', slot='1/2')],

@@ -1,9 +1,9 @@
 # 06 — Problemas conhecidos e melhorias
 
 Resultado da análise do repositório e das simulações (nov/2026). **Projeto concluído — nenhuma pendência.** Corrigidos no `main.c` final: P1, P7, P10, P14, P15.
-Os demais itens (P2, P5, P6, P8, P9, P11, P12, P13) ficam registrados como **melhorias possíveis**;
+Os demais itens (P2, P5, P6, P8, P9, P11, P13) ficam registrados como **melhorias possíveis**;
 o teste com lanterna (sentido invertido) está registrado com causas e roteiro de diagnóstico em
-`05-testes.md` (F-03). Conclusão do projeto: [07-conclusao.md](07-conclusao.md). P3 só valia para o Nano; P4 confirmado na montagem.
+`05-testes.md` (F-03). Conclusão do projeto: [07-conclusao.md](07-conclusao.md). P3 só valia para o Nano; P4 confirmado na montagem; P12 resolvido (controlador de carga na montagem final).
 
 ## <a id="p1"></a>P1 — Pinos dos LDRs divergem entre código e diagrama — encerrado com a migração para o ESP32
 
@@ -34,7 +34,10 @@ demais para a corrente dos servos. Ver [02-hardware.md](02-hardware.md#alimenta�
 **Confirmado pelo grupo:** servos numa fonte externa regulada de 6 V, GND dessa fonte ligado ao GND
 do ESP32, LDRs no 3,3 V do ESP32.
 
-## <a id="p12"></a>P12 — Sem controlador de carga entre painel e bateria (alto, se forem ligados)
+## <a id="p12"></a>P12 — Sem controlador de carga entre painel e bateria — resolvido
+
+**Resolvido na montagem final:** o grupo usou um controlador de carga solar 12 V (com 2 portas USB,
+uma delas alimentando o ESP32). Registro original:
 
 O painel de 10 W (≈ 18 V em operação, ≈ 21 V em aberto) não pode ser ligado direto à bateria
 selada de 12 V: sobrecarrega durante o dia e descarrega a bateria pelo painel à noite. Nenhum
