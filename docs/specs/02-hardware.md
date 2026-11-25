@@ -15,7 +15,7 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 4 | LDR 5 mm | Sensores de luz |
 | 4 | Resistor 10 kΩ 1/4 W | Divisor de tensão com cada LDR |
 | 2 | Servo MG996R (15 kg·cm, engrenagem metálica) | Giro horizontal (azimute) e inclinação (elevação) |
-| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | Baixar os 12 V da bateria para os servos e para a placa de controle |
+| 2 | Conversor DC-DC *step-down* XL4015 (5 A) | #1: 12 V → 6 V para os servos e a placa do ESP32; #2: 12 V → 5 V para as 2 saídas USB |
 | 1 | Bateria selada 12 V (Elgin, tipo alarme/cerca) | Fonte de energia do sistema |
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
@@ -110,9 +110,9 @@ Esquema completo:
 
 ```
                   [fusível]
-Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]── servos (+ capacitor 1000 µF)
-  (não comprado — ver acima)                          │
-                                                      └──[XL4015 #2 → 6 V]── placa de expansão do ESP32
+Painel 10 W ──[controlador de carga]── Bateria 12 V ──┬──[XL4015 #1 → 6,0 V]──┬── servos (+ capacitor 1000 µF)
+  (não comprado — ver acima)                          │                        └── placa de expansão do ESP32
+                                                      └──[XL4015 #2 → 5 V]──── 2 saídas USB (celulares)
 GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
 ```
 
@@ -120,12 +120,14 @@ GND da bateria, dos dois XL4015, dos servos e do ESP32: TODOS INTERLIGADOS
    qualquer posição — um XL4015 saindo 12 V queima a placa ou os servos na hora.
 2. **XL4015 #1 (servos): 6,0 V.** Cabos curtos e mais grossos que os jumpers; capacitor perto dos
    servos.
-3. **XL4015 #2 (placa do ESP32): 6 V** — valor ajustado pelo grupo nos testes físicos (12 V → 6 V).
+3. **A placa de expansão do ESP32 também sai do XL4015 #1 (6 V)** — valor ajustado pelo grupo nos
+   testes físicos (12 V → 6 V).
+4. **XL4015 #2 (saídas USB): 5 V** — alimenta as duas saídas USB de carga de celulares.
    *Histórico (Nano):* 7,5 V no pino VIN. O regulador do Nano baixa para 5 V e protege contra um
    ajuste descuidado.
-4. Com a bateria ligada, pode-se conectar o USB ao computador para ver o Monitor Serial — os GNDs
+5. Com a bateria ligada, pode-se conectar o USB ao computador para ver o Monitor Serial — os GNDs
    ficam em comum pelo USB, o que é esperado.
-5. **Nunca** ligar servos ou ESP32 direto nos 12 V da bateria.
+6. **Nunca** ligar servos ou ESP32 direto nos 12 V da bateria.
 
 Consumo médio estimado: ESP32 com Wi-Fi em modo AP ~100–150 mA (picos de ~250 mA na transmissão);
 LDRs ~1 mA; servos parados ~10–20 mA cada, picos curtos ao mover.

@@ -294,10 +294,10 @@ r.ps(
 r.h1('3 DESENVOLVIMENTO DO PROJETO')
 r.h2('3.1 Descrição geral do sistema')
 r.p(f'A Figura {r.prox_fig()} apresenta o sistema. Na cadeia de energia, o painel carrega a bateria por um '
-    'controlador de carga; da bateria, protegida por fusível, derivam o conversor das saídas USB, o conversor de '
-    '6 V dos servos e o da placa de controle. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
-    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. Blocos tracejados indicam a parte de carga '
-    'e de saídas USB da torre, projetada mas fora do protótipo de rastreamento.')
+    'controlador de carga; da bateria, protegida por fusível, derivam dois conversores XL4015: o #1, de '
+    '6 V, alimenta os servos e a placa do ESP32; o #2 reduz os 12 V para os 5 V das duas saídas USB. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
+    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. Blocos tracejados indicam '
+    'itens planejados para a versão definitiva (controlador de carga e fusível).')
 r.figura(f('d_blocos.png'), 'Diagrama de blocos da torre solar', largura=16)
 r.h2('3.2 Estrutura física')
 r.p('O roteiro do PIM sugere uma torre de tubo plástico de 5 polegadas fixada ao solo; o grupo desenvolveu o '
@@ -331,11 +331,11 @@ r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'F
     ['2', 'Servo MG996R (engrenagens metálicas)', 'Azimute (GPIO 18) e elevação (GPIO 19)'],
     ['1', 'Painel monocristalino 10 W', 'Gera a energia do sistema'],
     ['1', 'Bateria selada 12 V', 'Armazena a energia'],
-    ['2', 'Conversor *step-down* XL4015 (5 A)', '12 V da bateria → 6 V (servos e placa de controle)'],
-    ['—', 'Controlador de carga, conversor USB duplo, fusível (projeto da torre)', 'Carga segura, saídas USB e proteção'],
+    ['2', 'Conversor *step-down* XL4015 (5 A)', '#1: 12 V → 6 V (servos e ESP32); #2: 12 V → 5 V (2 saídas USB)'],
+    ['—', 'Controlador de carga e fusível (planejados)', 'Carga segura da bateria e proteção'],
 ], larguras=[1.3, 7.2, 7.5], quadro=True)
 r.p('Na montagem final, os divisores dos LDRs ficam no **3,3 V** do ESP32 e no GND, pois as entradas não '
-    'toleram 5 V; os servos são alimentados por uma **fonte externa regulada de 6 V** (XL4015), e não pela placa '
+    'toleram 5 V; os servos são alimentados por uma **fonte externa regulada de 6 V** (XL4015 #1), e não pela placa '
     'de controle, já que cada MG996R pode exigir ≈ 2,5 A travado; e o **GND da fonte dos servos é ligado ao GND '
     'do ESP32**, para que o sinal PWM tenha referência comum. Os XL4015 foram ajustados com multímetro, sem '
     'carga, antes de qualquer ligação.')
