@@ -2,10 +2,13 @@
 """Gera as etiquetas adesivas da torre (identidade visual da IHM do main.c), em tamanho real.
 
   1. Título .......... 90 × 32 mm — mesmo cabeçalho da IHM (logo UNIP + "Solar Smart Tower")
-  2. Conexão Wi-Fi ... 90 × 60 mm — rede, senha, endereço da IHM e QR code que conecta à rede
+  2. Conexão Wi-Fi ... 90 × 60 mm — em 2 passos, cada um com seu QR code:
+       1) rede e senha + QR que conecta o celular à rede
+       2) endereço da IHM + QR que abre http://192.168.4.1 no navegador
 
 Cores e logo: os mesmos da IHM (main.c: --azul #0b2a5b, --azul2 #16407f, --ouro #f5b800).
-O QR usa o formato padrão de Wi-Fi (WIFI:T:WPA;S:...;P:...;;), lido pela câmera do Android e do iPhone.
+O QR do passo 1 usa o formato padrão de Wi-Fi (WIFI:T:WPA;S:...;P:...;;); o do passo 2 é a URL.
+Ambos são lidos pela câmera do Android e do iPhone.
 
 Saídas (docs/etiquetas/):
   etiquetas_A4.pdf    folha A4 com 2 jogos, marcas de corte e régua de conferência (imprimir em 100%)
@@ -29,6 +32,7 @@ CHROME = os.environ.get("CHROME", "/Applications/Google Chrome.app/Contents/MacO
 
 REDE, SENHA, IP = "SOLAR_TOWER", "torre1234", "192.168.4.1"
 QR_WIFI = f"WIFI:T:WPA;S:{REDE};P:{SENHA};;"
+QR_URL = f"http://{IP}"
 
 # Logo da IHM (main.c), mesmo desenho em SVG
 # (fundo branco arredondado feito em CSS: o <rect rx> saía cortado no PDF do Chrome)
@@ -42,9 +46,9 @@ REGUA = ('<svg viewBox="0 0 502 30"><path d="M1 29H501' + "".join(f"M{1 + i * 10
          for i in range(6)) + '" stroke="#14213d" stroke-width="2" fill="none"/></svg>')
 
 
-def qr_svg():
+def qr_svg(dados):
     buf = io.BytesIO()
-    segno.make(QR_WIFI, error="m").save(buf, kind="svg", border=0, dark="#0b2a5b", xmldecl=False,
+    segno.make(dados, error="m").save(buf, kind="svg", border=0, dark="#0b2a5b", xmldecl=False,
                                          svgns=True, omitsize=True)
     return buf.getvalue().decode().replace("<svg ", '<svg class="qr" ', 1)
 
@@ -71,19 +75,25 @@ body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-se
   padding: 0 4mm; color: #fff; background: linear-gradient(135deg, #0b2a5b, #16407f); border-bottom: .9mm solid #f5b800 }
 .wifi header b { font-size: 4mm; font-weight: 750; letter-spacing: -.05mm }
 .wifi header span { font-size: 2.2mm; font-weight: 800; letter-spacing: .35mm; color: #f5b800 }
-.wifi main { flex: 1; display: grid; grid-template-columns: 1fr 33mm; gap: 2.4mm; padding: 2.6mm 3mm 3mm }
-.col { display: flex; flex-direction: column; gap: 1.8mm }
-.cx { flex: 1; background: #fff; border: .25mm solid #e3e7ee; border-radius: 2mm; padding: 1.4mm 2.6mm;
-  display: flex; flex-direction: column; justify-content: center }
-.cx small { font-size: 1.8mm; font-weight: 800; letter-spacing: .3mm; color: #66728a; text-transform: uppercase }
-.cx strong { font-size: 5mm; font-weight: 800; letter-spacing: -.05mm; line-height: 1.1; margin-top: .3mm }
-.cx.ip { background: linear-gradient(135deg, #0b2a5b, #16407f); border: 0; color: #fff }
-.cx.ip small { color: #f5b800 }
-.cx.ip strong { font-size: 5.6mm }
-.qrcx { background: #fff; border: .25mm solid #e3e7ee; border-radius: 2mm; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 1.6mm; padding: 2mm }
-.qr { width: 26mm; height: 26mm; display: block }
-.qrcx small { font-size: 1.75mm; font-weight: 800; letter-spacing: .25mm; color: #66728a; text-align: center; line-height: 1.3 }
+.wifi main { flex: 1; display: flex; flex-direction: column; gap: 2mm; padding: 2.4mm 3mm 3mm }
+.passo { flex: 1; display: flex; align-items: center; gap: 2.5mm; border-radius: 2mm; padding: 1.6mm 2mm 1.6mm 3mm;
+  background: #fff; border: .25mm solid #e3e7ee }
+.passo .txt { flex: 1; display: flex; flex-direction: column; gap: .9mm; min-width: 0 }
+.passo em { font-style: normal; font-size: 1.8mm; font-weight: 800; letter-spacing: .25mm; color: #16407f; text-transform: uppercase }
+.passo em b { display: inline-block; width: 3.1mm; height: 3.1mm; line-height: 3.1mm; border-radius: 50%; text-align: center;
+  background: #0b2a5b; color: #fff; margin-right: 1mm; letter-spacing: 0 }
+.campos { display: flex; gap: 3.5mm }
+.passo small { display: block; font-size: 1.6mm; font-weight: 800; letter-spacing: .25mm; color: #66728a; text-transform: uppercase }
+.passo strong { display: block; font-size: 4.3mm; font-weight: 800; letter-spacing: -.05mm; line-height: 1.1; white-space: nowrap }
+.passo.ip { background: linear-gradient(135deg, #0b2a5b, #16407f); border: 0; color: #fff }
+.passo.ip em { color: #f5b800 }
+.passo.ip em b { background: #f5b800; color: #0b2a5b }
+.passo.ip strong { font-size: 6.4mm }
+.passo.ip small { color: #c9d3e6; margin-top: .2mm }
+.qrbox { flex: none; background: #fff; border-radius: 1.4mm; padding: 1.2mm }
+.qr { width: 16.5mm; height: 16.5mm; display: block }
+.passo.ip .qr { width: 15mm; height: 15mm }
+.passo.ip .qrbox { padding: 2mm }
 
 /* Folha A4 */
 .folha { width: 210mm; height: 297mm; padding: 14mm 10mm; position: relative }
@@ -109,10 +119,11 @@ def titulo():
 
 def wifi():
     return f"""<div class="et wifi"><header><b>Solar Smart Tower</b><span>CONEXÃO WI-FI</span></header><main>
-<div class="col"><div class="cx"><small>Rede (login)</small><strong>{REDE}</strong></div>
-<div class="cx"><small>Senha</small><strong>{SENHA}</strong></div>
-<div class="cx ip"><small>Abra no navegador</small><strong>{IP}</strong></div></div>
-<div class="qrcx">{qr_svg()}<small>ESCANEIE PARA<br>CONECTAR</small></div></main></div>"""
+<div class="passo"><div class="txt"><em><b>1</b>Conecte-se à rede</em><div class="campos">
+<div><small>Rede (login)</small><strong>{REDE}</strong></div><div><small>Senha</small><strong>{SENHA}</strong></div></div></div>
+<div class="qrbox">{qr_svg(QR_WIFI)}</div></div>
+<div class="passo ip"><div class="txt"><em><b>2</b>Abra a IHM no navegador</em><strong>{IP}</strong>
+<small>ou escaneie o QR ao lado</small></div><div class="qrbox">{qr_svg(QR_URL)}</div></div></main></div>"""
 
 
 def corte(rotulo, html):
