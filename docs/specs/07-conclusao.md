@@ -15,6 +15,7 @@
 | Simulador 3D | Mesmo `main.c` em WebAssembly sobre as peças reais; dia, ano inteiro e testes de falha |
 | Correções achadas pela simulação | P10 (sentido horizontal), P14 (tolerância de 12 bits), P15 (preso no limite no inverno); P13 (sombra do painel nos LDRs) com correção mecânica proposta |
 | Testes físicos | Na casa do integrante Dawid, acompanhados pela IHM no celular: fabricação, servos, quebra e reimpressão da peça, ajuste do XL4015 (12 V → 6 V) e teste com lanterna (girou para o lado contrário — causas e diagnóstico em [05-testes.md](05-testes.md), F-03) |
+| Versão final | Torre montada com as etiquetas (título e Wi-Fi com QR) e as 2 saídas USB; foto e vídeo de funcionamento em `docs/imagens_videos_testes_fisicos/` (`versao_final_adesivado.jpeg`, `video_versao_final_funcionando.mp4`) |
 
 ## Custo do protótipo
 

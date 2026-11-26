@@ -23,6 +23,8 @@ PAINEIS = {
                      ('problema_peça_impressa_quebrou_na_montagem.mp4', 36)],
     'f_esp32.png': [('mudança_para_esp32.mp4', 2), ('mudança_para_esp32.mp4', 22), ('mudança_para_esp32.mp4', 12.5)],
     'f_celular.png': [('screenshot_interface_no_celular.jpeg', None), ('testando_pela_interface_no_celular.mp4', 25)],
+    'f_versao_final.png': [('versao_final_adesivado.jpeg', None), ('video_versao_final_funcionando.mp4', 9),
+                           ('video_versao_final_funcionando.mp4', 19), ('video_versao_final_funcionando.mp4', 31)],
     'f_p15.png': [('ganho_anual_antes_da_correcao_p15.jpeg', None), ('ganho_anual_depois_da_correcao_p15.jpeg', None)],
 }
 

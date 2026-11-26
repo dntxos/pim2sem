@@ -20,7 +20,7 @@ XL4015. O ESP32 cria a rede Wi-Fi **`SOLAR_TOWER`** e serve uma **IHM** para o c
 | `docs/relatorio/` | Relatório do PIM II (`.docx` + `.pdf` para impressão + `.low.pdf` ≤ 10 MB para submissão) |
 | `docs/etiquetas/` | Etiquetas adesivas da torre (título 90 × 32 mm e Wi-Fi 90 × 60 mm com QR da rede e QR da IHM): `etiquetas_A4.pdf`; arte do poste 120 × 400 mm (`poster_poste_A3.pdf`). Imprimir em 100% |
 | `docs/video/` | Vídeos de demonstração: IHM (`demo_ihm.mp4`) e simulador (`demo_simulador.mp4`) |
-| `docs/imagens_videos_testes_fisicos/` | Fotos e vídeos dos testes físicos (e capturas do simulador do P15) |
+| `docs/imagens_videos_testes_fisicos/` | Fotos e vídeos dos testes físicos e da versão final montada (e capturas do simulador do P15) |
 | `3d_material/` | Peças para impressão 3D (`stl/`) e montagem completa (`amf/`) |
 | `simulator/` | Simulador 3D no navegador: o mesmo `main.c` compilado para WebAssembly sobre as peças 3D |
 | `tools/` | Geração do relatório, renders do Blender, gravação dos vídeos e etiquetas |

@@ -427,7 +427,7 @@ r.p(f'Com a estrutura parcialmente montada, os dois eixos foram acionados (Figur
     'vertical inclinou a trave em toda a faixa e o horizontal girou o prato com o conjunto superior, sem '
     'travamentos nem reinícios da placa de controle.')
 r.figura(f('f_teste_servos.png'), 'Teste dos servos na pré-montagem: diferentes posições da trave',
-         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
+         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=13)
 r.h2('4.3 Falha: quebra de peça impressa na montagem')
 r.p(f'Durante a montagem da trave, a peça de suporte da placa quebrou no encaixe dos braços (Figura {r.prox_fig()}). '
     'Em (a) vê-se o braço acoplado ao servo pelo *horn* metálico, preso por quatro parafusos, e a fratura junto ao '
@@ -435,7 +435,7 @@ r.p(f'Durante a montagem da trave, a peça de suporte da placa quebrou no encaix
     'e nas regiões com furos e encaixes, justamente onde se concentram o aperto dos parafusos e o momento causado '
     'pelo peso da placa. A peça foi **reimpressa em versão mais resistente** e a montagem prosseguiu.')
 r.figura(f('f_quebra.png'), 'Montagem da trave: braço do servo com fratura (a) e braço livre (b, c)',
-         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
+         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=13)
 r.h2('4.4 Migração para o ESP32')
 r.p(f'Na etapa de testes físicos, o controle migrou do Arduino Nano para um ESP32 em placa de expansão com bornes '
     f'(Figura {r.prox_fig()}a), alimentado por um XL4015 (b) ajustado para converter os 12 V da bateria em 6 V; na montagem final, o ESP32 passou a ser alimentado por '
@@ -444,14 +444,14 @@ r.p(f'Na etapa de testes físicos, o controle migrou do Arduino Nano para um ESP
     'de 950 kB, coincide com a compilação do `main.c`. A troca trouxe o Wi-Fi, o ADC de 12 bits e mais memória, '
     'mas exigiu reescrever o firmware — o que, como mostra o capítulo 5, reintroduziu dois problemas.')
 r.figura(f('f_esp32.png'), 'ESP32 em operação (a), conversor XL4015 e protoboard (b) e gravação concluída (c)',
-         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=15)
+         fonte='Quadros extraídos de vídeo do grupo, 2026.', largura=13.5)
 r.h2('4.5 Controle pelo celular e IHM')
 r.p('O ESP32 cria sua própria rede, sem depender de roteador ou internet: no celular, conecta-se à rede Wi-Fi '
     '**SOLAR_TOWER** (senha **torre1234**) e abre-se **http://192.168.4.1**. No primeiro teste '
     f'(Figura {r.prox_fig()}), a página ainda simples indicou a conexão e, em modo manual, os botões moveram os '
     'dois eixos.')
 r.figura(f('f_celular.png'), 'Primeira versão da página no celular (a) e teste da torre pela interface (b)',
-         fonte='Captura de tela e quadro de vídeo do grupo, 2026.', largura=11)
+         fonte='Captura de tela e quadro de vídeo do grupo, 2026.', largura=10)
 r.p(f'A página foi então reescrita como uma **IHM** (Figura {r.prox_fig()}), com a identidade visual da UNIP e '
     'sem nenhum arquivo externo — logotipo e ícones são desenhados no próprio código —, para funcionar sem '
     'internet. Ela é atualizada a cada segundo e reúne: o painel geral (modo, período do dia com contagem para o '
@@ -460,7 +460,7 @@ r.p(f'A página foi então reescrita como uma **IHM** (Figura {r.prox_fig()}), c
     'movimento manual (5° por toque, repetindo enquanto pressionadas) com o retorno à posição inicial. Os '
     'comandos manuais ficam bloqueados, com aviso, em modo automático ou no repouso noturno.')
 r.figura(f('f_ihm.png'), 'IHM final no celular: painel geral, sensores e servos (a); histórico e controle manual (b)',
-         fonte='Elaborado pelos autores (página do main.c capturada no simulador), 2026.', largura=11)
+         fonte='Elaborado pelos autores (página do main.c capturada no simulador), 2026.', largura=9)
 r.h2('4.6 Rastreamento automático com lanterna')
 r.p('No teste de rastreamento automático com uma lanterna, a torre reagiu à luz, mas **girou para o lado '
     'contrário**, afastando o painel da lanterna em vez de apontá-lo para ela. O resultado mostra que a cadeia '
@@ -478,7 +478,16 @@ r.p('A IHM final permite separar essas causas: iluminando um lado de cada vez, o
     'servo está invertido; se aponta o lado errado, os sensores estão trocados ou o divisor está invertido. No '
     'simulador, as opções “inverter servo” reproduzem cada hipótese.')
 
-r.h2('4.7 Resultados')
+r.h2('4.7 Versão final montada')
+r.p(f'A Figura {r.prox_fig()} mostra a versão final da torre (a): o tubo cinza com o mecanismo de rastreamento '
+    'no topo, a cruz de LDRs, as etiquetas de identificação e de conexão Wi-Fi — com os códigos QR da rede e da '
+    'IHM — e as duas saídas USB de carga de celulares; o painel de 10 W aparece à frente. No vídeo da versão '
+    'final, um cabo está ligado a uma das saídas USB (b) e, ao sombrear os sensores com a mão (c), o mecanismo '
+    'se movimenta e muda a orientação da placa (d).')
+r.figura(f('f_versao_final.png'), 'Versão final montada (a) e quadros do vídeo de funcionamento: saída USB em uso (b), '
+         'sombreamento dos sensores com a mão (c) e nova orientação da placa (d)',
+         fonte='Acervo do grupo, 2026.', largura=13)
+r.h2('4.8 Resultados')
 r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'], [
     ['Impressão e montagem mecânica', 'Aprovado após reimpressão da peça quebrada', 'Fotos e vídeo'],
     ['Movimento dos dois servos', 'Aprovado', 'Vídeo'],
@@ -489,6 +498,7 @@ r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'],
     ['Ajuste do XL4015', 'Aprovado: 12 V → 6 V', 'Teste do grupo'],
     ['Ligações e alimentação (3,3 V, 6 V, GND comum)', 'Aprovado', 'Montagem final'],
     ['IHM no celular', 'Aprovado: leituras, ângulos e comandos', 'IHM'],
+    ['Versão final montada (torre, etiquetas, saídas USB)', 'Montada; mecanismo se move ao sombrear os sensores', 'Foto e vídeo'],
     ['Repouso noturno; correções P10, P14 e P15', 'Aplicados ao `main.c` final; validados em simulação', 'Simulador'],
 ], larguras=[6.0, 6.5, 3.5])
 
