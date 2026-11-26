@@ -32,7 +32,7 @@ digraph G {{
     painel [label="Painel fotovoltaico\\n10 W (≈18 V)", fillcolor="#fff7e6", color="#d9822b"];
     ctrl [label="Controlador de carga\\n12 V (2 portas USB)"];
     bat [label="Bateria selada\\n12 V", fillcolor="#e7f3ec", color="#2e7d4f"];
-    fus [label="Fusível\\n(planejado)", style="rounded,dashed,filled", fillcolor="#ffffff"];
+    fus [label="Fusível"];
   }}
   subgraph cluster_u {{ label="Carga de celulares"; fontname="{FONTE}"; fontsize=14; color="#9ca3af"; style="rounded,dashed";
     usbc [label="XL4015 #2\\n12 V → 5 V"];

@@ -1,9 +1,13 @@
-# Relatório — versão 5 (final): sem pendências
+# Relatório — versão 8 (final): sem pendências
 
 O projeto está concluído (24/11/2026): protótipo montado, `main.c` final, conclusão definida.
 **v5 gerada:** `PIM_Torre_Solar_v5.pdf` (39 páginas, impressão) e `PIM_Torre_Solar_v5.low.pdf`
 (3,8 MB, submissão), sem marcadores `[PREENCHER]`. Regenerar com
-`uv run --with python-docx python tools/relatorio/gerar_relatorio.py` → `exportar_pdf.sh PIM_Torre_Solar_v5`.
+`uv run --with python-docx python tools/relatorio/gerar_relatorio.py` → `exportar_pdf.sh PIM_Torre_Solar_v8`.
+
+**v8:** custos definitivos — impressão 3D **R$ 140,00** (no lugar da estimativa de filamento),
+tinta Colorart **R$ 22,00**, fusível **R$ 9,99** (deixa de ser "planejado" no diagrama de blocos e no
+Quadro 1), parafusos/porcas/arruelas **R$ 10,00**; **total R$ 442,03**.
 
 ## O que muda da v4 para a v5
 

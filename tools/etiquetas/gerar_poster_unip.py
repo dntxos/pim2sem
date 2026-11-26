@@ -167,7 +167,7 @@ rastreamento ao longo do ano antes e depois da montagem.</p></section>
  <div class="num"><strong>2 eixos</strong><span>4 LDRs · 2 servos MG996R</span></div>
  <div class="num"><strong>+47%</strong><span>energia no ano (simulação)*</span></div>
  <div class="num"><strong>2 USB</strong><span>carga de celulares (5 V)</span></div>
- <div class="num"><strong>R$ 287,82</strong><span>custo do protótipo</span></div>
+ <div class="num"><strong>R$ 442,03</strong><span>custo do protótipo</span></div>
 </div>
 <p class="nota">* Simulação do ano inteiro em São Paulo, céu limpo, em relação a uma placa fixa voltada ao Norte.
 Conclusão: nesse porte, duas placas fixas (Leste e Oeste) rendem mais e custam menos que o rastreador.</p>

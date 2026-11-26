@@ -1,7 +1,8 @@
-"""Gera o relatório do PIM II — versão 5, final (docs/relatorio/PIM_Torre_Solar_v5.docx).
+"""Gera o relatório do PIM II — versão 8, final (docs/relatorio/PIM_Torre_Solar_v8.docx).
 v3: correções P10 e P14 aplicadas ao main.c do ESP32. v4: dados do grupo (orientador, custos,
 XL4015 em 6 V, peça reimpressa, teste com lanterna). v5: projeto concluído — nova IHM, simulação do
 ano e P15, custos completos, placa universal, consulta ao mercado e conclusão (placas fixas).
+v8: custos definitivos (impressão 3D, tinta, fusível, parafusos); fusível deixa de ser planejado.
 A versão 4 está em gerar_relatorio_v4.py.
 
 Uso: python tools/relatorio/gerar_relatorio.py   (requer python-docx)
@@ -23,7 +24,7 @@ from abnt_docx import Relatorio  # noqa: E402
 RAIZ = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 FIG = os.path.join(RAIZ, 'docs', 'relatorio', 'figuras')
 DADOS = os.path.join(RAIZ, 'docs', 'relatorio', 'dados')
-SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v5.docx')
+SAIDA = os.path.join(RAIZ, 'docs', 'relatorio', 'PIM_Torre_Solar_v8.docx')
 C = WD_ALIGN_PARAGRAPH.CENTER
 
 
@@ -67,7 +68,6 @@ G_RAST = G_FIX['rastreador (1 placa, main.c final)']
 G_LO = next(v for k, v in G_FIX.items() if 'Leste' in k)
 EXTRA_RAST = fixas['custos_R$']['itens extras do rastreador (sem estrutura reforçada e manutenção)']
 PAINEL = fixas['custos_R$']['painel 10 W adicional']
-fil = dados('filamento.json')
 def dec(v):  # noqa: E302
     return f'{v:.1f}'.replace('.', ',')
 def brl(v):  # noqa: E302
@@ -78,7 +78,9 @@ CUSTOS = [  # (item, qtd, unitário, total) — notas de compra do grupo
     ('Servo MG996R', '2', 36.80, 73.60), ('Conversor XL4015', '2', 18.50, 37.00),
     ('Bateria selada 12 V', '1', 78.80, 78.80), ('Painel solar 10 W', '1', 39.24, 39.24),
     ('ESP32 (placa de desenvolvimento)', '1', 25.00, 25.00),
-    ('Filamento PLA 1,75 mm (rolo de 1 kg)', f'{fil["massa_com_perdas_g"]} g', fil['preco_rolo_1kg'], fil['custo_R$']),
+    ('Impressão 3D das peças (valor total)', '1', 140.00, 140.00),
+    ('Tinta Colorart (lata)', '1', 22.00, 22.00), ('Fusível', '1', 9.99, 9.99),
+    ('Parafusos, porcas e arruelas', '—', None, 10.00),
 ]
 TOTAL = sum(c[3] for c in CUSTOS)
 
@@ -297,8 +299,7 @@ r.p(f'A Figura {r.prox_fig()} apresenta o sistema. Na cadeia de energia, o paine
     'controlador de carga, e uma das duas portas USB do controlador alimenta o ESP32; da bateria, protegida '
     'por fusível, derivam dois conversores XL4015: o #1, de 6 V, alimenta os servos; o #2 reduz os 12 V para '
     'os 5 V das duas saídas USB de carga de celulares. Em paralelo, a malha de rastreamento — LDRs, ESP32 e servos — '
-    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi. O bloco tracejado (fusível) '
-    'é um item planejado para a versão definitiva.')
+    'orienta o painel, e o celular se conecta ao ESP32 por Wi-Fi.')
 r.figura(f('d_blocos.png'), 'Diagrama de blocos da torre solar', largura=16)
 r.h2('3.2 Estrutura física')
 r.p('O roteiro do PIM sugere uma torre de tubo plástico de 5 polegadas fixada ao solo; o grupo desenvolveu o '
@@ -334,7 +335,7 @@ r.tabela('Componentes do protótipo e suas funções', ['Qtd.', 'Componente', 'F
     ['1', 'Bateria selada 12 V', 'Armazena a energia'],
     ['2', 'Conversor *step-down* XL4015 (5 A)', '#1: 12 V → 6 V (servos); #2: 12 V → 5 V (2 saídas USB)'],
     ['1', 'Controlador de carga solar 12 V com 2 portas USB', 'Carga segura da bateria; uma porta USB alimenta o ESP32'],
-    ['—', 'Fusível (planejado)', 'Proteção da saída da bateria'],
+    ['1', 'Fusível', 'Proteção da saída da bateria'],
 ], larguras=[1.3, 7.2, 7.5], quadro=True)
 r.p('Na montagem final, os divisores dos LDRs ficam no **3,3 V** do ESP32 e no GND, pois as entradas não '
     'toleram 5 V; os servos são alimentados por uma **fonte externa regulada de 6 V** (XL4015 #1), e não pela placa '
@@ -403,10 +404,10 @@ r.p('O circuito foi desenhado no Tinkercad e montado em **placa universal** — 
 r.figura(f('d_pci.png'), 'Projeto de leiaute da placa de circuito impresso para a versão definitiva (face das trilhas)', largura=12.5)
 
 r.h2('3.8 Custos')
-r.p(f'A Tabela {r.prox_tab()} reúne o custo do protótipo. O consumo de filamento foi calculado a partir dos modelos 3D das '
-    'peças, incluindo a reimpressão da peça que quebrou (seção 4.3).')
+r.p(f'A Tabela {r.prox_tab()} reúne o custo definitivo do protótipo. A impressão 3D das peças entra pelo valor total '
+    'pago pelo grupo; tinta, fusível e parafusaria completam a montagem final.')
 r.tabela('Custos do protótipo', ['Item', 'Qtd.', 'Unit. (R$)', 'Total (R$)'],
-         [[n, q, '0,05–0,06' if u is None else (brl(u) + ('/kg' if 'Filamento' in n else '')), brl(t)] for n, q, u, t in CUSTOS]
+         [[n, q, ('0,05–0,06' if 'Jumpers' in n else '—') if u is None else brl(u), brl(t)] for n, q, u, t in CUSTOS]
          + [['**Total**', '', '', f'**{brl(TOTAL)}**']],
          fonte='Notas de compra do grupo, 2026.', larguras=[8.6, 1.6, 2.9, 2.9])
 

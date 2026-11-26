@@ -55,8 +55,8 @@ praça), sempre rotuladas "Ilustração conceitual gerada por IA" — nunca como
 - Formato de entrega: **.docx** (o curso usa Word) gerado via skill `docx` ou python-docx, com
   estilos reais (Título 1/2/3) para o sumário automático, Times New Roman 12, margens 3/3/2/2,
   1,5 entrelinhas, numeração a partir da Introdução, legendas "Figura N –" em cima e "Fonte:" embaixo.
-- Pipeline: `capturar_ihm.mjs` / `graficos.py` / `diagramas.py` / `fotos.py` → `gerar_relatorio.py` (v5;
-  rodar com `uv run --with python-docx python …`) → `exportar_pdf.sh PIM_Torre_Solar_v5` (Word atualiza sumário/listas e exporta o PDF). Os números do
+- Pipeline: `capturar_ihm.mjs` / `graficos.py` / `diagramas.py` / `fotos.py` → `gerar_relatorio.py` (v8;
+  rodar com `uv run --with python-docx python …`) → `exportar_pdf.sh PIM_Torre_Solar_v8` (Word atualiza sumário/listas e exporta o PDF). Os números do
   texto são lidos de `docs/relatorio/dados/` — gere dados novos pelo simulador (`sim.traco`/`sim.salvar`).
 - **Sempre dois PDFs:** `PIM_Torre_Solar_vN.pdf` (alta resolução, para imprimir/encadernar) e
   `PIM_Torre_Solar_vN.low.pdf` (≤ 10 MB, para submeter na plataforma). O `exportar_pdf.sh` já gera

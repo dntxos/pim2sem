@@ -26,12 +26,16 @@
 | Bateria selada 12 V | 78,80 |
 | Painel solar 10 W | 39,24 |
 | ESP32 | 25,00 |
-| Filamento PLA (~347 g das peças, incluindo a trave reimpressa, de um rolo de 1 kg a R$ 80,00) | 27,78 |
+| Impressão 3D das peças (valor total pago) | 140,00 |
+| Tinta Colorart (1 lata) | 22,00 |
+| Fusível | 9,99 |
+| Parafusos, porcas e arruelas | 10,00 |
 | LDRs, resistores e jumpers | 6,40 |
-| **Total** | **287,82** |
+| **Total** | **442,03** |
 
-Consumo de filamento calculado pelas peças 3D: `tools/relatorio/estimar_filamento.py` →
-`docs/relatorio/dados/filamento.json`.
+Valores definitivos informados pelo grupo (relatório v8). A estimativa antiga de filamento
+(`tools/relatorio/estimar_filamento.py` → `docs/relatorio/dados/filamento.json`, ~347 g ≈ R$ 27,78)
+foi substituída pelo valor real da impressão.
 
 ## Ganho de energia do rastreador (simulação)
 

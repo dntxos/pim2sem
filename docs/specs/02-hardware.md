@@ -21,7 +21,10 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | 1 | Painel solar 10 W monocristalino (Ztroon) | Placa que o rastreador aponta para o sol |
 | 40 | Jumper Dupont macho–fêmea 20 cm | Ligações |
 | 40 | Jumper Dupont macho–macho 20 cm | Ligações |
-| ~347 g | Filamento PLA 1,75 mm (rolo de 1 kg a R$ 80,00) — R$ 27,78 | Peças impressas em 3D — ver [04-mecanica.md](04-mecanica.md) |
+| — | Impressão 3D das peças — R$ 140,00 (valor total) | Peças impressas em 3D — ver [04-mecanica.md](04-mecanica.md) |
+| 1 | Tinta Colorart (lata) — R$ 22,00 | Acabamento da estrutura |
+| 1 | Fusível — R$ 9,99 | Proteção da saída da bateria |
+| — | Parafusos, porcas e arruelas — R$ 10,00 | Fixação das peças |
 
 ### Itens complementares recomendados (fora da lista de compras)
 
@@ -31,11 +34,11 @@ Referência visual da fase inicial: [`docs/diagrama_tinkercad.png`](../diagrama_
 | Placa universal (perfurada) | Usada no protótipo para os divisores dos LDRs e a distribuição de 3,3 V/6 V/GND. |
 | Cabo USB do ESP32 | Gravar o firmware e ler o Monitor Serial (115 200 baud). |
 | Capacitor eletrolítico 470–1000 µF / 16 V | Junto aos servos, absorve os picos de corrente do MG996R. |
-| Fusível (2–5 A) + porta-fusível na saída da bateria | Bateria selada fornece corrente alta em curto-circuito. |
+| ~~Fusível (2–5 A) na saída da bateria~~ — **comprado** (ver lista acima) | Bateria selada fornece corrente alta em curto-circuito. |
 | Chave liga/desliga e fios mais grossos (≥ 0,5 mm²) | Os jumpers Dupont de 20 cm não são adequados para a corrente dos servos (até ~2,5 A cada em travamento). |
 | Multímetro | Ajustar a saída dos XL4015 **antes** de ligar qualquer coisa. |
 
-Custo total do protótipo: **R$ 287,82** (detalhe em [07-conclusao.md](07-conclusao.md#custo-do-protótipo)).
+Custo total do protótipo: **R$ 442,03** (detalhe em [07-conclusao.md](07-conclusao.md#custo-do-protótipo)).
 
 ## Mapa de pinos (ESP32 — `main.c` atual, confirmado pelo grupo em 24/11/2026)
 
