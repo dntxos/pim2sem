@@ -479,13 +479,13 @@ r.p('A IHM final permite separar essas causas: iluminando um lado de cada vez, o
     'simulador, as opções “inverter servo” reproduzem cada hipótese.')
 
 r.h2('4.7 Versão final montada')
-r.p(f'A Figura {r.prox_fig()} mostra a versão final da torre (a): o tubo cinza com o mecanismo de rastreamento '
-    'no topo, a cruz de LDRs, as etiquetas de identificação e de conexão Wi-Fi — com os códigos QR da rede e da '
-    'IHM — e as duas saídas USB de carga de celulares; o painel de 10 W aparece à frente. No vídeo da versão '
-    'final, um cabo está ligado a uma das saídas USB (b) e, ao sombrear os sensores com a mão (c), o mecanismo '
-    'se movimenta e muda a orientação da placa (d).')
-r.figura(f('f_versao_final.png'), 'Versão final montada (a) e quadros do vídeo de funcionamento: saída USB em uso (b), '
-         'sombreamento dos sensores com a mão (c) e nova orientação da placa (d)',
+r.p(f'A Figura {r.prox_fig()} mostra a versão final da torre com o painel de 10 W montado no mecanismo, em três '
+    'inclinações: o tubo cinza, as etiquetas de identificação e de conexão Wi-Fi — com os códigos QR da rede e da '
+    'IHM —, as duas saídas USB de carga de celulares e, no topo, a cruz de LDRs acima do plano do painel, posição '
+    'que corresponde à solução proposta para a sombra do painel sobre os sensores (seção 5.4). No vídeo da versão '
+    'final, gravado pelo grupo, um cabo está ligado a uma das saídas USB e o mecanismo se movimenta ao sombrear os '
+    'sensores com a mão.')
+r.figura(f('f_versao_final.png'), 'Versão final montada com o painel de 10 W, em três inclinações (a, b, c)',
          fonte='Acervo do grupo, 2026.', largura=13)
 r.h2('4.8 Resultados')
 r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'], [
@@ -498,7 +498,7 @@ r.tabela('Resultados dos testes físicos', ['Teste', 'Resultado', 'Evidência'],
     ['Ajuste do XL4015', 'Aprovado: 12 V → 6 V', 'Teste do grupo'],
     ['Ligações e alimentação (3,3 V, 6 V, GND comum)', 'Aprovado', 'Montagem final'],
     ['IHM no celular', 'Aprovado: leituras, ângulos e comandos', 'IHM'],
-    ['Versão final montada (torre, etiquetas, saídas USB)', 'Montada; mecanismo se move ao sombrear os sensores', 'Foto e vídeo'],
+    ['Versão final montada (painel, etiquetas, saídas USB)', 'Montada; mecanismo se move ao sombrear os sensores', 'Fotos e vídeo'],
     ['Repouso noturno; correções P10, P14 e P15', 'Aplicados ao `main.c` final; validados em simulação', 'Simulador'],
 ], larguras=[6.0, 6.5, 3.5])
 
