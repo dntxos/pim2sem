@@ -10,7 +10,7 @@
 | Entrega | Resultado |
 |---------|-----------|
 | Rastreador de dois eixos (4 LDR + 2 MG996R + ESP32) | Montado (ligações e alimentação confirmadas pelo grupo); controle em malha fechada com zona morta |
-| Repouso noturno | Estaciona em 90°/90° com pouca luz e retoma de manhã (P7, P15; verificado no simulador) |
+| Repouso noturno | Estaciona em 90°/80° (H/V; P16) com pouca luz e retoma de manhã (P7, P15; verificado no simulador) |
 | IHM pelo celular | Rede `SOLAR_TOWER`, `http://192.168.4.1`: modo, dia/noite, 4 LDRs, servos, gráfico, controle manual |
 | Simulador 3D | Mesmo `main.c` em WebAssembly sobre as peças reais; dia, ano inteiro e testes de falha |
 | Correções achadas pela simulação | P10 (sentido horizontal), P14 (tolerância de 12 bits), P15 (preso no limite no inverno); P13 (sombra do painel nos LDRs) com correção mecânica proposta |

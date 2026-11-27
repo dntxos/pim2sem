@@ -47,7 +47,7 @@ Os quatro LDRs ficam em cruz, separados por um anteparo. Quando a luz vem de um 
 sombreia os sensores do lado oposto; o ESP32 compara as médias (esquerda × direita,
 superior × inferior) a cada 100 ms e gira cada servo 2° na direção da luz até equilibrar (zona
 morta de 160 no ADC de 12 bits). À noite (luz baixa por 2 min) o painel estaciona no centro
-(90°/90°) e volta a rastrear depois de 30 s de luz.
+(90°/80° — vertical limitado a 80°, P16) e volta a rastrear depois de 30 s de luz.
 
 **IHM pelo celular** (rede `SOLAR_TOWER`, senha `torre1234`, `http://192.168.4.1`, funciona sem
 internet): modo automático/manual, dia/noite, leitura dos 4 LDRs, diferença entre lados, ângulos dos

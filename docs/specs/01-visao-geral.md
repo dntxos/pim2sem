@@ -20,7 +20,7 @@ celulares por USB a partir de bateria de 12 V).
 3. Se um lado recebe mais luz que o oposto além de uma tolerância, o servo daquele eixo gira um
    pequeno passo na direção da luz.
 4. O processo se repete a cada 100 ms; quando os lados estão equilibrados, a placa está alinhada.
-5. À noite (luz baixa por 2 min) o painel estaciona no centro (90°/90°) e volta a rastrear quando
+5. À noite (luz baixa por 2 min) o painel estaciona em 90°/80° (H/V) e volta a rastrear quando
    a luz se mantém por 30 s.
 6. O ESP32 cria a rede Wi-Fi `SOLAR_TOWER`; pelo celular (`http://192.168.4.1`) a **IHM** mostra
    sensores, servos, período do dia e histórico, e permite o controle manual.
@@ -36,10 +36,10 @@ astronômico da posição do sol.
 | RF-02 | Mover o eixo horizontal (azimute, prato giratório) em direção ao lado mais iluminado. |
 | RF-03 | Mover o eixo vertical (elevação) em direção ao lado mais iluminado. |
 | RF-04 | Não mover quando a diferença entre lados for menor que a tolerância (zona morta). |
-| RF-05 | Limitar os ângulos dos servos a 20°–160° para proteger a mecânica. |
+| RF-05 | Limitar os ângulos dos servos (H 20°–160°, V 20°–80° — P16) para proteger a mecânica. |
 | RF-06 | Iniciar com ambos os servos em 90° (posição central). |
 | RF-07 | Expor leituras e ângulos para depuração/calibração (IHM e rota `/estado`; serial a 115 200 baud). |
-| RF-08 | Repouso noturno: estacionar em 90°/90° com luz baixa por 120 s; retomar após 30 s de luz. |
+| RF-08 | Repouso noturno: estacionar em 90°/80° (H/V) com luz baixa por 120 s; retomar após 30 s de luz. |
 | RF-09 | IHM pelo celular (Wi-Fi próprio, sem internet): modo automático/manual, dia/noite, 4 LDRs, ângulos, gráfico, setas e posição inicial. |
 
 ## Requisitos não funcionais

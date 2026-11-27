@@ -31,18 +31,20 @@ Servo servoVertical;
 // POSICOES
 // =====================================
 int anguloH = 90;
-int anguloV = 90;
+int anguloV = 80;
 
 // Ajustar conforme a montagem mecanica
 // Repouso noturno no centro do horizontal (P15): estacionado em 20 graus,
 // no inverno o painel acordava preso no limite ate perto do meio-dia.
 const int INICIO_H = 90;
-const int INICIO_V = 90;
+// Vertical limitado a 80 graus (P16): acima disso o peso do painel o faz
+// passar do ponto e tombar para o outro lado, e o MG996R nao o traz de volta.
+const int INICIO_V = 80;
 
 const int LIMITE_H_MIN = 20;
 const int LIMITE_H_MAX = 160;
 const int LIMITE_V_MIN = 20;
-const int LIMITE_V_MAX = 160;
+const int LIMITE_V_MAX = 80;
 
 // =====================================
 // CONFIGURACOES DO RASTREAMENTO
@@ -205,7 +207,7 @@ footer{text-align:center;font-size:11px;color:var(--sub);padding:2px 0 8px;line-
  </section>
 
  <section class="card">
-  <h2>Posição dos servos <span>limites 20°–160°</span></h2>
+  <h2>Posição dos servos <span>H 20°–160° · V 20°–80°</span></h2>
   <div class="medidores">
    <div><svg viewBox="0 0 120 70" id="gH"></svg><b class="num" id="aH">—</b><small>Horizontal · base</small></div>
    <div><svg viewBox="0 0 120 70" id="gV"></svg><b class="num" id="aV">—</b><small>Inclinação · painel</small></div>
@@ -272,11 +274,11 @@ async function modo(m) { await chamar("/modo?valor=" + m); atualizar(); }
 /* Medidor semicircular: 0° a 180° do servo; faixa útil 20°–160° */
 function ponto(a, r) { const t = Math.PI * (1 - a / 180); return [60 + r * Math.cos(t), 62 - r * Math.sin(t)]; }
 function arco(a0, a1, r) { const p = ponto(a0, r), q = ponto(a1, r); return "M" + p[0].toFixed(1) + " " + p[1].toFixed(1) + " A" + r + " " + r + " 0 0 1 " + q[0].toFixed(1) + " " + q[1].toFixed(1); }
-function medidor(id, a) {
+function medidor(id, a, max = 160) {
   const p = ponto(a, 40);
   $(id).innerHTML =
     '<path d="' + arco(0, 180, 50) + '" stroke="#eef1f6" stroke-width="10" fill="none" stroke-linecap="round"/>' +
-    '<path d="' + arco(20, 160, 50) + '" stroke="#d6dce7" stroke-width="10" fill="none"/>' +
+    '<path d="' + arco(20, max, 50) + '" stroke="#d6dce7" stroke-width="10" fill="none"/>' +
     '<path d="' + arco(20, Math.max(20, a), 50) + '" stroke="#f5b800" stroke-width="10" fill="none"/>' +
     '<line x1="60" y1="62" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="#0b2a5b" stroke-width="3.5" stroke-linecap="round"/>' +
     '<circle cx="60" cy="62" r="5.5" fill="#0b2a5b"/>';
@@ -353,7 +355,7 @@ function mostrar(d) {
   equilibrio("kH", "zH", "tH", (d.se + d.ie) / 2 | 0, (d.sd + d.id) / 2 | 0, d.tol, ["à esquerda", "à direita"]);
   equilibrio("kV", "zV", "tV", (d.se + d.sd) / 2 | 0, (d.ie + d.id) / 2 | 0, d.tol, ["em cima", "embaixo"]);
 
-  medidor("gH", d.h); medidor("gV", d.v);
+  medidor("gH", d.h); medidor("gV", d.v, 80);
   $("aH").textContent = d.h + "°"; $("aV").textContent = d.v + "°";
 
   const noite = d.estado.indexOf("NOITE") === 0;

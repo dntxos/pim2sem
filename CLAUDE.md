@@ -52,12 +52,13 @@ Specs: [visão geral](docs/specs/01-visao-geral.md) · [hardware](docs/specs/02-
 - **Não remover do `main.c`:** `sentidoHorizontal` (P10 — sem ele o servo horizontal trava no limite
   com o vertical abaixo de 90°; já regrediu uma vez na migração) e `TOLERANCIA = 160` (P14 — escala
   de 12 bits; 40 era o valor do Nano) e `INICIO_H = 90` (P15 — repouso em 20° prendia o painel no
-  limite nas manhãs de inverno). É a versão final do projeto.
+  limite nas manhãs de inverno) e `LIMITE_V_MAX = 80` (P16). É a versão final do projeto.
 - **Convenção do sensor:** leitura maior = mais luz (LDR no lado do 5 V do divisor). Inverter o
   divisor inverte o sentido dos eixos.
 - **Sinais dos eixos** (`+=`/`-=`) dependem da montagem mecânica; o eixo vertical é propositalmente
   invertido em relação ao horizontal.
-- **Limites 20°–160°** protegem a estrutura impressa — não ampliar sem checar a mecânica.
+- **Limites:** horizontal 20°–160°; vertical **20°–80°** (`LIMITE_V_MAX = 80`, P16 — acima disso o painel
+  de 10 W tomba para o outro lado e o servo não o traz de volta). Não ampliar sem checar a mecânica.
 - **Ritmo do laço:** no ESP32 o rastreamento roda a cada 100 ms por `millis()` (`INTERVALO_MOVIMENTO`).
 - **O painel sombreia os LDRs (P13):** no CAD o suporte dos LDRs fica abaixo do plano do painel;
   em simulação isso faz o rastreador fugir do Sol em junho. Variante `simulator/?elevacaoLdr=25`.

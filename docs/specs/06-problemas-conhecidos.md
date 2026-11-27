@@ -165,3 +165,19 @@ o necessário (variantes em `simulator/firmware/variantes/`):
 | As duas juntas | +44,0% | 17,7° | +38% / 16° | +58% / 20° |
 
 Dados: `docs/relatorio/dados/ano_p15.json`. Teste de verificação no protótipo: F-10 em `05-testes.md`.
+
+## <a id="p16"></a>P16 — Com o vertical acima de ~80°, o painel tomba para o outro lado — ✅ contornado (`LIMITE_V_MAX = 80`, 26/11/2026)
+
+Achado na montagem final, com o painel de 10 W: quando o eixo vertical passa do ponto, o peso do
+painel o faz trocar de lado e o MG996R não tem força para trazê-lo de volta — era preciso apoiar com
+a mão. O grupo pediu para limitar a subida do vertical a 80° (antes da apresentação).
+
+**Correção aplicada:** `LIMITE_V_MAX = 80` (era 160) e `INICIO_V = 80` (repouso dentro da faixa).
+Na IHM o medidor de inclinação mostra a faixa 20°–80°. Efeito: o painel só inclina para um lado e o
+vertical nunca cruza 90°, então o `sentidoHorizontal` (P10) fica fixo em −1 — o código continua lá.
+No simulador (26/11/2026) o vertical não passou de 80° em nenhum cenário; com o Sol do lado oposto
+o painel para no limite (cobre metade do céu). O ganho anual de +47% (P15) foi medido com a faixa
+20°–160° e **não foi refeito** com o limite novo.
+
+Solução definitiva: contrapeso ou servo mais forte no eixo vertical, ou centro de massa do painel
+sobre o eixo; aí a faixa 20°–160° pode voltar.

@@ -35,7 +35,7 @@ período do dia). Registros: `docs/imagens_videos_testes_fisicos/` (fotos, víde
 | F-06 | Torque na elevação | Com o painel montado, o servo vertical segura a placa em 20° e 160° sem "cair" nem zumbir forte. |
 | F-07 | Autonomia (opcional) | Medir tensão da bateria no início e no fim do dia; com controlador de carga, deve subir ao sol. |
 | F-08 | IHM no celular | Conectar em `SOLAR_TOWER`, abrir `http://192.168.4.1`: leituras atualizam a cada 1 s; manual move 5° por toque; em automático as setas ficam bloqueadas. |
-| F-09 | Repouso noturno | Cobrir os LDRs por > 2 min: painel vai a 90°/90° e a IHM mostra "Noite"; descobrir: retoma após 30 s ("Amanhecendo"). |
+| F-09 | Repouso noturno | Cobrir os LDRs por > 2 min: painel vai a 90°/80° e a IHM mostra "Noite"; descobrir: retoma após 30 s ("Amanhecendo"). |
 | F-10 | Manhã após o repouso (P15) | Depois de uma noite estacionado, o painel sai do centro e segue o sol logo de manhã (antes da correção ficava preso em H = 20° até ~meio-dia no inverno). |
 | F-11 | Versão final montada | Torre com o painel de 10 W, etiquetas e 2 saídas USB; ao sombrear os LDRs com a mão, o mecanismo se move. **Registrado:** `resultado_final_com_painel1–4.jpeg` (painel montado, cruz de LDRs acima do painel), `versao_final_adesivado.jpeg` e `video_versao_final_funcionando.mp4` (um cabo ligado a uma saída USB). |
 

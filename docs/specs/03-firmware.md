@@ -19,8 +19,8 @@ Arquivo: `main.c` — sketch Arduino em C++ para **ESP32** (núcleo `esp32:esp32
 | `TOLERANCIA` | 160 | Zona morta em unidades do ADC de 12 bits (era 40 no Nano, 10 bits — P14) |
 | `PASSO_AUTO` / `PASSO_MANUAL` | 2° / 5° | Passo por ciclo automático / por toque no celular |
 | `INTERVALO_MOVIMENTO` | 100 ms | Período do rastreamento (não depende mais da serial) |
-| `LIMITE_*` | 20°–160° | Limites dos dois eixos |
-| `INICIO_H` / `INICIO_V` | 90° / 90° | Posição inicial / de repouso noturno (H era 20° — P15) |
+| `LIMITE_H_*` / `LIMITE_V_*` | 20°–160° / 20°–80° | Limites dos eixos (V era 160° — P16: acima de ~80° o painel tomba) |
+| `INICIO_H` / `INICIO_V` | 90° / 80° | Posição inicial / de repouso noturno (H era 20° — P15; V era 90° — P16) |
 | `LIMITE_NOITE` / `LIMITE_DIA` | 500 / 700 | Média dos LDRs (0–4095) para noite / dia (histerese) |
 | `TEMPO_NOITE` / `TEMPO_DIA` | 120 s / 30 s | Tempo contínuo para confirmar noite / dia |
 
@@ -59,7 +59,7 @@ Atualiza `/estado` a cada 1 s.
 - **Sensores:** os 4 LDRs na disposição física (SE/SD/IE/ID) com barras, média, e a **diferença
   esquerda × direita e superior × inferior** com a zona morta (`TOLERANCIA`) desenhada — útil para
   diagnosticar sentido invertido (ex.: o teste com lanterna).
-- **Servos:** medidores semicirculares de H e V com a faixa útil 20°–160°.
+- **Servos:** medidores semicirculares de H (faixa útil 20°–160°) e V (20°–80°, P16).
 - **Gráfico:** histórico dos últimos 60 s (4 LDRs + média) com os limites noite/dia.
 - **Controle manual:** setas (toque = 5°, segurar repete) e posição inicial; bloqueado com aviso em
   modo automático ou repouso noturno; erros HTTP 409 aparecem como aviso na tela.
