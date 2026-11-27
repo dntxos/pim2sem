@@ -6,10 +6,12 @@ Mesma disposição do modelo:
   duas telas explicativas (protótipo e controle pelo celular) · resultados ·
   componentes do grupo · logo do projeto · orientador.
 
-O PDF é vetorial (as fotos entram em resolução própria): imprime em A3 ou ampliado para A1/A0.
+O PDF é vetorial (as fotos entram em resolução própria): imprime em A3 ou ampliado para A1/A0;
+a versão A4 é a mesma página reduzida (mesma proporção √2), sem perda de qualidade.
 
 Saídas (docs/etiquetas/):
   poster_unip_A3.pdf   297 × 420 mm
+  poster_unip_A4.pdf   210 × 297 mm
   poster_unip.png      prévia em 150 dpi
 
 Uso: uv run --with segno --with pymupdf python tools/etiquetas/gerar_poster_unip.py
@@ -189,7 +191,10 @@ def main():
     with pymupdf.open(pdf) as doc:
         print("páginas:", len(doc))
         doc[0].get_pixmap(dpi=150).save(SAIDA / "poster_unip.png")
-    for f in (pdf, SAIDA / "poster_unip.png"):
+        a4 = pymupdf.open()
+        a4.new_page(width=210 / 25.4 * 72, height=297 / 25.4 * 72).show_pdf_page(pymupdf.Rect(0, 0, 210 / 25.4 * 72, 297 / 25.4 * 72), doc, 0)
+        a4.save(SAIDA / "poster_unip_A4.pdf", garbage=3, deflate=True)
+    for f in (pdf, SAIDA / "poster_unip_A4.pdf", SAIDA / "poster_unip.png"):
         print(f.relative_to(RAIZ), f"{f.stat().st_size / 1024:.0f} kB")
 
 
